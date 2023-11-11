@@ -9,20 +9,23 @@ profile = Blueprint('profile', __name__, url_prefix='/profile')
 # Creates a new user in the database
 @profile.route('/user', methods=['POST'])
 def add_user():
-    id = request.json['uid']
+    uid = request.json['uid']
     username = request.json['displayName']
     email = request.json['email']
 
-    new_user = User(id, username, email)
+    new_user = User(uid, username, email)
 
     db.session.add(new_user)
     db.session.commit()
 
-    # user = User.query.get(new_user.id)
+    # user = User.query.get(new_user.uid)
+    
+    # will send back the row with name, email, and uid that matches this uid
+    user = User.query.filter_by(uid=new_user.uid).first()
 
-    # return user_schema.jsonify(user)
+    return user_schema.jsonify(user)
 
-    return f'It worked. ID: {new_user.id} Username: {new_user.username} Email: {new_user.email}'
+    # return f'It worked. ID: {new_user.uid} Username: {new_user.username} Email: {new_user.email}'
 
 # Creates a user info row attached to a specific user
 @profile.route('/user_info', methods=['POST'])
@@ -35,9 +38,9 @@ def add_userinfo():
     relaxation = request.json['relaxation']
     food = request.json['food']
     arts = request.json['arts']
-    user_id = request.json['user_id']          # how does this connect up with the correct user???
+    uid = request.json['uid']          # how does this connect up with the correct user???
 
-    new_userinfo = UserInfo(shopping, nature, landmarks, entertainment, relaxation, food, arts, user_id)
+    new_userinfo = UserInfo(shopping, nature, landmarks, entertainment, relaxation, food, arts, uid)
 
     db.session.add(new_userinfo)
     db.session.commit()

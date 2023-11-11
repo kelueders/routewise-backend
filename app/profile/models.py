@@ -7,13 +7,14 @@ ma = Marshmallow()   # the Marshmallow instance works to serialize and deseriali
 
 # model and schema for the User Table in the database
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    uid = db.Column(db.String(64), unique=True)
+    username = db.Column(db.String(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
     user_info = db.relationship('UserInfo', back_populates = 'user')
 
-    def __init__(self, id, username, email):
-        self.id = id
+    def __init__(self, uid, username, email):
+        self.uid = uid
         self.username = username
         self.email = email
 
@@ -22,7 +23,7 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ['id', 'username', 'email']
+        fields = ['uid', 'username', 'email']
 
 user_schema = UserSchema()
 
