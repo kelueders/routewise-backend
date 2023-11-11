@@ -1,5 +1,5 @@
 alembic==1.12.1
-blinker==1.7.0
+blinker==1.6.3
 certifi==2023.7.22
 charset-normalizer==3.3.2
 click==8.1.7
