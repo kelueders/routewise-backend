@@ -20,7 +20,7 @@ marshmallow==3.19.0
 marshmallow-sqlalchemy==0.29.0
 packaging==23.2
 psycopg2==2.9.9
-python-dotenv==1.0.0
+python-dotenv==0.21.1
 requests==2.31.0
 SQLAlchemy==2.0.23
 typing_extensions==4.8.0
