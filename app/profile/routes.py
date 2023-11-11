@@ -9,11 +9,13 @@ profile = Blueprint('profile', __name__, url_prefix='/profile')
 # Creates a new user in the database
 @profile.route('/user', methods=['POST'])
 def add_user():
-    id = request.json['id']
-    username = request.json['username']
+    id = request.json['uid']
+    username = request.json['displayName']
     email = request.json['email']
 
     new_user = User(id, username, email)
+
+    return f'It worked. ID: {new_user.id} Username: {new_user.username} Email: {new_user.email}'
 
     db.session.add(new_user)
     db.session.commit()
