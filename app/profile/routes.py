@@ -15,14 +15,14 @@ def add_user():
 
     new_user = User(id, username, email)
 
-    # return f'It worked. ID: {new_user.id} Username: {new_user.username} Email: {new_user.email}'
-
     db.session.add(new_user)
     db.session.commit()
 
-    user = User.query.get(new_user.id)
+    # user = User.query.get(new_user.id)
 
-    return user_schema.jsonify(user)
+    # return user_schema.jsonify(user)
+
+    return f'It worked. ID: {new_user.id} Username: {new_user.username} Email: {new_user.email}'
 
 # Creates a user info row attached to a specific user
 @profile.route('/user_info', methods=['POST'])
