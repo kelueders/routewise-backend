@@ -15,7 +15,7 @@ def add_user():
 
     new_user = User(id, username, email)
 
-    return f'It worked. ID: {new_user.id} Username: {new_user.username} Email: {new_user.email}'
+    # return f'It worked. ID: {new_user.id} Username: {new_user.username} Email: {new_user.email}'
 
     db.session.add(new_user)
     db.session.commit()
