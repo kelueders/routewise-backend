@@ -23,6 +23,6 @@ psycopg2==2.9.9
 python-dotenv==0.21.1
 requests==2.31.0
 SQLAlchemy==2.0.23
-typing_extensions==4.8.0
+typing_extensions==4.7.1
 urllib3==2.0.7
 Werkzeug==3.0.1
