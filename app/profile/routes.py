@@ -19,13 +19,17 @@ def add_user():
     db.session.commit()
 
     # user = User.query.get(new_user.uid)
-    
+
     # will send back the row with name, email, and uid that matches this uid
     user = User.query.filter_by(uid=new_user.uid).first()
 
     return user_schema.jsonify(user)
 
     # return f'It worked. ID: {new_user.uid} Username: {new_user.username} Email: {new_user.email}'
+
+@profile.route('/test', methods=['POST', 'GET'])
+def test():
+    return "It's working!"
 
 # Creates a user info row attached to a specific user
 @profile.route('/user_info', methods=['POST'])

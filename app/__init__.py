@@ -20,7 +20,7 @@ migrate = Migrate(app, db)        # the instance for the database migration engi
 CORS(app)                         # what is this for?????
 
 # Test route
-@app.route('/kate')
+@app.route('/')
 def kate():
     response_body = {
         "name": "Kate",
