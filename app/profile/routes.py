@@ -34,7 +34,6 @@ def test():
 # Creates a user info row attached to a specific user
 @profile.route('/user_info', methods=['POST'])
 def add_userinfo():
-    # id = request.json['id']                 # does this need to be here if it is being autoincremented when it is instantiated?
     shopping = request.json['shopping']
     nature = request.json['nature']
     landmarks = request.json['landmarks']

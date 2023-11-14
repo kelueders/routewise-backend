@@ -23,6 +23,7 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     class Meta:
+        # These fields will be posted or returned?
         fields = ['uid', 'username', 'email']
 
 user_schema = UserSchema()
@@ -39,11 +40,10 @@ class UserInfo(db.Model):
     relaxation = db.Column(db.Boolean, default=False, nullable=False)
     food = db.Column(db.Boolean, default=False, nullable=False)
     arts = db.Column(db.Boolean, default=False, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    uid = db.Column(db.String(64), db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates = 'user_info')
 
-    def __init__(self, id, shopping, nature, landmarks, entertainment, relaxation, food, arts, user_id):
-        self.id = id
+    def __init__(self, shopping, nature, landmarks, entertainment, relaxation, food, arts, uid):                       
         self.shopping = shopping
         self.nature = nature
         self.landmarks = landmarks
@@ -51,14 +51,14 @@ class UserInfo(db.Model):
         self.relaxation = relaxation
         self.food = food
         self.arts = arts
-        self.user_id = user_id
+        self.uid = uid
 
     def __repr__(self):
-        return f'User id {self.user_id} has added survey information to the database.'
+        return f'User id {self.uid} has added survey information to the database.'
     
 class UserInfoSchema(ma.Schema):
     class Meta:
-        # Does user_id need to be added in the fields?????
-        fields = ['shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
+        # these fields are being sent to the server from the frontend
+        fields = ['shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts', 'uid']
 
 user_info_schema = UserInfoSchema()
