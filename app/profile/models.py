@@ -8,7 +8,7 @@ ma = Marshmallow()   # the Marshmallow instance works to serialize and deseriali
 # model and schema for the User Table in the database
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uid = db.Column(db.String(64), unique=True)
+    uid = db.Column(db.String, unique=True)
     username = db.Column(db.String(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
     user_info = db.relationship('UserInfo', back_populates = 'user')
@@ -40,7 +40,7 @@ class UserInfo(db.Model):
     relaxation = db.Column(db.Boolean, default=False, nullable=False)
     food = db.Column(db.Boolean, default=False, nullable=False)
     arts = db.Column(db.Boolean, default=False, nullable=False)
-    uid = db.Column(db.String(64), db.ForeignKey('user.uid'), nullable=False)
+    uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates = 'user_info')
 
     def __init__(self, uid, shopping, nature, landmarks, entertainment, relaxation, food, arts):                       
