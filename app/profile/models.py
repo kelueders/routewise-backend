@@ -43,7 +43,8 @@ class UserInfo(db.Model):
     uid = db.Column(db.String(64), db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates = 'user_info')
 
-    def __init__(self, shopping, nature, landmarks, entertainment, relaxation, food, arts, uid):                       
+    def __init__(self, uid, shopping, nature, landmarks, entertainment, relaxation, food, arts):                       
+        self.uid = uid
         self.shopping = shopping
         self.nature = nature
         self.landmarks = landmarks
@@ -51,14 +52,15 @@ class UserInfo(db.Model):
         self.relaxation = relaxation
         self.food = food
         self.arts = arts
-        self.uid = uid
 
     def __repr__(self):
         return f'User id {self.uid} has added survey information to the database.'
     
 class UserInfoSchema(ma.Schema):
     class Meta:
-        # these fields are being sent to the server from the frontend
-        fields = ['shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts', 'uid']
+        fields = ['uid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
 
 user_info_schema = UserInfoSchema()
+
+# these fields are being sent to the server from the frontend????
+# fields = ['uid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']

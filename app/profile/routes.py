@@ -32,22 +32,35 @@ def test():
     return "It's working!"
 
 # Creates a user info row attached to a specific user
-@profile.route('/user_info', methods=['POST'])
+@profile.route('/user_info', methods=['POST', 'GET'])
 def add_userinfo():
-    shopping = request.json['shopping']
-    nature = request.json['nature']
-    landmarks = request.json['landmarks']
-    entertainment = request.json['entertainment']
-    relaxation = request.json['relaxation']
-    food = request.json['food']
-    arts = request.json['arts']
-    uid = request.json['uid']          # how does this connect up with the correct user???
 
-    new_userinfo = UserInfo(shopping, nature, landmarks, entertainment, relaxation, food, arts, uid)
+    uid = request.json['uid']
+    categories = request.json['categories']      # this returns a dictionary
+
+    shopping = categories['shopping']
+    nature = categories['nature']
+    landmarks = categories['landmarks']
+    entertainment = categories['entertainment']
+    relaxation = categories['relaxation']
+    food = categories['food']
+    arts = categories['arts']  
+
+    # shopping = request.json['shopping']
+    # nature = request.json['nature']
+    # landmarks = request.json['landmarks']
+    # entertainment = request.json['entertainment']
+    # relaxation = request.json['relaxation']
+    # food = request.json['food']
+    # arts = request.json['arts']     
+
+    new_userinfo = UserInfo(uid, shopping, nature, landmarks, entertainment, relaxation, food, arts)
 
     db.session.add(new_userinfo)
     db.session.commit()
 
-    user_info = UserInfo.query.get(new_userinfo.id)
+    # user_info = UserInfo.query.get(new_userinfo.id)
 
-    return user_info_schema.jsonify(user_info)
+    # return user_info_schema.jsonify(user_info)
+
+    return 'hello'
