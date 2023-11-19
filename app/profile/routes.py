@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 
 # INTERNAL
-from .models import User, UserInfo, user_schema, user_info_schema, db
+from app.models import User, UserInfo, user_schema, user_info_schema, db
 
 profile = Blueprint('profile', __name__, url_prefix='/profile')
 
@@ -10,7 +10,7 @@ profile = Blueprint('profile', __name__, url_prefix='/profile')
 @profile.route('/user', methods=['POST'])
 def add_user():
     uid = request.json['uid']
-    username = request.json['displayName']
+    username = request.json['username']
     email = request.json['email']
 
     new_user = User(uid, username, email)
@@ -44,15 +44,7 @@ def add_userinfo():
     entertainment = categories['entertainment']
     relaxation = categories['relaxation']
     food = categories['food']
-    arts = categories['arts']  
-
-    # shopping = request.json['shopping']
-    # nature = request.json['nature']
-    # landmarks = request.json['landmarks']
-    # entertainment = request.json['entertainment']
-    # relaxation = request.json['relaxation']
-    # food = request.json['food']
-    # arts = request.json['arts']     
+    arts = categories['arts']    
 
     new_userinfo = UserInfo(uid, shopping, nature, landmarks, entertainment, relaxation, food, arts)
 
