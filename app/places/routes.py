@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 
 # INTERNAL
-from app.models import Trip, db
+from app.models import Trip, db, trip_schema
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -23,5 +23,23 @@ def add_trip():
 
     return f'It worked. Trip to {trip.destination} was created.'
 
+    # trip = Trip.query.filter_by(uid=trip.uid).first()
+
+    # return trip_schema.jsonify(trip)
+
 # Return a specific trip from the database to the front-end
-# @places.route('/trip/<trip_id', methods=['GET'])
+@places.route('/trip/<trip_id>', methods=['GET'])
+def get_trip(trip_id):
+
+    if trip_id:
+        trip = Trip.query.get(trip_id)
+        response = trip_schema.dump(trip)
+        return jsonify(response)
+    else:
+        return jsonify({'message': 'Trip ID is missing'}), 401
+    
+ # Return all the trips for a specific user   
+# @places.route('/trips', methods = ['GET'])
+# def get_trips(uid):
+
+#     trips = Trip.query.filter_by(uid=user.uid)

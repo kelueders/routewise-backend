@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from datetime import datetime
 
+# from .helpers import LatLngType
+
 db = SQLAlchemy()    # the database is represented in the app by the database instance
 ma = Marshmallow()   # the Marshmallow instance works to serialize and deserialize objects
 
@@ -13,6 +15,7 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
     user_info = db.relationship('UserInfo', back_populates = 'user')
+    trip = db.relationship('Trip', back_populates = 'user')
 
     def __init__(self, uid, username, email):
         self.uid = uid
@@ -63,8 +66,6 @@ class UserInfoSchema(ma.Schema):
 
 user_info_schema = UserInfoSchema()
 
-# these fields are being sent to the server from the frontend????
-# fields = ['uid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
 
 
 # Model for Trip table
@@ -75,8 +76,11 @@ class Trip(db.Model):
     img_url = db.Column(db.String)
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
-    uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
     duration = db.Column(db.Integer)
+    uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
+    user = db.relationship('User', back_populates = 'trip')
+    # place = db.relationship('Place', back_populates = 'trip')
+    # day = db.relationship('Day', back_populates = 'trip')
 
     def __init__(self, trip_name, destination, img_url, start_date, end_date, uid):
         self.trip_name = trip_name
@@ -97,10 +101,27 @@ class Trip(db.Model):
 
         # then subtract and return type INT for days
         duration = end_obj - start_obj
-        duration = duration.days
+        duration = duration.days + 1
 
         return duration
     
+class TripSchema(ma.Schema):
+    class Meta:
+        fields = ['trip_id', 'trip_name', 'destination', 'img_url', 'start_date', 'end_date', 'uid', 'duration']
+
+trip_schema = TripSchema()
+trips_schema = TripSchema(many = True)
 
 # Model for the Place table
 # class Place(db.Model):
+#     place_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     place_name = db.Column(db.String(120))
+#     place_img_url = db.Column(db.String)
+#     info = db.Column(db.String)
+#     favorite = db.Column(db.Boolean, default=False)
+#     category = db.Column(db.String(64))
+#     lat_long = db.Column(db.LatLngType)       # uses custom type for storing lat long values
+#     trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
+#     day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
+#     trip = db.relationship('Trip', back_populates='Place')
+#     day = db.relationship('Day', back_populates='Place')
