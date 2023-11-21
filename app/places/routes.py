@@ -10,18 +10,26 @@ places = Blueprint('places', __name__, url_prefix='/places')
 @places.route('/trip', methods=['POST', 'GET'])
 def add_trip():
     uid = request.json['uid']
-    trip_name = request.json['tripName']
-    destination = request.json['destination']
-    img_url = request.json['destinationImgUrl']
-    start_date = request.json['startDate']
-    end_date = request.json['endDate']
+    trip_data = request.json['tripData']
 
-    trip = Trip(trip_name, destination, img_url, start_date, end_date, uid)
+    trip_name = trip_data['tripName']
+    dest_city = trip_data['destinationCity']
+    dest_state = trip_data['destinationState']
+    dest_lat = trip_data['destinationLat']
+    dest_long = trip_data['destinationLong']
+    dest_url = trip_data['destinationImg']
+    start_date = trip_data['startDate']
+    end_date = trip_data['endDate']
+
+    trip = Trip(trip_name, dest_city, dest_state, dest_lat, dest_long, 
+                dest_url, start_date, end_date, uid)
 
     db.session.add(trip)
     db.session.commit()
 
-    return f'It worked. Trip to {trip.destination} was created.'
+    return str(trip.trip_id)
+
+    # return f'It worked. Trip to {trip.dest_city} was created.'
 
     # trip = Trip.query.filter_by(uid=trip.uid).first()
 

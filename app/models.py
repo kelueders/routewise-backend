@@ -72,8 +72,11 @@ user_info_schema = UserInfoSchema()
 class Trip(db.Model):
     trip_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     trip_name = db.Column(db.String(64))
-    destination = db.Column(db.String(64))
-    img_url = db.Column(db.String)
+    dest_city = db.Column(db.String(64))
+    dest_state = db.Column(db.String(20))
+    dest_lat = db.Column(db.Float)
+    dest_long = db.Column(db.Float)
+    dest_img = db.Column(db.String)
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
     duration = db.Column(db.Integer)
@@ -82,10 +85,13 @@ class Trip(db.Model):
     # place = db.relationship('Place', back_populates = 'trip')
     # day = db.relationship('Day', back_populates = 'trip')
 
-    def __init__(self, trip_name, destination, img_url, start_date, end_date, uid):
+    def __init__(self, trip_name, dest_city, dest_state, dest_lat, dest_long, dest_img, start_date, end_date, uid):
         self.trip_name = trip_name
-        self.destination = destination
-        self.img_url = img_url
+        self.dest_city = dest_city
+        self.dest_state = dest_state
+        self.dest_lat = dest_lat
+        self.dest_long = dest_long
+        self.dest_img = dest_img
         self.start_date = start_date
         self.end_date = end_date
         self.uid = uid
@@ -107,7 +113,8 @@ class Trip(db.Model):
     
 class TripSchema(ma.Schema):
     class Meta:
-        fields = ['trip_id', 'trip_name', 'destination', 'img_url', 'start_date', 'end_date', 'uid', 'duration']
+        fields = ['trip_id', 'trip_name', 'dest_city', 'dest_state', 'dest_lat', 
+                  'dest_long', 'dest_img', 'start_date', 'end_date', 'uid', 'duration']
 
 trip_schema = TripSchema()
 trips_schema = TripSchema(many = True)
