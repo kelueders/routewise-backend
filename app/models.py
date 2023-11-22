@@ -83,7 +83,7 @@ class Trip(db.Model):
     duration = db.Column(db.Integer)
     uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates = 'trip')
-    # place = db.relationship('Place', back_populates = 'trip')
+    place = db.relationship('Place', back_populates = 'trip')
     # day = db.relationship('Day', back_populates = 'trip')
 
     def __init__(self, trip_name, dest_city, dest_state, dest_country, dest_lat, dest_long, dest_img, 
@@ -127,7 +127,7 @@ class Place(db.Model):
     place_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     place_name = db.Column(db.String(120))
     place_address = db.Column(db.String(120))
-    place_img_url = db.Column(db.String)
+    place_img = db.Column(db.String)
     info = db.Column(db.String)
     # favorite = db.Column(db.Boolean, default=False)
     # category = db.Column(db.String(64))
@@ -135,13 +135,13 @@ class Place(db.Model):
     long = db.Column(db.Float)      
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
     # day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
-    # trip = db.relationship('Trip', back_populates='Place')
+    trip = db.relationship('Trip', back_populates='place')
     # day = db.relationship('Day', back_populates='Place')
 
-    def __init__(self, place_name, place_address, place_img_url, info, lat, long, trip_id):
+    def __init__(self, place_name, place_address, place_img, info, lat, long, trip_id):
         self.place_name = place_name
         self.place_address = place_address
-        self.place_img_url = place_img_url
+        self.place_img = place_img
         self.info = info
         self.lat = lat
         self.long = long

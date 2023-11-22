@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 
 # INTERNAL
-from app.models import Trip, db, trip_schema
+from app.models import Trip, Place, db, trip_schema
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -54,10 +54,25 @@ def get_trip(trip_id):
 #     trips = Trip.query.filter_by(uid=user.uid)
 
 # Add a place to the user's list
-# @places.route('/place', methods=['POST'])
-# def add_place():
+@places.route('/place', methods=['POST'])
+def add_place():
 
-#     trip_id = request.json['tripID']
-#     data = request.json['data']
+    trip_id = request.json['tripID']
+    data = request.json['places']
 
-#     place_name = data[]
+    for place in data:
+
+        place_name = place['placeName']
+        place_address = place['address']
+        place_img = place['imgURL']
+        info = place['info']
+        lat = place['lat']
+        long = place['long']
+
+        place = Place(place_name, place_address, place_img, info, lat, long, trip_id)
+
+        db.session.add(place)
+        db.session.commit()
+
+    return "It worked. The places were added!"
+
