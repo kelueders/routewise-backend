@@ -46,8 +46,17 @@ def get_trip(trip_id):
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
- # Return all the trips for a specific user   
+# Return all the trips for a specific user   
 # @places.route('/trips', methods = ['GET'])
 # def get_trips(uid):
 
 #     trips = Trip.query.filter_by(uid=user.uid)
+
+# Add a place to the user's list
+# @places.route('/place', methods=['POST'])
+# def add_place():
+
+#     trip_id = request.json['tripID']
+#     data = request.json['data']
+
+#     place_name = data[]

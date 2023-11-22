@@ -85,7 +85,8 @@ class Trip(db.Model):
     # place = db.relationship('Place', back_populates = 'trip')
     # day = db.relationship('Day', back_populates = 'trip')
 
-    def __init__(self, trip_name, dest_city, dest_state, dest_lat, dest_long, dest_img, start_date, end_date, uid):
+    def __init__(self, trip_name, dest_city, dest_state, dest_lat, dest_long, dest_img, 
+                 start_date, end_date, uid):
         self.trip_name = trip_name
         self.dest_city = dest_city
         self.dest_state = dest_state
@@ -120,15 +121,29 @@ trip_schema = TripSchema()
 trips_schema = TripSchema(many = True)
 
 # Model for the Place table
-# class Place(db.Model):
-#     place_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     place_name = db.Column(db.String(120))
-#     place_img_url = db.Column(db.String)
-#     info = db.Column(db.String)
-#     favorite = db.Column(db.Boolean, default=False)
-#     category = db.Column(db.String(64))
-#     lat_long = db.Column(db.LatLngType)       # uses custom type for storing lat long values
-#     trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
-#     day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
-#     trip = db.relationship('Trip', back_populates='Place')
-#     day = db.relationship('Day', back_populates='Place')
+class Place(db.Model):
+    place_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    place_name = db.Column(db.String(120))
+    place_address = db.Column(db.String(120))
+    place_img_url = db.Column(db.String)
+    info = db.Column(db.String)
+    # favorite = db.Column(db.Boolean, default=False)
+    # category = db.Column(db.String(64))
+    lat = db.Column(db.Float)
+    long = db.Column(db.Float)      
+    trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
+    # day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
+    # trip = db.relationship('Trip', back_populates='Place')
+    # day = db.relationship('Day', back_populates='Place')
+
+    def __init__(self, place_name, place_address, place_img_url, info, lat, long, trip_id):
+        self.place_name = place_name
+        self.place_address = place_address
+        self.place_img_url = place_img_url
+        self.info = info
+        self.lat = lat
+        self.long = long
+        self.trip_id = trip_id
+
+    def __repr__(self):
+        return f'{self.place_name} has been added to the user trip.'

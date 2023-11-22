@@ -10,7 +10,7 @@ profile = Blueprint('profile', __name__, url_prefix='/profile')
 @profile.route('/user', methods=['POST'])
 def add_user():
     uid = request.json['uid']
-    username = request.json['username']
+    username = request.json['displayName']
     email = request.json['email']
 
     new_user = User(uid, username, email)
