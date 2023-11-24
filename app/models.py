@@ -126,6 +126,7 @@ trips_schema = TripSchema(many = True)
 class Place(db.Model):
     place_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     place_name = db.Column(db.String(120))
+    geoapify_placeId = db.Column(db.String)
     place_address = db.Column(db.String(120))
     place_img = db.Column(db.String)
     info = db.Column(db.String)
@@ -138,8 +139,9 @@ class Place(db.Model):
     trip = db.relationship('Trip', back_populates='place')
     # day = db.relationship('Day', back_populates='Place')
 
-    def __init__(self, place_name, place_address, place_img, info, favorite, category, lat, long, trip_id):
+    def __init__(self, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, trip_id):
         self.place_name = place_name
+        self.geoapify_placeId = geoapify_placeId
         self.place_address = place_address
         self.place_img = place_img
         self.info = info

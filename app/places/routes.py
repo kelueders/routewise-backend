@@ -63,6 +63,7 @@ def add_place():
     for place in data:
 
         place_name = place['placeName']
+        geoapify_placeId = place['placeId']
         place_address = place['address']
         place_img = place['imgURL']
         category = place['category']
@@ -71,7 +72,7 @@ def add_place():
         lat = place['lat']
         long = place['long']
 
-        place = Place(place_name, place_address, place_img, category, favorite, info, lat, long, trip_id)
+        place = Place(place_name, geoapify_placeId, place_address, place_img, category, favorite, info, lat, long, trip_id)
 
         db.session.add(place)
         db.session.commit()
