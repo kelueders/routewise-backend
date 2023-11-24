@@ -129,8 +129,8 @@ class Place(db.Model):
     place_address = db.Column(db.String(120))
     place_img = db.Column(db.String)
     info = db.Column(db.String)
-    # favorite = db.Column(db.Boolean, default=False)
-    # category = db.Column(db.String(64))
+    favorite = db.Column(db.Boolean, default=False)
+    category = db.Column(db.String(64))
     lat = db.Column(db.Float)
     long = db.Column(db.Float)      
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
@@ -138,11 +138,13 @@ class Place(db.Model):
     trip = db.relationship('Trip', back_populates='place')
     # day = db.relationship('Day', back_populates='Place')
 
-    def __init__(self, place_name, place_address, place_img, info, lat, long, trip_id):
+    def __init__(self, place_name, place_address, place_img, info, favorite, category, lat, long, trip_id):
         self.place_name = place_name
         self.place_address = place_address
         self.place_img = place_img
         self.info = info
+        self.favorite = favorite
+        self.category = category
         self.lat = lat
         self.long = long
         self.trip_id = trip_id
