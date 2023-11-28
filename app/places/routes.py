@@ -16,13 +16,14 @@ def add_trip():
     dest_city = trip_data['cityName']
     dest_state = trip_data['state']
     dest_country = trip_data['country']
+    dest_country_2letter = trip_data['country_2letter']
     dest_lat = trip_data['destinationLat']
     dest_long = trip_data['destinationLong']
     dest_url = trip_data['destinationImg']
     start_date = trip_data['startDate']
     end_date = trip_data['endDate']
 
-    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_lat, dest_long, 
+    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_2letter, dest_lat, dest_long, 
                 dest_url, start_date, end_date, uid)
 
     db.session.add(trip)
