@@ -127,6 +127,7 @@ trips_schema = TripSchema(many = True)
 # Model for the Place table
 class Place(db.Model):
     place_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    local_id = db.Column(db.Integer)
     place_name = db.Column(db.String(120))
     geoapify_placeId = db.Column(db.String)
     place_address = db.Column(db.String(120))
@@ -135,13 +136,14 @@ class Place(db.Model):
     favorite = db.Column(db.Boolean, default=False)
     category = db.Column(db.String(64))
     lat = db.Column(db.Float)
-    long = db.Column(db.Float)      
+    long = db.Column(db.Float)
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
     day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
     trip = db.relationship('Trip', back_populates='place')
     day = db.relationship('Day', back_populates='place')
 
-    def __init__(self, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, trip_id):
+    def __init__(self, local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, trip_id):
+        self.local_id = local_id
         self.place_name = place_name
         self.geoapify_placeId = geoapify_placeId
         self.place_address = place_address
@@ -158,7 +160,7 @@ class Place(db.Model):
     
 class PlaceSchema(ma.Schema):
     class Meta:
-        fields = ['place_id', 'place_name', 'geoapify_placeId', 'place_address', 'place_img', 'info', 
+        fields = ['local_id', 'place_id', 'place_name', 'geoapify_placeId', 'place_address', 'place_img', 'info', 
                   'favorite', 'category', 'lat', 'long', 'trip_id']
 
 place_schema = PlaceSchema()
@@ -167,7 +169,7 @@ places_schema = PlaceSchema(many = True)
 # Model for Day Table
 class Day(db.Model):
     day_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date = db.Column(db.Date)
+    date_formatted = db.Column(db.Date)
     date_short = db.Column(db.String(60))
     week_day = db.Column(db.String(60))
     day_name = db.Column(db.String(60), nullable=True)
@@ -175,19 +177,19 @@ class Day(db.Model):
     trip = db.relationship('Trip', back_populates='day')
     place = db.relationship('Place', back_populates='day')
 
-    def __init__(self, date, date_short, week_day, day_name, trip_id):
-        self.date = date
+    def __init__(self, date_formatted, date_short, week_day, day_name, trip_id):
+        self.date_formatted = date_formatted
         self.date_short = date_short
         self.week_day = week_day
         self.day_name = day_name
         self.trip_id = trip_id
     
     def __repr__(self):
-        return f'{self.date} has added a trip to the database.'
+        return f'{self.date_formatted} has added a trip to the database.'
     
 class DaySchema(ma.Schema):
     class Meta:
-        fields = ['day_id', 'date', 'date_short', 'week_day', 'day_name', 'trip_id']
+        fields = ['day_id', 'date_formatted', 'date_short', 'week_day', 'day_name', 'trip_id']
 
 day_schema = DaySchema()
 days_schema = DaySchema(many = True)

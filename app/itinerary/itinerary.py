@@ -60,20 +60,21 @@ def create_itinerary(places, duration):
 
             if max_value < place['sum_dist']: 
                 max_value = place['sum_dist']
-                max_place = place['place_name']
+                max_place = place['local_id']
 
         i = 0
 
         # step 2
         for place in places_copy:
             
-            if place['place_name'] == max_place:
+            if place['local_id'] == max_place:
                 places_copy.pop(i)
             
             i += 1
 
         # step 3
-        day_places.append(max_place)
+        if max_place:
+            day_places.append(max_place)
 
         # step 4
         c += 1
@@ -90,17 +91,23 @@ def create_itinerary(places, duration):
                     - long
                     - a dict containing the distance from that place to each of the other places
                     - the sum of the distances to each of the other places '''
-    days = []
+    days = {}
+    day_order = []
 
     # step 1
-    for day_place in day_places:
-        day = {}
+    for i in range(duration):
+        days[f'day-{i + 1}'] = {
+            'id': f'day-{i + 1}',
+            'placeIds': []
+        } 
+        day_order.append(f'day-{i + 1}') 
 
-        for place in places:
-            if place['place_name'] == day_place:
-                day['places'] = [place]
-        
-        days.append(day)
+    for day_num in day_order:
+        if len(day_places) > 0:
+            place_id = day_places.pop()
+            days[day_num]['placeIds'].append(place_id)
+            print("check")
+
 
     # step 2
     for place in places_copy:
@@ -115,13 +122,14 @@ def create_itinerary(places, duration):
                     min_value = v
                     min_place = k
 
-        # step 3
-        for day in days:
-            if min_place == day['places'][0]['place_name']:
+        for day_num in day_order:
+            day = days[day_num]
 
-                day['places'].append(place)
+            if min_place == day['placeIds'][0]['local_id']:
+                day['placeIds'].append(place.local_id)
 
-    # print(day_places)
-
-    return days
+    return {
+        "days": days,
+        "day_order": day_order
+    }
 

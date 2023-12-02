@@ -66,10 +66,13 @@ def get_trips(uid):
 def add_place():
 
     trip_id = request.json['tripID']
-    data = request.json['places']
+    places_last = request.json['placesLast']
+    places = request.json['places_serial']
 
-    for place in data:
+    for i in range(places_last):
+        place = places[i + 1] 
 
+        local_id = place['id']
         place_name = place['placeName']
         geoapify_placeId = place['placeId']
         place_address = place['address']
@@ -79,8 +82,9 @@ def add_place():
         info = place['info']
         lat = place['lat']
         long = place['long']
+        
 
-        place = Place(place_name, geoapify_placeId, place_address, place_img, 
+        place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
                       info, favorite, category, lat, long, trip_id)
 
         db.session.add(place)
