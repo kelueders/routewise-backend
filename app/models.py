@@ -71,7 +71,7 @@ user_info_schema = UserInfoSchema()
 # Model for Trip table
 class Trip(db.Model):
     trip_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    trip_name = db.Column(db.String(64))
+    trip_name = db.Column(db.String(200))
     dest_city = db.Column(db.String(64))
     dest_state = db.Column(db.String(20))
     dest_country = db.Column(db.String(20))
@@ -167,7 +167,7 @@ places_schema = PlaceSchema(many = True)
 # Model for Day Table
 class Day(db.Model):
     day_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date = db.Column(db.String(60))
+    date = db.Column(db.Date)
     date_short = db.Column(db.String(60))
     week_day = db.Column(db.String(60))
     day_name = db.Column(db.String(60), nullable=True)
