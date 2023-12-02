@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 
 # INTERNAL
-from app.models import Trip, Place, db, trip_schema
+from app.models import Trip, Place, db, trip_schema, trips_schema, places_schema
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -48,11 +48,18 @@ def get_trip(trip_id):
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
+    
 # Return all the trips for a specific user   
-# @places.route('/trips', methods = ['GET'])
-# def get_trips(uid):
+@places.route('/trips/<uid>', methods = ['GET'])
+def get_trips(uid):
 
-#     trips = Trip.query.filter_by(uid=user.uid)
+    if uid:
+        trips = Trip.query.filter_by(uid = uid).all()
+        response = trips_schema.dump(trips)
+        return jsonify(response)
+    else:
+        return jsonify({'message': 'UID is missing'}), 401
+
 
 # Add a place to the user's list
 @places.route('/place', methods=['POST'])
@@ -73,10 +80,23 @@ def add_place():
         lat = place['lat']
         long = place['long']
 
-        place = Place(place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, trip_id)
+        place = Place(place_name, geoapify_placeId, place_address, place_img, 
+                      info, favorite, category, lat, long, trip_id)
 
         db.session.add(place)
         db.session.commit()
 
     return "It worked. The places were added!"
 
+
+# Return all the places for a specific trip  
+@places.route('/places/<trip_id>', methods = ['GET'])
+def get_places(trip_id):
+
+    if trip_id:
+        places = Place.query.filter_by(trip_id = trip_id).all()
+        response = places_schema.dump(places)
+        print(response)
+        return jsonify(response)
+    else:
+        return jsonify({'message': 'Trip ID is missing'}), 401

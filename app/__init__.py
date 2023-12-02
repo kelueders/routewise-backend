@@ -7,6 +7,7 @@ from flask_cors import CORS
 # INTERNAL
 from .profile.routes import profile
 from .places.routes import places
+from .itinerary.routes import itinerary
 from .models import db
 
 app = Flask(__name__)
@@ -14,6 +15,7 @@ app = Flask(__name__)
 # Blueprints for each user story
 app.register_blueprint(profile)
 app.register_blueprint(places)
+app.register_blueprint(itinerary)
 
 app.config.from_object(Config)
 

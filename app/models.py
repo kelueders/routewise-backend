@@ -85,7 +85,7 @@ class Trip(db.Model):
     uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates = 'trip')
     place = db.relationship('Place', back_populates = 'trip')
-    # day = db.relationship('Day', back_populates = 'trip')
+    day = db.relationship('Day', back_populates = 'trip')
 
     def __init__(self, trip_name, dest_city, dest_state, dest_country, dest_country_2letter, dest_lat, dest_long, dest_img, 
                  start_date, end_date, uid):
@@ -137,9 +137,9 @@ class Place(db.Model):
     lat = db.Column(db.Float)
     long = db.Column(db.Float)      
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
-    # day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
+    day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
     trip = db.relationship('Trip', back_populates='place')
-    # day = db.relationship('Day', back_populates='Place')
+    day = db.relationship('Day', back_populates='place')
 
     def __init__(self, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, trip_id):
         self.place_name = place_name
@@ -155,3 +155,41 @@ class Place(db.Model):
 
     def __repr__(self):
         return f'{self.place_name} has been added to the user trip.'
+    
+class PlaceSchema(ma.Schema):
+    class Meta:
+        fields = ['place_id', 'place_name', 'geoapify_placeId', 'place_address', 'place_img', 'info', 
+                  'favorite', 'category', 'lat', 'long', 'trip_id']
+
+place_schema = PlaceSchema()
+places_schema = PlaceSchema(many = True)
+
+# Model for Day Table
+class Day(db.Model):
+    day_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date = db.Column(db.String(60))
+    date_short = db.Column(db.String(60))
+    week_day = db.Column(db.String(60))
+    day_name = db.Column(db.String(60), nullable=True)
+    trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
+    trip = db.relationship('Trip', back_populates='day')
+    place = db.relationship('Place', back_populates='day')
+
+    def __init__(self, date, date_short, week_day, day_name, trip_id):
+        self.date = date
+        self.date_short = date_short
+        self.week_day = week_day
+        self.day_name = day_name
+        self.trip_id = trip_id
+    
+    def __repr__(self):
+        return f'{self.date} has added a trip to the database.'
+    
+class DaySchema(ma.Schema):
+    class Meta:
+        fields = ['day_id', 'date', 'date_short', 'week_day', 'day_name', 'trip_id']
+
+day_schema = DaySchema()
+days_schema = DaySchema(many = True)
+    
+
