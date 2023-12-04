@@ -27,7 +27,7 @@ def create_itinerary(places, duration):
         
         for d in all_dist[i]:
             if d != 0.0:
-                place['place_distances'][places_copy[j]['place_name']] = d
+                place['place_distances'][places_copy[j]['local_id']] = d
                 
             j += 1
         i += 1
@@ -60,7 +60,7 @@ def create_itinerary(places, duration):
 
             if max_value < place['sum_dist']: 
                 max_value = place['sum_dist']
-                max_place = place['local_id']
+                max_place = place['local_id']   # a local_id is a 
 
         i = 0
 
@@ -92,7 +92,7 @@ def create_itinerary(places, duration):
                     - a dict containing the distance from that place to each of the other places
                     - the sum of the distances to each of the other places '''
     days = {}
-    day_order = []
+    day_order = []    # [day-1, day-2, day-3, ...]
 
     # step 1
     for i in range(duration):
@@ -104,9 +104,9 @@ def create_itinerary(places, duration):
 
     for day_num in day_order:
         if len(day_places) > 0:
-            place_id = day_places.pop()
-            days[day_num]['placeIds'].append(place_id)
-            print("check")
+            local_id = day_places.pop()
+            days[day_num]['placeIds'].append(local_id)
+            print("day_place")
 
 
     # step 2
@@ -115,18 +115,25 @@ def create_itinerary(places, duration):
         min_value = 1000000
         min_place = ""
 
+        # place['place_distances'] is a dict with each of the other locations as keys, and distances to them as values
         for k, v in place['place_distances'].items():
-            if k in day_places:
+            if k in day_places:            # day_places = a list of places that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
 
                 if v < min_value:
                     min_value = v
-                    min_place = k
+                    min_place = place['local_id']
 
         for day_num in day_order:
-            day = days[day_num]
+            d = days[day_num]    # referencing the key of days["day-1"] for example, which is a dict containing key-value pairs that describe the day
+            placeIds = d['placeIds']     # a list of integers, which are the local_id 's
+            id = placeIds[0]       # first 'local_id' in the list = integer
 
-            if min_place == day['placeIds'][0]['local_id']:
-                day['placeIds'].append(place.local_id)
+            # if min_place == placeIds[0]['local_id']:
+            #     d['placeIds'].append(place.local_id)
+
+            # what is min_place? A string
+            if min_place == place['local_id']:       # TypeError here: 'int' object is not subscriptable - FIXED BUT MAY HAVE MESSED IT UP
+                d['placeIds'].append(place.local_id)
 
     return {
         "days": days,
