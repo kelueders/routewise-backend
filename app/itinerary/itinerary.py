@@ -2,6 +2,9 @@
 from scipy.spatial import distance
 import numpy as np
 
+# INTERNAL
+from app.models import Place, db
+
 def create_itinerary(places, duration):
     # create a list just containing the coordinates to be used to create the matrix of
     #      all the distances
@@ -27,7 +30,7 @@ def create_itinerary(places, duration):
         
         for d in all_dist[i]:
             if d != 0.0:
-                place['place_distances'][places_copy[j]['local_id']] = d
+                place['place_distances'][places_copy[j]['id']] = d
                 
             j += 1
         i += 1
@@ -50,6 +53,7 @@ def create_itinerary(places, duration):
         4. Continues this process X times where X is the number of days of the trip'''
     c = 0
     day_places = []      # gives you a list of places that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
+    
     while duration > c:
 
         max_value = 0
@@ -60,14 +64,14 @@ def create_itinerary(places, duration):
 
             if max_value < place['sum_dist']: 
                 max_value = place['sum_dist']
-                max_place = place['local_id']   # a local_id is a 
+                max_place = place['id']   
 
         i = 0
 
         # step 2
         for place in places_copy:
             
-            if place['local_id'] == max_place:
+            if place['id'] == max_place:
                 places_copy.pop(i)
             
             i += 1
@@ -75,6 +79,8 @@ def create_itinerary(places, duration):
         # step 3
         if max_place:
             day_places.append(max_place)
+
+        captains = day_places.copy()
 
         # step 4
         c += 1
@@ -109,19 +115,22 @@ def create_itinerary(places, duration):
             print("day_place")
 
 
+    print(captains)
+    
+
     # step 2
     for place in places_copy:
 
         min_value = 1000000
-        min_place = ""
+        min_place = 0
 
         # place['place_distances'] is a dict with each of the other locations as keys, and distances to them as values
         for k, v in place['place_distances'].items():
-            if k in day_places:            # day_places = a list of places that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
+            if k in captains:            # day_places = a list of places that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
 
                 if v < min_value:
                     min_value = v
-                    min_place = place['local_id']
+                    min_place = k
 
         for day_num in day_order:
             d = days[day_num]    # referencing the key of days["day-1"] for example, which is a dict containing key-value pairs that describe the day
@@ -132,11 +141,37 @@ def create_itinerary(places, duration):
             #     d['placeIds'].append(place.local_id)
 
             # what is min_place? A string
-            if min_place == place['local_id']:       # TypeError here: 'int' object is not subscriptable - FIXED BUT MAY HAVE MESSED IT UP
-                d['placeIds'].append(place.local_id)
+            if min_place == id:       # TypeError here: 'int' object is not subscriptable - FIXED BUT MAY HAVE MESSED IT UP
+                d['placeIds'].append(place['id'])
 
     return {
         "days": days,
         "day_order": day_order
     }
+
+def add_places(trip_id, places_last, places_serial):
+    # trip_id = request.json['tripID']
+    # places_last = request.json['placesLast']
+    # places = request.json['places_serial']
+
+    for i in range(places_last):
+        place = places_serial[str(i + 1)] 
+
+        local_id = place['id']
+        place_name = place['placeName']
+        geoapify_placeId = place['placeId']
+        place_address = place['address']
+        place_img = place['imgURL']
+        category = place['category']
+        favorite = place['favorite']
+        info = place['info']
+        lat = place['lat']
+        long = place['long']
+        
+
+        place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
+                      info, favorite, category, lat, long, trip_id)
+
+        db.session.add(place)
+        db.session.commit()
 

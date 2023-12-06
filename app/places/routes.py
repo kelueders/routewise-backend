@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 
 # INTERNAL
 from app.models import Trip, Place, db, trip_schema, trips_schema, places_schema
+from app.itinerary.itinerary import add_places
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -65,30 +66,11 @@ def get_trips(uid):
 @places.route('/place', methods=['POST'])
 def add_place():
 
-    trip_id = request.json['tripID']
+    trip_id = request.json['tripId']
     places_last = request.json['placesLast']
-    places = request.json['places_serial']
+    places_serial = request.json['places_serial']
 
-    for i in range(places_last):
-        place = places[i + 1] 
-
-        local_id = place['id']
-        place_name = place['placeName']
-        geoapify_placeId = place['placeId']
-        place_address = place['address']
-        place_img = place['imgURL']
-        category = place['category']
-        favorite = place['favorite']
-        info = place['info']
-        lat = place['lat']
-        long = place['long']
-        
-
-        place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                      info, favorite, category, lat, long, trip_id)
-
-        db.session.add(place)
-        db.session.commit()
+    add_places(trip_id, places_last, places_serial)
 
     return "It worked. The places were added!"
 

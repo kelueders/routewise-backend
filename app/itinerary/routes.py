@@ -4,21 +4,35 @@ from datetime import datetime, timedelta
 
 # INTERNAL
 from app.models import Place, Trip, Day, places_schema, days_schema, db
-from .itinerary import create_itinerary
+from .itinerary import create_itinerary, add_places
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
 @itinerary.route('/createdays/<trip_id>', methods=['POST', 'GET'])
 def create_days(trip_id):
 
+    trip_id = request.json['tripId']
+    places_last = request.json['placesLast']
+    places_serial = request.json['places_serial']
+
+
+    add_places(trip_id, places_last, places_serial)
+
+    result = []
+
+    for i in range(places_last):
+        place = places_serial[str(i + 1)] 
+
+        result.append(place)
+
     if trip_id:
-        places = Place.query.filter_by(trip_id = trip_id).all()
-        response = places_schema.dump(places)
-        jsonify(response)
+        # places = Place.query.filter_by(trip_id = trip_id).all()
+        # result = places_schema.dump(places)
+        # jsonify(result)
 
         trip = Trip.query.filter_by(trip_id = trip_id).first()
         
-        day_data = create_itinerary(response, trip.duration)
+        day_data = create_itinerary(result, trip.duration)
 
         current_date = trip.start_date
 
@@ -58,9 +72,25 @@ def create_days(trip_id):
                 place.day_id = new_day.day_id
             
                 db.session.commit()
+
+        
+        trip_data = {
+            "trip_id": trip_id,
+            "places_last": places_last,
+            "places": places_serial,
+            "days": days,
+            "day_order": day_order
+        }
                 
-        return jsonify(days)
+        return trip_data
 
     
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
+    
+# @itinerary.route('/returndays/<trip_id>', methods=['GET'])
+# def create_days(trip_id):
+
+#     places = db.session.query()
+
+#     places_last = 
