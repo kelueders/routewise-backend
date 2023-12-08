@@ -1,10 +1,10 @@
 # EXTERNAL
 from flask import Blueprint, request, jsonify
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 # INTERNAL
-from app.models import Place, Trip, Day, places_schema, days_schema, db
-from .itinerary import create_itinerary, add_places
+from ..models import Place, Trip, Day, db
+from .helpers import create_itinerary, add_places
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 

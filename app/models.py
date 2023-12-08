@@ -195,5 +195,3 @@ class DaySchema(ma.Schema):
 
 day_schema = DaySchema()
 days_schema = DaySchema(many = True)
-    
-

@@ -6,6 +6,9 @@ import numpy as np
 from app.models import Place, db
 
 def create_itinerary(places, duration):
+
+    # if len(places) < 2:
+
     # create a list just containing the coordinates to be used to create the matrix of
     #      all the distances
     coords = []

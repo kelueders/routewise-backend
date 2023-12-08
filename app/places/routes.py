@@ -1,9 +1,10 @@
 # EXTERNAL
 from flask import Blueprint, request, jsonify
+from datetime import datetime
 
 # INTERNAL
-from app.models import Trip, Place, db, trip_schema, trips_schema, places_schema
-from app.itinerary.itinerary import add_places
+from ..models import Trip, Place, db, trip_schema, trips_schema, places_schema
+from ..itinerary.helpers import add_places
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -24,13 +25,33 @@ def add_trip():
     start_date = trip_data['startDate']
     end_date = trip_data['endDate']
 
+
+    # ''' Calculates duration of the trip '''
+    # # Determining duration of trip by converting string to datetime object
+    # start_obj = datetime.strptime(start_date, '%m/%d/%Y').date()
+    # end_obj = datetime.strptime(end_date, '%m/%d/%Y').date()
+
+    # # then subtract and return type INT for days
+    # duration = end_obj - start_obj
+    # duration = duration.days + 1
+
+
     trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_2letter, dest_lat, dest_long, 
                 dest_url, start_date, end_date, uid)
 
     db.session.add(trip)
     db.session.commit()
 
-    return str(trip.trip_id)
+    data = {
+        "trip_id": trip.trip_id,
+        "start_date": trip.start_date,
+        "end_date": trip.end_date,
+        "duration": trip.duration
+    }
+
+    return data
+
+    # return str(trip.trip_id)
 
     # return f'It worked. Trip to {trip.dest_city} was created.'
 
