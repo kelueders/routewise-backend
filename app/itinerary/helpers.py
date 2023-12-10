@@ -7,7 +7,30 @@ from app.models import Place, db
 
 def create_itinerary(places, duration):
 
-    # if len(places) < 2:
+    days = {}
+    day_order = []    # [day-1, day-2, day-3, ...]
+
+    if len(places) < 2:
+
+        for i in range(duration):
+            days[f'day-{i + 1}'] = {
+                'id': f'day-{i + 1}',
+                'placeIds': []
+            } 
+            day_order.append(f'day-{i + 1}') 
+
+        days['day-1'] = {
+            'id': 'day-1',
+            'placeIds': [1]
+        }
+
+        return {
+            "days": days,
+            "day_order": day_order
+        }
+    
+    print(places)
+
 
     # create a list just containing the coordinates to be used to create the matrix of
     #      all the distances
@@ -88,20 +111,24 @@ def create_itinerary(places, duration):
         # step 4
         c += 1
 
-    ''' creates a list of days with each day being a dict that contains all the places for that day
+    ''' creates a dict of days with each day being a key-value pair that contains info about that day including place IDs associated with it
         1. separate each day_place (the locations furthest from each other) into separate days in the list
         2. Go through each place dict to find the closest places to each of those max places, creating zones for each day
         3. Append each of those places to the list of days
-        4. FINAL RESULT: Now have a list of days. Each day is a dict that contains the locations for that day.
-            The information about those locations is also contained within the 'places' key of the day dict.
-            The 'places' key is a list of dicts with the location information (with a key for each type of info) including: 
-                    - place name
-                    - lat
-                    - long
-                    - a dict containing the distance from that place to each of the other places
-                    - the sum of the distances to each of the other places '''
-    days = {}
-    day_order = []    # [day-1, day-2, day-3, ...]
+        4. FINAL RESULT: Now have a dict called days, which contains a reference to the id of the day 'day-1, etc.' and a list of 
+            place ID's that correspond to that day.  
+            
+            Example structure: 
+                days: {
+                    "day-1": {
+                        id: "day-1",
+                        placeIds: [1, 2]
+                    },
+                    "day-2": {
+                        id: "day-2",
+                        placeIds: [3]
+                    }} '''
+
 
     # step 1
     for i in range(duration):
@@ -115,10 +142,10 @@ def create_itinerary(places, duration):
         if len(day_places) > 0:
             local_id = day_places.pop()
             days[day_num]['placeIds'].append(local_id)
-            print("day_place")
+            # print("day_place")
 
 
-    print(captains)
+    # print(captains)
     
 
     # step 2
@@ -140,11 +167,7 @@ def create_itinerary(places, duration):
             placeIds = d['placeIds']     # a list of integers, which are the local_id 's
             id = placeIds[0]       # first 'local_id' in the list = integer
 
-            # if min_place == placeIds[0]['local_id']:
-            #     d['placeIds'].append(place.local_id)
-
-            # what is min_place? A string
-            if min_place == id:       # TypeError here: 'int' object is not subscriptable - FIXED BUT MAY HAVE MESSED IT UP
+            if min_place == id:      
                 d['placeIds'].append(place['id'])
 
     return {
