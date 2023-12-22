@@ -45,6 +45,7 @@ def create_itinerary(places, duration):
     # print(all_dist)
 
     places_copy = places.copy()    # creates a copy of the places list to be manipulated without altering the original
+    dist_range = 0
 
     # creates a key within the places_copy dict that holds a dict containing the distances
     #       to each of the other locations
@@ -57,9 +58,15 @@ def create_itinerary(places, duration):
         for d in all_dist[i]:
             if d != 0.0:
                 place['place_distances'][places_copy[j]['id']] = d
+                dist_range = max(d, dist_range)
                 
             j += 1
         i += 1
+
+    print(all_dist)
+    print(dist_range)
+    
+    threshold_range = 0.15 * dist_range
 
     # creates a list containing the sum of all the distances to each other location
     #       in order to compare proximities 
@@ -69,8 +76,8 @@ def create_itinerary(places, duration):
 
     # creates a key within places_copy that holds the sum of distances calculated above
     i = 0
-    for s in sums:
-        places_copy[i]['sum_dist'] = s
+    for i in range(len(sums)):
+        places_copy[i]['sum_dist'] = sums[i]
         i += 1
 
     ''' 1. Finds the location amongst the list of places that is furthest from the others.
@@ -79,7 +86,8 @@ def create_itinerary(places, duration):
         4. Continues this process X times where X is the number of days of the trip'''
     c = 0
     day_places = []      # gives you a list of places that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
-    
+    co_captains = {}
+
     while duration > c:
 
         max_value = 0
@@ -98,9 +106,39 @@ def create_itinerary(places, duration):
         for place in places_copy:
             
             if place['id'] == max_place:
-                places_copy.pop(i)
+                for p, d in place['place_distances'].items():
+                    if d < threshold_range:
+
+                        print("p in loop = ", p)
+
+                        if place['id'] not in co_captains.keys():
+                            co_captains[place['id']] = [p]
+                        elif len(co_captains[place['id']]) < 4:
+                                co_captains[place['id']].append(p)
+                        elif len(co_captains[place['id']]) >= 4:
+                            continue
+                    
+                        co_captain = places[p - 1]
+                        print("p = ", p)
+                        co_cap_index = places_copy.index(co_captain)
+                        places_copy.pop(co_cap_index)
+
+                        print("co_captain =", co_captain)
+                        print("co_cap_index =", co_cap_index)
+
+
+                captain = places[place['id'] - 1]
+                cap_index = places_copy.index(captain)
+                places_copy.pop(cap_index)
+
+                print("captain = ", captain)
+                print("cap_index = ", cap_index)
+
+                print("places after =", places_copy)
             
             i += 1
+
+        print(co_captains)
 
         # step 3
         if max_place:
@@ -142,6 +180,12 @@ def create_itinerary(places, duration):
         if len(day_places) > 0:
             local_id = day_places.pop()
             days[day_num]['placeIds'].append(local_id)
+
+            if local_id in co_captains.keys():
+                for co_cap in co_captains[local_id]:
+                    days[day_num]['placeIds'].append(co_cap)
+                
+
             # print("day_place")
 
 
