@@ -13,6 +13,9 @@ def add_user():
     username = request.json['displayName']
     email = request.json['email']
 
+    if User.query.filter_by(uid = uid).first():
+        return "User has already been added to the database."
+
     new_user = User(uid, username, email)
 
     db.session.add(new_user)
