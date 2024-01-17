@@ -107,23 +107,33 @@ def create_itinerary(places, duration):
             
             if place['id'] == max_place:
                 for p, d in place['place_distances'].items():
+
+                    print("Captain =", place['id'])
+
                     if d < threshold_range:
+
+                        print(place['place_distances'])
 
                         print("p in loop = ", p)
 
-                        if place['id'] not in co_captains.keys():
-                            co_captains[place['id']] = [p]
-                        elif len(co_captains[place['id']]) < 4:
+                        try:
+                            co_cap_index = places_copy.index(co_captain)
+                            places_copy.pop(co_cap_index)
+
+                            if place['id'] not in co_captains.keys():
+                                co_captains[place['id']] = [p]
+                            elif len(co_captains[place['id']]) < 4:
                                 co_captains[place['id']].append(p)
-                        elif len(co_captains[place['id']]) >= 4:
+                            elif len(co_captains[place['id']]) >= 4:
+                                continue
+                        
+                        except:
                             continue
                     
                         co_captain = places[p - 1]
-                        print("p = ", p)
-                        co_cap_index = places_copy.index(co_captain)
-                        places_copy.pop(co_cap_index)
+                        print("p = ", p)  
 
-                        print("co_captain =", co_captain)
+                        # print("co_captain =", co_captain)
                         print("co_cap_index =", co_cap_index)
 
 
@@ -131,14 +141,14 @@ def create_itinerary(places, duration):
                 cap_index = places_copy.index(captain)
                 places_copy.pop(cap_index)
 
-                print("captain = ", captain)
-                print("cap_index = ", cap_index)
+                # print("captain = ", captain)
+                # print("cap_index = ", cap_index)
 
-                print("places after =", places_copy)
+                # print("places after =", places_copy)
             
             i += 1
 
-        print(co_captains)
+        print("Co-captains = ", co_captains)
 
         # step 3
         if max_place:
