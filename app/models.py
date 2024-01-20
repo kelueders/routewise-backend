@@ -142,7 +142,7 @@ class Place(db.Model):
     trip = db.relationship('Trip', back_populates='place')
     day = db.relationship('Day', back_populates='place')
 
-    def __init__(self, local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, trip_id):
+    def __init__(self, local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, trip_id, day_id = 0):
         self.local_id = local_id
         self.place_name = place_name
         self.geoapify_placeId = geoapify_placeId
@@ -154,6 +154,7 @@ class Place(db.Model):
         self.lat = lat
         self.long = long
         self.trip_id = trip_id
+        self.day_id = day_id
 
     def __repr__(self):
         return f'{self.place_name} has been added to the user trip.'

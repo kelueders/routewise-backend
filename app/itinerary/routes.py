@@ -23,6 +23,10 @@ def create_days(trip_id):
     for i in range(places_last):
         place = places_serial[str(i + 1)] 
 
+        db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
+
+        places_serial[str(i + 1)]['place_id'] = db_place.place_id
+
         result.append(place)
 
     if trip_id:
@@ -66,6 +70,8 @@ def create_days(trip_id):
 
             new_day = Day.query.filter_by(date_formatted = day["date_formatted"]).first()
 
+            days[day_num]['day_id'] = new_day.day_id
+
             for place_id in day['placeIds']:
                 place = Place.query.filter_by(local_id = place_id, trip_id = trip_id).first()
 
@@ -88,9 +94,45 @@ def create_days(trip_id):
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
-# @itinerary.route('/returndays/<trip_id>', methods=['GET'])
-# def create_days(trip_id):
+@itinerary.route('/add-one-place/<trip_id>', methods = ['POST'])
+def add_one_place(trip_id):
 
-#     places = db.session.query()
+    place = request.get_json()
 
-#     places_last = 
+    print(place)
+
+    local_id = place['id']
+    place_name = place['placeName']
+    geoapify_placeId = place['placeId']
+    place_address = place['address']
+    place_img = place['imgURL']
+    category = place['category']
+    favorite = place['favorite']
+    info = place['info']
+    lat = place['lat']
+    long = place['long']
+    day_id = place['day_id']
+    
+
+    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
+                info, favorite, category, lat, long, trip_id, day_id)
+
+    db.session.add(place)
+    db.session.commit()
+
+    #### NEED TO RETURN THE place_id to the front end
+
+
+@itinerary.route('/delete-place/<place_id>', methods = ['DELETE'])
+def delete_place(place_id):
+
+    place = Place.query.get(place_id)
+    
+    db.session.delete(place)
+    db.session.commit()
+
+
+@itinerary.route('/update-place/<place_id>', methods = ['PATCH'])
+def update_place(place_id):
+
+    place = Place.query.get(place_id)
