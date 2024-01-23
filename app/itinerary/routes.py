@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from datetime import timedelta
 
 # INTERNAL
-from ..models import Place, Trip, Day, db
+from ..models import Place, Trip, Day, db, place_schema
 from .helpers import create_itinerary, add_places
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
@@ -94,10 +94,11 @@ def create_days(trip_id):
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
-@itinerary.route('/add-one-place/<trip_id>', methods = ['POST'])
+@itinerary.route('/add-one-place/<trip_id>', methods = ['POST', 'GET'])
 def add_one_place(trip_id):
 
-    place = request.get_json()
+    data = request.get_json()
+    place = data['place']
 
     print(place)
 
@@ -111,16 +112,23 @@ def add_one_place(trip_id):
     info = place['info']
     lat = place['lat']
     long = place['long']
-    day_id = place['day_id']
+    day_id = data['day_id']
     
 
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                info, favorite, category, lat, long, trip_id, day_id)
+                info, favorite, category, lat, long, trip_id)
+    
+    place.update_day_id(day_id)
 
     db.session.add(place)
     db.session.commit()
 
     #### NEED TO RETURN THE place_id to the front end
+    place = Place.query.filter_by(local_id = local_id, trip_id = trip_id).first()
+
+    response = place_schema.dump(place)
+
+    return jsonify(response['place_id'])
 
 
 @itinerary.route('/delete-place/<place_id>', methods = ['DELETE'])
