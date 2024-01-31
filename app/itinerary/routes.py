@@ -139,8 +139,24 @@ def delete_place(place_id):
     db.session.delete(place)
     db.session.commit()
 
+    return "Place deleted"
+
 
 @itinerary.route('/update-place/<place_id>', methods = ['PATCH'])
 def update_place(place_id):
 
     place = Place.query.get(place_id)
+
+    data = request.get_json()
+
+    print(data)
+
+    # place.day_id = request.json['day_id']
+
+    db.session.commit()
+
+    response = place_schema.dump(place)
+
+    return jsonify(response['place_id'])
+
+    
