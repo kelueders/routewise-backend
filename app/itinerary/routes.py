@@ -149,9 +149,7 @@ def update_place(place_id):
 
     data = request.get_json()
 
-    print(data)
-
-    # place.day_id = request.json['day_id']
+    place.day_id = data['day_id']
 
     db.session.commit()
 
