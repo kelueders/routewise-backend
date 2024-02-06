@@ -68,7 +68,7 @@ def create_days(trip_id):
         for day_num in day_order:
             day = days[day_num]
 
-            new_day = Day.query.filter_by(date_formatted = day["date_formatted"]).first()
+            new_day = Day.query.filter_by(date_formatted = day["date_formatted"], trip_id = trip_id).first()
 
             days[day_num]['day_id'] = new_day.day_id
 
@@ -78,6 +78,14 @@ def create_days(trip_id):
                 place.day_id = new_day.day_id
             
                 db.session.commit()
+
+        # Assign the day_id to each place in the places_serial object
+        for i in range(places_last):
+            place = places_serial[str(i + 1)] 
+
+            db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
+
+            places_serial[str(i + 1)]['day_id'] = db_place.day_id
 
         
         trip_data = {
@@ -149,12 +157,16 @@ def update_place(place_id):
 
     data = request.get_json()
 
+    print(data)
+
     place.day_id = data['day_id']
 
     db.session.commit()
 
-    response = place_schema.dump(place)
+    return "Place Updated"
 
-    return jsonify(response['place_id'])
+    # response = place_schema.dump(place)
+
+    # return jsonify(response['place_id'])
 
     
