@@ -1,5 +1,5 @@
 # EXTERNAL
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, redirect, request, jsonify, url_for
 from datetime import datetime
 
 # INTERNAL
@@ -70,8 +70,8 @@ def get_trip(trip_id):
         days_db = Day.query.filter_by(trip_id = trip_id).all()
 
         # finds the largest local_id in the list of places for that trip = places_last
+        max_local_id = 0
         for place in places:
-            max_local_id = 0
             local_id = place.local_id
 
             if local_id > max_local_id:
@@ -82,27 +82,51 @@ def get_trip(trip_id):
         # creates a dictionary with format:
         '''
         "places_serial: {
-            "1": {
-                ALL PLACE DATA
+            1: {
+                id:
+                place_id:
+                placeName:
+                info:
+                address:
+                imgURL:
+                lat:
+                long:
+                favorite:
+                geocode:
             },
-            "2": {
+            2: {
                 ALL PLACE DATA
             }
         }
         '''
         places_serial = {}
 
-        for i, place in enumerate(places):
+        for i, place_data in enumerate(places):
 
-            data = place_schema.dump(place)
+            # data = place_schema.dump(place)
+            place = {}
 
-            places_serial[str(i + 1)] = data
+            place['id'] = place_data.local_id
+            place['place_id'] = place_data.place_id
+            place['placeName'] = place_data.place_name
+            place['info'] = place_data.info
+            place['address'] = place_data.place_address
+            place['imgURL'] = place_data.place_img
+            place['lat'] = place_data.lat
+            place['long'] = place_data.long
+            place['favorite'] = place_data.favorite
+            place['geocode'] = [place_data.lat, place_data.long]
+            places_serial[place_data.local_id] = place
 
         # creates a dict of days with format:
         '''
         "days": {
             "day-1": {
                 "id": "day-1",
+                "date_converted": "Thursday, November 9",
+                "day_short": "Thurs",
+                "date_short": "11/9",
+                "dayName": "",
                 "placeIds": []
                 NEED TO ADD REST OF THE DAY DATA *******
             }
@@ -110,12 +134,17 @@ def get_trip(trip_id):
         '''
         days = {}
 
-        # creates a list of days numbered labels in format: [day-1, day-2, day-3, ...]
+        # creates a list of day numbered labels in format: [day-1, day-2, day-3, ...]
         day_order = []    
 
+        # creates a key in the days dict corresponding to "day-1", etc.  which contains data for that day
         for i, day in enumerate(days_db):
             days[f'day-{i + 1}'] = {
                 'id': f'day-{i + 1}',
+                'date_converted': day.date_converted,
+                'day_short': day.week_day,
+                'date_short': day.date_short,
+                'dayName': day.day_name,
                 'placeIds': []
             } 
             day_order.append(f'day-{i + 1}') 
@@ -130,7 +159,7 @@ def get_trip(trip_id):
         itinerary_data = {
             "trip_id": int(trip_id),
             "places_last": places_last,
-            "places_serial": places_serial,
+            "places": places_serial,
             "days": days,
             "day_order": day_order
         }
@@ -151,6 +180,57 @@ def get_trips(uid):
         return jsonify(response)
     else:
         return jsonify({'message': 'UID is missing'}), 401
+    
+# Delete a trip
+@places.route('/delete-trip/<trip_id>', methods = ['DELETE'])
+def delete_trip(trip_id):
+
+    if trip_id:
+        trip = Trip.query.filter_by(trip_id = trip_id).first()
+        places = Place.query.filter_by(trip_id = trip_id).all()
+        days = Day.query.filter_by(trip_id = trip_id).all()
+
+        print("Trip: ", trip)
+        print("Places:", places)
+
+        for place in places:
+            db.session.delete(place)
+
+        for day in days:
+            db.session.delete(day)
+
+        db.session.delete(trip)
+        db.session.commit()
+
+        return "Trip deleted"
+    
+    else:
+        return jsonify({'message': 'Trip ID is missing'}), 401
+    
+# Update a trip name and duration
+@places.route('/update-trip/<trip_id>', methods = ['PATCH'])
+def update_trip(trip_id):
+
+    trip = Trip.query.get(trip_id)
+
+    data = request.get_json()
+
+    print(data)
+
+    if data['update_key'] == "trip_name":
+        trip.trip_name = data['tripName']     
+
+    if data['update_key'] == "start_end_dates":
+        trip.start_date = data['startDate']
+        trip.end_date = data['endDate']
+        trip.duration = trip.calc_duration(trip.start_date, trip.end_date)
+
+    db.session.commit()
+
+    if data['update_key'] == "start_end_dates":
+        return redirect(url_for(f'/itinerary/createdays/{trip_id}'))
+
+    return "Trip Name and/or Duration Updated"
 
 
 # Add a place to the user's list

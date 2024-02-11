@@ -58,7 +58,7 @@ class UserInfo(db.Model):
         self.arts = arts
 
     def __repr__(self):
-        return f'User id {self.uid} has added survey information to the database.'
+        return f'{self.uid} User Object'
     
 class UserInfoSchema(ma.Schema):
     class Meta:
@@ -103,7 +103,7 @@ class Trip(db.Model):
         self.duration = self.calc_duration(start_date, end_date)
 
     def __repr__(self):
-        return f'User id {self.uid} has added a trip to the database.'
+        return f'{self.trip_id} Trip Object'
     
     def calc_duration(self, start_date, end_date):
         # Determining duration of trip by converting string to datetime object
@@ -159,7 +159,7 @@ class Place(db.Model):
         self.day_id = day_id
 
     def __repr__(self):
-        return f'{self.place_name} has been added to the user trip.'
+        return f'{self.place_name} Place Object'
     
 class PlaceSchema(ma.Schema):
     class Meta:
@@ -190,7 +190,7 @@ class Day(db.Model):
         self.trip_id = trip_id
     
     def __repr__(self):
-        return f'{self.date_formatted} has added a trip to the database.'
+        return f'{self.date_formatted} Day Object.'
     
 class DaySchema(ma.Schema):
     class Meta:
