@@ -207,8 +207,31 @@ def delete_trip(trip_id):
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
-# Update a trip name and duration
-@places.route('/update-trip/<trip_id>', methods = ['PATCH'])
+# Update a trip duration or name BEFORE the itinerary is created
+@places.route('/update-trip-before/<trip_id>', methods = ['PATCH', 'POST'])
+def update_trip_before(trip_id):
+
+    trip = Trip.query.get(trip_id)
+
+    data = request.get_json()
+
+    print(data)
+
+    if data['tripName']:
+        trip.trip_name = data['tripName']     
+
+    if data['startDate']:
+        trip.start_date = data['startDate']
+        trip.end_date = data['endDate']
+        trip.duration = trip.calc_duration(trip.start_date, trip.end_date)
+
+    db.session.commit()
+
+    return "Trip Name and/or Duration Updated"
+
+    
+# Update a trip name and duration AFTER itinerary has already been created
+@places.route('/update-trip/<trip_id>', methods = ['PATCH', 'POST'])
 def update_trip(trip_id):
 
     trip = Trip.query.get(trip_id)
@@ -217,18 +240,18 @@ def update_trip(trip_id):
 
     print(data)
 
-    if data['update_key'] == "trip_name":
+    if data['tripName']:
         trip.trip_name = data['tripName']     
 
-    if data['update_key'] == "start_end_dates":
+    if data['startDate']:
         trip.start_date = data['startDate']
         trip.end_date = data['endDate']
         trip.duration = trip.calc_duration(trip.start_date, trip.end_date)
 
     db.session.commit()
 
-    if data['update_key'] == "start_end_dates":
-        return redirect(url_for(f'/itinerary/createdays/{trip_id}'))
+    if data['startDate']:
+        return redirect(url_for('itinerary.create_days', trip_id = trip_id))
 
     return "Trip Name and/or Duration Updated"
 

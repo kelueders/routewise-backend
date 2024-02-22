@@ -82,6 +82,8 @@ class Trip(db.Model):
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
     duration = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates = 'trip')
     place = db.relationship('Place', back_populates = 'trip')
