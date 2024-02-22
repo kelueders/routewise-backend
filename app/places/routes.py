@@ -141,6 +141,7 @@ def get_trip(trip_id):
         for i, day in enumerate(days_db):
             days[f'day-{i + 1}'] = {
                 'id': f'day-{i + 1}',
+                'db_id': day.day_id,
                 'date_converted': day.date_converted,
                 'day_short': day.week_day,
                 'date_short': day.date_short,
