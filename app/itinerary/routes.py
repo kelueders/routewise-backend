@@ -62,8 +62,6 @@ def create_days(trip_id):
         places_serial[place_data.local_id] = place
 
 
-    add_places(trip_id, places_last, places_serial)
-
     result = []
 
     for i in range(places_last):
