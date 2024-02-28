@@ -5,6 +5,10 @@ import numpy as np
 # INTERNAL
 from app.models import Place, db
 
+'''
+Takes a list of Place objects and a trip duration and returns a dictionary of days that contains 
+all the information needed for that day: such as all the trips associated with it
+'''
 def create_itinerary(places, duration):
 
     days = {}

@@ -8,12 +8,59 @@ from .helpers import create_itinerary, add_places
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
-@itinerary.route('/createdays/<trip_id>', methods=['POST', 'GET', 'PATCH'])
+@itinerary.route('/createdays/<trip_id>', methods=['GET'])
 def create_days(trip_id):
 
-    trip_id = request.json['tripId']
-    places_last = request.json['placesLast']
-    places_serial = request.json['places_serial']
+    places = Place.query.filter_by(trip_id = trip_id).all()
+
+    # finds the largest local_id in the list of places for that trip = places_last
+    max_local_id = 0
+    for place in places:
+        local_id = place.local_id
+
+        if local_id > max_local_id:
+            max_local_id = local_id
+
+    places_last = max_local_id
+
+    # creates a dictionary with format:
+    '''
+    "places_serial: {
+        1: {
+            id:
+            place_id:
+            placeName:
+            info:
+            address:
+            imgURL:
+            lat:
+            long:
+            favorite:
+            geocode:
+        },
+        2: {
+            ALL PLACE DATA
+        }
+    }
+    '''
+    places_serial = {}
+
+    for i, place_data in enumerate(places):
+
+        # data = place_schema.dump(place)
+        place = {}
+
+        place['id'] = place_data.local_id
+        place['place_id'] = place_data.place_id
+        place['placeName'] = place_data.place_name
+        place['info'] = place_data.info
+        place['address'] = place_data.place_address
+        place['imgURL'] = place_data.place_img
+        place['lat'] = place_data.lat
+        place['long'] = place_data.long
+        place['favorite'] = place_data.favorite
+        place['geocode'] = [place_data.lat, place_data.long]
+        places_serial[place_data.local_id] = place
 
 
     add_places(trip_id, places_last, places_serial)
