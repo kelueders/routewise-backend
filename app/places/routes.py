@@ -326,8 +326,27 @@ def get_places(trip_id):
         return jsonify({'message': 'Trip ID is missing'}), 401
     
 
-@places.route('add-get-place/', methods = ['GET', 'POST'])
-def add_get_place(trip_id, local_id):
+@places.route('add-get-place/<trip_id>', methods = ['GET', 'POST'])
+def add_get_place(trip_id):
+
+    place = request.get_json()
+
+    local_id = place['id']
+    place_name = place['placeName']
+    geoapify_placeId = place['placeId']
+    place_address = place['address']
+    place_img = place['imgURL']
+    category = place['category']
+    favorite = place['favorite']
+    info = place['info']
+    lat = place['lat']
+    long = place['long']
+
+    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
+                    info, favorite, category, lat, long, trip_id)
+
+    db.session.add(place)
+    db.session.commit()
 
     place = Place.query.filter_by(local_id = local_id, trip_id = trip_id).first()
 
