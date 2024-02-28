@@ -1,5 +1,5 @@
 # EXTERNAL
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect, url_for
 
 # INTERNAL
 from app.models import User, UserInfo, user_schema, user_info_schema, db
@@ -32,7 +32,7 @@ def add_user():
 
 @profile.route('/test', methods=['POST', 'GET'])
 def test():
-    return "It's working!"
+    return "Waking up!"
 
 # Creates a user info row attached to a specific user
 @profile.route('/user_info', methods=['POST', 'GET'])

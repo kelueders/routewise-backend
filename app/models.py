@@ -84,6 +84,7 @@ class Trip(db.Model):
     duration = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_itinerary = db.Column(db.Boolean, default=False, nullable=True)
     uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates = 'trip')
     place = db.relationship('Place', back_populates = 'trip')
@@ -121,7 +122,7 @@ class Trip(db.Model):
 class TripSchema(ma.Schema):
     class Meta:
         fields = ['trip_id', 'trip_name', 'dest_city', 'dest_state', 'dest_country', 'dest_country_2letter', 
-                  'dest_lat', 'dest_long', 'dest_img', 'start_date', 'end_date', 'uid', 'duration']
+                  'dest_lat', 'dest_long', 'dest_img', 'start_date', 'end_date', 'is_itinerary', 'uid', 'duration']
 
 trip_schema = TripSchema()
 trips_schema = TripSchema(many = True)

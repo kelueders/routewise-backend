@@ -87,8 +87,12 @@ def create_days(trip_id):
 
             places_serial[str(i + 1)]['day_id'] = db_place.day_id
 
-        
-        trip_data = {
+        # update the trip 'is_itinerary' key to 'True' since an itinerary has now been created
+        trip = Trip.query.filter_by(trip_id = trip_id).first()
+        trip.is_itinerary = True
+
+        # packages the itinerary data in order to be rendered on the frontend
+        itinerary_data = {
             "trip_id": trip_id,
             "places_last": places_last,
             "places": places_serial,
@@ -96,7 +100,7 @@ def create_days(trip_id):
             "day_order": day_order
         }
                 
-        return trip_data
+        return itinerary_data
 
     
     else:
