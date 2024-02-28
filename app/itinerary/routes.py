@@ -107,7 +107,7 @@ def create_days(trip_id):
 
             current_date += timedelta(1)       # increments by 1 the day that is added to the trip, starting at the trip start date
 
-        db.session.commit()
+        # db.session.commit()
 
         for day_num in day_order:
             day = days[day_num]
@@ -134,6 +134,8 @@ def create_days(trip_id):
         # update the trip 'is_itinerary' key to 'True' since an itinerary has now been created
         trip = Trip.query.filter_by(trip_id = trip_id).first()
         trip.is_itinerary = True
+
+        db.session.commit()
 
         # packages the itinerary data in order to be rendered on the frontend
         itinerary_data = {
