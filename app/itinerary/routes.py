@@ -8,7 +8,7 @@ from .helpers import create_itinerary, add_places
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
-@itinerary.route('/createdays/<trip_id>', methods=['GET'])
+@itinerary.route('/createdays/<trip_id>', methods=['GET', 'PATCH'])
 def create_days(trip_id):
 
     places = Place.query.filter_by(trip_id = trip_id).all()
