@@ -256,16 +256,18 @@ def update_trip(trip_id):
             trip.end_date = data['endDate']
         trip.duration = trip.calc_duration(trip.start_date, trip.end_date)
 
-        if data['itiCreated'] == True:
+        if trip.is_itinerary:
             return redirect(url_for('itinerary.create_days', trip_id = trip_id))
 
         db.session.commit()
+
+        # the itinerary has not been updated because there is no itinerary yet
         return "Itinerary not updated, dates were changed"
 
     db.session.commit()
 
     # if there IS an itinerary already created do this
-    if data['itiCreated'] == True:
+    if trip.is_itinerary:
         return redirect(url_for('itinerary.create_days', trip_id=trip_id))
 
 
