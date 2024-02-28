@@ -69,7 +69,7 @@ def create_days(trip_id):
     result = []
 
     for i in range(places_last):
-        place = places_serial[str(i + 1)] 
+        place = places_serial[i + 1] 
 
         db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
 
