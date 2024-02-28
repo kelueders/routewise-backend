@@ -47,7 +47,6 @@ def create_days(trip_id):
 
     for i, place_data in enumerate(places):
 
-        # data = place_schema.dump(place)
         place = {}
 
         place['id'] = place_data.local_id
@@ -61,6 +60,8 @@ def create_days(trip_id):
         place['favorite'] = place_data.favorite
         place['geocode'] = [place_data.lat, place_data.long]
         places_serial[place_data.local_id] = place
+
+    print(places_serial)
 
 
     add_places(trip_id, places_last, places_serial)
