@@ -239,7 +239,7 @@ def add_places(trip_id, places_last, places_serial):
     # places = request.json['places_serial']
 
     for i in range(places_last):
-        place = places_serial[str(i + 1)] 
+        place = places_serial[i + 1] 
 
         local_id = place['id']
         place_name = place['placeName']

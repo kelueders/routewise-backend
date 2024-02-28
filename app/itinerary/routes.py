@@ -61,8 +61,6 @@ def create_days(trip_id):
         place['geocode'] = [place_data.lat, place_data.long]
         places_serial[place_data.local_id] = place
 
-    print(places_serial)
-
 
     add_places(trip_id, places_last, places_serial)
 
@@ -73,7 +71,7 @@ def create_days(trip_id):
 
         db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
 
-        places_serial[str(i + 1)]['place_id'] = db_place.place_id
+        places_serial[i + 1]['place_id'] = db_place.place_id
 
         result.append(place)
 
@@ -129,11 +127,11 @@ def create_days(trip_id):
 
         # Assign the day_id to each place in the places_serial object
         for i in range(places_last):
-            place = places_serial[str(i + 1)] 
+            place = places_serial[i + 1] 
 
             db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
 
-            places_serial[str(i + 1)]['day_id'] = db_place.day_id
+            places_serial[i + 1]['day_id'] = db_place.day_id
 
         # update the trip 'is_itinerary' key to 'True' since an itinerary has now been created
         trip = Trip.query.filter_by(trip_id = trip_id).first()
