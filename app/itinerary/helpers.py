@@ -13,6 +13,10 @@ def create_itinerary(places, duration):
 
     days = {}
     day_order = []    # [day-1, day-2, day-3, ...]
+    places_dict = {}   # creates a serialized list (dict) that holds the place id as a key for each place object
+
+    for place in places:
+        places_dict[place['id']] = place
 
     if len(places) < 2:
 
@@ -89,7 +93,7 @@ def create_itinerary(places, duration):
         3. Appends that location to the day_places list (see below)
         4. Continues this process X times where X is the number of days of the trip'''
     c = 0
-    day_places = []      # gives you a list of places that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
+    day_places = []      # gives you a list of place ids that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
     co_captains = {}
 
     while duration > c:
@@ -197,7 +201,10 @@ def create_itinerary(places, duration):
 
             if local_id in co_captains.keys():
                 for co_cap in co_captains[local_id]:
-                    days[day_num]['placeIds'].append(co_cap)
+                    if len(days[day_num]['placeIds']) < 4:
+                        days[day_num]['placeIds'].append(co_cap)
+                    else:
+                        places_copy.append(places_dict[co_cap])
                 
 
             # print("day_place")
@@ -205,8 +212,8 @@ def create_itinerary(places, duration):
 
     # print(captains)
     
+    places_leftover = []
 
-    # step 2
     for place in places_copy:
 
         min_value = 1000000
@@ -225,8 +232,14 @@ def create_itinerary(places, duration):
             placeIds = d['placeIds']     # a list of integers, which are the local_id 's
             id = placeIds[0]       # first 'local_id' in the list = integer
 
-            if min_place == id:      
-                d['placeIds'].append(place['id'])
+            if min_place == id:
+                if d['placeIds'] < 4:      
+                    d['placeIds'].append(place['id'])
+                else:
+                    places_leftover.append(place['id'])
+
+    # if places_leftover:
+
 
     return {
         "days": days,
