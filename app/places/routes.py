@@ -237,7 +237,7 @@ def delete_trip(trip_id):
     - Places List page - can update trip dates, is_itinerary = True or False
     - Itinerary page - can update trip dates, is_itinerary = True
 '''
-@places.route('/update-trip/<trip_id>', methods = ['PATCH', 'POST', 'GET'])
+@places.route('/update-trip/<trip_id>', methods = ['PATCH', 'POST', 'GET', 'DELETE'])
 def update_trip(trip_id):
 
     trip = Trip.query.get(trip_id)
@@ -259,6 +259,12 @@ def update_trip(trip_id):
         db.session.commit()
 
         if trip.is_itinerary:
+            # days = Day.query.filter_by(trip_id = trip_id).all()
+
+            # db.session.delete(days)
+            db.session.query(Day).filter(trip_id = trip_id).delete()
+            db.session.commit()
+
             return redirect(url_for('itinerary.create_days', trip_id = trip_id))
 
         # the itinerary has not been updated because there is no itinerary yet
