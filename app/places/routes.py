@@ -259,10 +259,11 @@ def update_trip(trip_id):
         db.session.commit()
 
         if trip.is_itinerary:
-            # days = Day.query.filter_by(trip_id = trip_id).all()
+            days = Day.query.filter_by(trip_id = trip_id).all()
 
-            # db.session.delete(days)
-            db.session.query(Day).filter(trip_id = trip_id).delete()
+            for day in days:
+                db.session.delete(day)
+                
             db.session.commit()
 
             return redirect(url_for('itinerary.create_days', trip_id = trip_id))
