@@ -201,11 +201,10 @@ def create_itinerary(places, duration):
 
             if local_id in co_captains.keys():
                 for co_cap in co_captains[local_id]:
-                    days[day_num]['placeIds'].append(co_cap)
-                    # if len(days[day_num]['placeIds']) < 4:
-                    #     days[day_num]['placeIds'].append(co_cap)
-                    # else:
-                    #     places_copy.append(places_dict[co_cap])
+                    if len(days[day_num]['placeIds']) < 4:
+                        days[day_num]['placeIds'].append(co_cap)
+                    else:
+                        places_copy.append(places_dict[co_cap])
                 
 
             # print("day_place")
@@ -236,11 +235,11 @@ def create_itinerary(places, duration):
             if min_place == id:      
                 d['placeIds'].append(place['id'])
 
-            # if min_place == id:
-            #     if len(d['placeIds']) < 4:      
-            #         d['placeIds'].append(place['id'])
-            #     else:
-            #         places_leftover.append(place['id'])
+            if min_place == id:
+                if len(d['placeIds']) < 4:      
+                    d['placeIds'].append(place['id'])
+                else:
+                    places_leftover.append(place['id'])
 
     # if places_leftover:
 
