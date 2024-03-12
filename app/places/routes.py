@@ -203,7 +203,7 @@ def delete_trip(trip_id):
         db.session.delete(trip)
         db.session.commit()
 
-        return "Trip deleted"
+        return "Trip deleted yay"
     
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
