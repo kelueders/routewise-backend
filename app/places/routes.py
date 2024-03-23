@@ -51,13 +51,6 @@ def add_trip():
 
     return data
 
-    # return str(trip.trip_id)
-
-    # return f'It worked. Trip to {trip.dest_city} was created.'
-
-    # trip = Trip.query.filter_by(uid=trip.uid).first()
-
-    # return trip_schema.jsonify(trip)
 
 # Return a specific trip from the database to the front-end
 @places.route('/trip/<trip_id>', methods=['GET'])
@@ -207,28 +200,6 @@ def delete_trip(trip_id):
     
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
-    
-# # Update a trip duration or name BEFORE the itinerary is created
-# @places.route('/update-trip-before/<trip_id>', methods = ['PATCH', 'POST'])
-# def update_trip_before(trip_id):
-
-#     trip = Trip.query.get(trip_id)
-
-#     data = request.get_json()
-
-#     print(data)
-
-#     if data['tripName']:
-#         trip.trip_name = data['tripName']     
-
-#     if data['startDate']:
-#         trip.start_date = data['startDate']
-#         trip.end_date = data['endDate']
-#         trip.duration = trip.calc_duration(trip.start_date, trip.end_date)
-
-#     db.session.commit()
-
-#     return "Trip Name and/or Duration Updated"
 
 '''
 ** Update a Trip Name AND/OR Date **
@@ -279,32 +250,6 @@ def update_trip(trip_id):
 
 
     return "Trip Name and/or Duration Updated"
-
-    
-# # Update a trip name and duration AFTER itinerary has already been created
-# @places.route('/update-trip-after/<trip_id>', methods = ['PATCH', 'POST'])
-# def update_trip_after(trip_id):
-
-#     trip = Trip.query.get(trip_id)
-
-#     data = request.get_json()
-
-#     print(data)
-
-#     if data['tripName']:
-#         trip.trip_name = data['tripName']     
-
-#     if data['startDate']:
-#         trip.start_date = data['startDate']
-#         trip.end_date = data['endDate']
-#         trip.duration = trip.calc_duration(trip.start_date, trip.end_date)
-
-#     db.session.commit()
-
-#     if data['startDate']:
-#         return redirect(url_for('itinerary.create_days', trip_id = trip_id))
-
-#     return "Trip Name and/or Duration Updated"
 
 
 # Add a place to the user's list
@@ -360,3 +305,30 @@ def add_get_place(trip_id):
     response = place_schema.dump(place)
 
     return jsonify(response['place_id'])
+
+@places.route('add-trip-and-places/', methods = ['GET', 'POST'])
+def add_trip_and_places():
+
+    data = request.get_json()
+
+    uid = data['uid']
+    trip_data = data['currentTrip']
+
+
+    trip_name = trip_data['tripName']
+    dest_city = trip_data['city']
+    dest_state = trip_data['state']
+    dest_country = trip_data['country']
+    dest_country_2letter = trip_data['country_2letter']
+    dest_lat = trip_data['geocode'][0]
+    dest_long = trip_data['geocode'][1]
+    dest_url = trip_data['imgUrl']
+    start_date = trip_data['startDate']
+    end_date = trip_data['endDate']
+
+    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_2letter, dest_lat, dest_long, 
+            dest_url, start_date, end_date, uid)
+    
+    db.session.add(trip)
+    db.session.commit()
+

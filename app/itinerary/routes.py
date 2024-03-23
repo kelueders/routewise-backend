@@ -5,6 +5,7 @@ from datetime import timedelta
 # INTERNAL
 from ..models import Place, Trip, Day, db, place_schema
 from .helpers import create_itinerary, add_places
+from ..global_helpers import create_places_last
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
@@ -14,14 +15,7 @@ def create_days(trip_id):
     places = Place.query.filter_by(trip_id = trip_id).all()
 
     # finds the largest local_id in the list of places for that trip = places_last
-    max_local_id = 0
-    for place in places:
-        local_id = place.local_id
-
-        if local_id > max_local_id:
-            max_local_id = local_id
-
-    places_last = max_local_id
+    places_last = create_places_last(places)
 
     # creates a dictionary with format:
     '''
@@ -74,9 +68,6 @@ def create_days(trip_id):
         result.append(place)
 
     if trip_id:
-        # places = Place.query.filter_by(trip_id = trip_id).all()
-        # result = places_schema.dump(places)
-        # jsonify(result)
 
         trip = Trip.query.filter_by(trip_id = trip_id).first()
         
