@@ -5,6 +5,7 @@ from datetime import datetime
 # INTERNAL
 from ..models import Trip, Place, Day, db, trip_schema, trips_schema, places_schema, place_schema
 from ..itinerary.helpers import add_places
+from ..global_helpers import create_places_last, serialize_places
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -63,14 +64,7 @@ def get_trip(trip_id):
         days_db = Day.query.filter_by(trip_id = trip_id).all()
 
         # finds the largest local_id in the list of places for that trip = places_last
-        max_local_id = 0
-        for place in places:
-            local_id = place.local_id
-
-            if local_id > max_local_id:
-                max_local_id = local_id
-
-        places_last = max_local_id
+        places_last = create_places_last(places)
 
         # creates a dictionary with format:
         '''
@@ -331,4 +325,13 @@ def add_trip_and_places():
     
     db.session.add(trip)
     db.session.commit()
+
+    places = trip_data['places']
+
+    places_last = create_places_last(places)
+    # places_serial = serialize_places(places, places_last, trip.trip_id)
+
+    add_places(trip.trip_id, places_last, places)
+
+    return "Trip and places have been added to the database."
 

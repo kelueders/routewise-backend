@@ -8,17 +8,21 @@ def create_places_last(places):
     """
     max_local_id = 0
     for place in places:
-        local_id = place.local_id
+        if 'id' in place.keys():
+            local_id = place['id']
+        elif 'local_id' in place.keys():
+            local_id = place['local_id']
 
         if local_id > max_local_id:
                 max_local_id = local_id
 
     return max_local_id
 
-def serialize_places(places, places_last):
+def serialize_places(places, places_last, trip_id):
     '''
-    Serializes a list of Places, which creates a dictionary of places with the local_id as the key
-    and the place data (a dict) as the value
+    Serializes a list of Places.
+        Creates a list of dictionaries that each have a local_id as the KEY and the 
+        place data (a dict) as the VALUE for each place
 
     places_serial = {
         1: {
@@ -44,26 +48,31 @@ def serialize_places(places, places_last):
 
         place = {}
 
-        place['id'] = place_data.local_id
-        place['place_id'] = place_data.place_id
-        place['placeName'] = place_data.place_name
-        place['info'] = place_data.info
-        place['address'] = place_data.place_address
-        place['imgURL'] = place_data.place_img
-        place['lat'] = place_data.lat
-        place['long'] = place_data.long
-        place['favorite'] = place_data.favorite
-        place['geocode'] = [place_data.lat, place_data.long]
-        places_serial[place_data.local_id] = place
+        if 'local_id' in place_data.keys():
+            place['local_id'] = place_data['local_id']
+            place['placeName'] = place_data['place_name']
+            place['address'] = place_data['place_address']
+            place['imgURL'] = place_data['place_img']
+        elif 'id' in place_data.keys():
+            place['local_id'] = place_data['id']
+            place['placeName'] = place_data['placeName']
+            place['address'] = place_data['address']
+            place['imgURL'] = place_data['imgURL']
 
+        place['place_id'] = place_data['place_id']
+        place['info'] = place_data['info']
+        place['lat'] = place_data['lat']
+        place['long'] = place_data['long']
+        place['favorite'] = place_data['favorite']
+        place['geocode'] = [place_data['lat'], place_data['long']]
 
-    result = []
+        places_serial[place['local_id']] = place
 
     for i in range(places_last):
         place = places_serial[i + 1] 
 
-        db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
+        db_place = Place.query.filter_by(local_id = place['local_id'], trip_id = trip_id).first()
 
         places_serial[i + 1]['place_id'] = db_place.place_id
 
-        result.append(place)
+    return places_serial

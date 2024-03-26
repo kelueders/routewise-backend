@@ -5,7 +5,7 @@ from datetime import timedelta
 # INTERNAL
 from ..models import Place, Trip, Day, db, place_schema
 from .helpers import create_itinerary, add_places
-from ..global_helpers import create_places_last
+from ..global_helpers import create_places_last, serialize_places
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
@@ -17,66 +17,20 @@ def create_days(trip_id):
     # finds the largest local_id in the list of places for that trip = places_last
     places_last = create_places_last(places)
 
-    # creates a dictionary with format:
-    '''
-    "places_serial: {
-        1: {
-            id:
-            place_id:
-            placeName:
-            info:
-            address:
-            imgURL:
-            lat:
-            long:
-            favorite:
-            geocode:
-        },
-        2: {
-            ALL PLACE DATA
-        }
-    }
-    '''
-    places_serial = {}
-
-    for i, place_data in enumerate(places):
-
-        place = {}
-
-        place['id'] = place_data.local_id
-        place['place_id'] = place_data.place_id
-        place['placeName'] = place_data.place_name
-        place['info'] = place_data.info
-        place['address'] = place_data.place_address
-        place['imgURL'] = place_data.place_img
-        place['lat'] = place_data.lat
-        place['long'] = place_data.long
-        place['favorite'] = place_data.favorite
-        place['geocode'] = [place_data.lat, place_data.long]
-        places_serial[place_data.local_id] = place
-
-
-    result = []
-
-    for i in range(places_last):
-        place = places_serial[i + 1] 
-
-        db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
-
-        places_serial[i + 1]['place_id'] = db_place.place_id
-
-        result.append(place)
+    # Serializes the list of places (see global_helpers.py)
+    serialized_places = serialize_places(places, places_last, trip_id)
 
     if trip_id:
 
         trip = Trip.query.filter_by(trip_id = trip_id).first()
         
-        day_data = create_itinerary(result, trip.duration)
+        # Creates an itinerary for the trip, dividing the places into separate days
+        trip_itinerary = create_itinerary(serialized_places, trip.duration)
 
         current_date = trip.start_date
 
-        days = day_data['days']
-        day_order = day_data['day_order']
+        days = trip_itinerary['days']
+        day_order = trip_itinerary['day_order']
 
         for day_num in day_order:
             day = days[day_num]
@@ -114,13 +68,13 @@ def create_days(trip_id):
             
                 db.session.commit()
 
-        # Assign the day_id to each place in the places_serial object
+        # Assign the day_id to each place in the serialized_places object
         for i in range(places_last):
-            place = places_serial[i + 1] 
+            place = serialized_places[i + 1] 
 
             db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
 
-            places_serial[i + 1]['day_id'] = db_place.day_id
+            serialized_places[i + 1]['day_id'] = db_place.day_id
 
         # update the trip 'is_itinerary' key to 'True' since an itinerary has now been created
         trip = Trip.query.filter_by(trip_id = trip_id).first()
@@ -132,7 +86,7 @@ def create_days(trip_id):
         itinerary_data = {
             "trip_id": trip_id,
             "places_last": places_last,
-            "places": places_serial,
+            "places": serialized_places,
             "days": days,
             "day_order": day_order
         }
