@@ -1,0 +1,4 @@
+Meaning of Variable Names:
+
+- places_last: The last local id in a list of places. This tells you how many places there are.
+- places_serial: Serialization of the list of places. 
