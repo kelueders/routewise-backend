@@ -175,26 +175,38 @@ def create_itinerary(places, duration):
         "saved_places": saved_places
     }
 
+def add_places(trip_id, places_last, places_arr):
 
-def add_places(trip_id, places_last, places_serial):
-    # trip_id = request.json['tripID']
-    # places_last = request.json['placesLast']
-    # places = request.json['places_serial']
 
     for i in range(places_last):
-        place = places_serial[i + 1] 
 
-        local_id = place['id']
-        place_name = place['placeName']
-        geoapify_placeId = place['placeId']
-        place_address = place['address']
-        place_img = place['imgURL']
-        category = place['category']
-        favorite = place['favorite']
-        info = place['info']
-        lat = place['lat']
-        long = place['long']
-        
+        if type(places_arr) == dict:
+            place = places_arr[i + 1]
+            
+            local_id = place['local_id']
+            place_name = place['placeName']
+            geoapify_placeId = place['placeId']
+            place_address = place['address']
+            place_img = place['imgURL']
+            category = place['category']
+            favorite = place['favorite']
+            info = place['info']
+            lat = place['lat']
+            long = place['long']   
+
+        elif type(places_arr) == list:
+            place = places_arr[i]
+
+            local_id = place['id']
+            place_name = place['placeName']
+            geoapify_placeId = place['place_id']
+            place_address = place['address']
+            place_img = place['imgURL']
+            category = place['category']
+            favorite = place['favorite']
+            info = place['info']
+            lat = place['lat']
+            long = place['long']        
 
         place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
                       info, favorite, category, lat, long, trip_id)
