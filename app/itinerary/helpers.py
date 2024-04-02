@@ -13,31 +13,28 @@ def create_itinerary(places, duration):
 
     days = {}
     day_order = []    # [day-1, day-2, day-3, ...]
+    for i in range(duration):
+        days[f'day-{i + 1}'] = {
+            'id': f'day-{i + 1}',
+            'placeIds': []
+        } 
+        day_order.append(f'day-{i + 1}') 
+
     places_dict = {}   # creates a serialized list (dict) that holds the place id as a key for each place object
 
     for place in places:
         places_dict[place['id']] = place
 
+    # if only one place given - create days dict and day_order list, then return simply itinerary
     if len(places) < 2:
 
-        for i in range(duration):
-            days[f'day-{i + 1}'] = {
-                'id': f'day-{i + 1}',
-                'placeIds': []
-            } 
-            day_order.append(f'day-{i + 1}') 
-
-        days['day-1'] = {
-            'id': 'day-1',
-            'placeIds': [1]
-        }
+        days['day-1']['placeIds'] = [1]
 
         return {
             "days": days,
             "day_order": day_order
         }
     
-    print(places)
 
 
     # create a list just containing the coordinates to be used to create the matrix of
@@ -64,29 +61,20 @@ def create_itinerary(places, duration):
         place['place_distances'] = {}
         
         for d in all_dist[i]:
-            if d != 0.0:
-                place['place_distances'][places_copy[j]['id']] = d
-                dist_range = max(d, dist_range)
+            # if d != 0.0: # if there are duplicates of the same place in the places list this breaks the code
+            place['place_distances'][places_copy[j]['id']] = d
+            dist_range = max(d, dist_range)
                 
             j += 1
+        
+        # creates a key within places_copy that holds the sum of distances calculated above
+        place['sum_dist'] = sum(all_dist[i])
         i += 1
 
-    print(all_dist)
-    print(dist_range)
+    # print(all_dist)
+    # print(dist_range)
     
     threshold_range = 0.15 * dist_range
-
-    # creates a list containing the sum of all the distances to each other location
-    #       in order to compare proximities 
-    sums = []
-    for dist in all_dist:
-        sums.append(sum(dist))
-
-    # creates a key within places_copy that holds the sum of distances calculated above
-    i = 0
-    for i in range(len(sums)):
-        places_copy[i]['sum_dist'] = sums[i]
-        i += 1
 
     ''' 1. Finds the location amongst the list of places that is furthest from the others.
         2. Removes that place from the places_copy list.
@@ -96,158 +84,97 @@ def create_itinerary(places, duration):
     day_places = []      # gives you a list of place ids that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
     co_captains = {}
 
-    while duration > c:
+    for day_num in day_order:
 
-        max_value = 0
-        max_place = ''
+        max_distance = 0
+        max_place_id = ''
 
         # step 1
         for place in places_copy:
 
-            if max_value < place['sum_dist']: 
-                max_value = place['sum_dist']
-                max_place = place['id']   
-
-        i = 0
-
-        # step 2
-        for place in places_copy:
-            
-            if place['id'] == max_place:
-                for p, d in place['place_distances'].items():
-
-                    print("Captain =", place['id'])
-
-                    if d < threshold_range:
-
-                        print(place['place_distances'])
-
-                        print("p in loop = ", p)
-
-                        try:
-                            co_cap_index = places_copy.index(co_captain)
-                            places_copy.pop(co_cap_index)
-
-                            if place['id'] not in co_captains.keys():
-                                co_captains[place['id']] = [p]
-                            elif len(co_captains[place['id']]) < 4:
-                                co_captains[place['id']].append(p)
-                            elif len(co_captains[place['id']]) >= 4:
-                                continue
-                        
-                        except:
-                            continue
-                    
-                        co_captain = places[p - 1]
-                        print("p = ", p)  
-
-                        # print("co_captain =", co_captain)
-                        print("co_cap_index =", co_cap_index)
+            if max_distance < place['sum_dist']: 
+                max_distance = place['sum_dist']
+                max_place_id = place['id']  
 
 
-                captain = places[place['id'] - 1]
-                cap_index = places_copy.index(captain)
-                places_copy.pop(cap_index)
+        if max_place_id: # there won't be an id if there are no more places left in places_copy
 
-                # print("captain = ", captain)
-                # print("cap_index = ", cap_index)
+            # step 1b - add captain's place id to the current day 
+            captain_id = max_place_id
+            days[day_num]['placeIds'] = [captain_id]
 
-                # print("places after =", places_copy)
-            
-            i += 1
+            # step 1c - remove captain place object from places_copy
+            place_index = places_copy.index(places_dict[captain_id])
+            places_copy.pop(place_index)
 
-        print("Co-captains = ", co_captains)
+            # step 2 - find co-captains of the selected captain (places that are within 15% range distance of the selected captain place)
+            sorted_places_copy = sorted(places_copy, key=lambda x: x['place_distances'][captain_id]) # sorted by distance 
 
-        # step 3
-        if max_place:
-            day_places.append(max_place)
+            for place in sorted_places_copy:
 
-        captains = day_places.copy()
+                if len(days[day_num]['placeIds']) < 4: # caps day places at 4
 
-        # step 4
-        c += 1
-
-    ''' creates a dict of days with each day being a key-value pair that contains info about that day including place IDs associated with it
-        1. separate each day_place (the locations furthest from each other) into separate days in the list
-        2. Go through each place dict to find the closest places to each of those max places, creating zones for each day
-        3. Append each of those places to the list of days
-        4. FINAL RESULT: Now have a dict called days, which contains a reference to the id of the day 'day-1, etc.' and a list of 
-            place ID's that correspond to that day.  
-            
-            Example structure: 
-                days: {
-                    "day-1": {
-                        id: "day-1",
-                        placeIds: [1, 2]
-                    },
-                    "day-2": {
-                        id: "day-2",
-                        placeIds: [3]
-                    }} '''
+                    if place['place_distances'][captain_id] < threshold_range:
+                        days[day_num]['placeIds'].append(place['id'])
+                        place_index = places_copy.index(places_dict[place['id']])
+                        places_copy.pop(place_index)
 
 
-    # step 1
-    for i in range(duration):
-        days[f'day-{i + 1}'] = {
-            'id': f'day-{i + 1}',
-            'placeIds': []
-        } 
-        day_order.append(f'day-{i + 1}') 
+    # step 3 - add remaining places to day with closest day captain 
+    # create places_copy remove list
+    remove_list = [] # place ids to remove from places_copy after finishing the loop
 
-    for day_num in day_order:
-        if len(day_places) > 0:
-            local_id = day_places.pop()
-            days[day_num]['placeIds'].append(local_id)
-
-            if local_id in co_captains.keys():
-                for co_cap in co_captains[local_id]:
-                    if len(days[day_num]['placeIds']) < 4:
-                        days[day_num]['placeIds'].append(co_cap)
-                    else:
-                        places_copy.append(places_dict[co_cap])
-                
-
-            # print("day_place")
-
-
-    # print(captains)
-    
-    places_leftover = []
-
+    # loop thru the remaining places in places_copy
     for place in places_copy:
 
-        min_value = 1000000
-        min_place = 0
+        # create closest_captain_id and closest_day_num "day-2"
+        closest_captain_id = ""
+        closest_day_num = ""
 
-        # place['place_distances'] is a dict with each of the other locations as keys, and distances to them as values
-        for k, v in place['place_distances'].items():
-            if k in captains:            # day_places = a list of places that matches the number of days, with each place being the furthest from others in order to create zones the user will visit each day
-
-                if v < min_value:
-                    min_value = v
-                    min_place = k
-
+        # loop thru the day_order
         for day_num in day_order:
-            d = days[day_num]    # referencing the key of days["day-1"] for example, which is a dict containing key-value pairs that describe the day
-            placeIds = d['placeIds']     # a list of integers, which are the local_id 's
-            id = placeIds[0]       # first 'local_id' in the list = integer
 
-            if min_place == id:      
-                d['placeIds'].append(place['id'])
+            # only executes if that day has less than four places assigned to it
+            if len(days[day_num]['placeIds']) < 4:
 
-            if min_place == id:
-                if len(d['placeIds']) < 4:      
-                    d['placeIds'].append(place['id'])
+                # current day captain id
+                captain_id = days[day_num]['placeIds'][0]
+
+                if closest_captain_id:
+                    # comparing this place's distance from current day captain to current closest captain
+                    # trying to ultimately find the day whose captain is the closest to it
+                    if place['place_distances'][captain_id] < place['place_distances'][closest_captain_id]:
+                        closest_captain_id = captain_id
+                        closest_day_num = day_num
                 else:
-                    places_leftover.append(place['id'])
+                    # if closest_captain_id hasn't been assigned yet we assign it
+                    closest_captain_id = captain_id
+                    closest_day_num = day_num
 
-    # if places_leftover:
+        # after resolving the closest day_num, add this place to the closest day_num
+        if closest_day_num: # if closest day_num is falsey, all of the days are full
 
+            days[closest_day_num]['placeIds'].append(place['id'])
+
+            # add the place id to a places_copy remove list
+            remove_list.append(place['id'])
+                    
+    # remove the 'remove_list' places from the places_copy
+    for place_id in remove_list:
+        place_index = places_copy.index(places_dict[place_id])
+        places_copy.pop(place_index)
+
+    # remaining places in places_copy will be added to a 'saved_places' list [{place 1}, {place 2} ... ]
+    saved_places = []
+    for place in places_copy:
+        saved_places.append(place['id'])
 
     return {
         "days": days,
-        "day_order": day_order
+        "day_order": day_order,
+        "saved_places": saved_places
     }
+
 
 def add_places(trip_id, places_last, places_serial):
     # trip_id = request.json['tripID']

@@ -82,6 +82,8 @@ def create_days(trip_id):
         
         day_data = create_itinerary(result, trip.duration)
 
+        saved_places = day_data['saved_places']
+
         current_date = trip.start_date
 
         days = day_data['days']
@@ -143,7 +145,8 @@ def create_days(trip_id):
             "places_last": places_last,
             "places": places_serial,
             "days": days,
-            "day_order": day_order
+            "day_order": day_order,
+            "saved_places": saved_places
         }
                 
         return itinerary_data
