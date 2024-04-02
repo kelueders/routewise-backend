@@ -27,7 +27,7 @@ def create_days(trip_id):
         # Creates an itinerary for the trip, dividing the places into separate days
         trip_itinerary = create_itinerary(serialized_places, trip.duration)
 
-        saved_places = day_data['saved_places']
+        saved_places = trip_itinerary['saved_places']
 
         current_date = trip.start_date
 
