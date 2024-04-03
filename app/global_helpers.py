@@ -8,10 +8,10 @@ def create_places_last(places):
     """
     max_local_id = 0
     for place in places:
-        if 'id' in place.keys():
-            local_id = place['id']
-        elif 'local_id' in place.keys():
-            local_id = place['local_id']
+        if hasattr(place, 'id'):
+            local_id = place.id
+        elif hasattr(place, 'local_id'):
+            local_id = place.local_id
 
         if local_id > max_local_id:
                 max_local_id = local_id
@@ -48,23 +48,23 @@ def serialize_places(places, places_last, trip_id):
 
         place = {}
 
-        if 'local_id' in place_data.keys():
-            place['local_id'] = place_data['local_id']
-            place['placeName'] = place_data['place_name']
-            place['address'] = place_data['place_address']
-            place['imgURL'] = place_data['place_img']
-        elif 'id' in place_data.keys():
-            place['local_id'] = place_data['id']
-            place['placeName'] = place_data['placeName']
-            place['address'] = place_data['address']
-            place['imgURL'] = place_data['imgURL']
+        if hasattr(place_data, 'local_id'):
+            place['local_id'] = place_data.local_id
+            place['placeName'] = place_data.place_name
+            place['address'] = place_data.place_address
+            place['imgURL'] = place_data.place_img
+        elif hasattr(place_data, 'id'):
+            place['local_id'] = place_data.id
+            place['placeName'] = place_data.placeName
+            place['address'] = place_data.address
+            place['imgURL'] = place_data.imgURL
 
-        place['place_id'] = place_data['place_id']
-        place['info'] = place_data['info']
-        place['lat'] = place_data['lat']
-        place['long'] = place_data['long']
-        place['favorite'] = place_data['favorite']
-        place['geocode'] = [place_data['lat'], place_data['long']]
+        place['place_id'] = place_data.place_id
+        place['info'] = place_data.info
+        place['lat'] = place_data.lat
+        place['long'] = place_data.long
+        place['favorite'] = place_data.favorite
+        place['geocode'] = [place_data.lat, place_data.long]
 
         places_serial[place['local_id']] = place
 
