@@ -129,8 +129,8 @@ def create_itinerary(places, duration):
                 if len(days[day_num]['placeIds']) < 4: # caps day places at 4
 
                     if place['place_distances'][captain_id] < threshold_range:
-                        days[day_num]['placeIds'].append(place['id'])
-                        place_index = places_copy.index(places_dict[place['id']])
+                        days[day_num]['placeIds'].append(place['local_id'])
+                        place_index = places_copy.index(places_dict[place['local_id']])
                         places_copy.pop(place_index)
 
 
