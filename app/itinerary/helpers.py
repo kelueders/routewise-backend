@@ -14,6 +14,9 @@ places_copy - dict type
 '''
 def create_itinerary(places, duration):
 
+    print("PLACES")
+    print(places)
+
     days = {}
     day_order = []    # [day-1, day-2, day-3, ...]
     for i in range(duration):
@@ -23,10 +26,13 @@ def create_itinerary(places, duration):
         } 
         day_order.append(f'day-{i + 1}') 
 
-    places_dict = {}   # creates a serialized list (dict) that holds the place id as a key for each place object
+    # places_dict = {}   # creates a serialized list (dict) that holds the place id as a key for each place object
 
-    for place in places.keys():
-        places_dict[place] = place
+    # for place in places.keys():
+    #     places_dict[place] = place
+
+    # print("PLACES_DICT")
+    # print(places_dict)
 
     # if only one place given - create days dict and day_order list, then return simply itinerary
     if len(places) < 2:
@@ -58,6 +64,7 @@ def create_itinerary(places, duration):
     places_list = list(places_copy.values())
     
     # print(type(places_list))
+    print("PLACES LIST")
     # print(places_list)
 
     # creates a key within the places_copy dict that holds a dict containing the distances
@@ -117,12 +124,17 @@ def create_itinerary(places, duration):
             # print(captain_id)
             captain_dict = list(filter(lambda x : True if x['local_id'] == captain_id else False, places_list ))
 
-            # step 1c - remove captain place object from places_copy
+            # step 1c - remove captain place object from places_list
             place_index = places_list.index(captain_dict[0])
             places_list.pop(place_index)
 
+            print(places_list)
+
             # step 2 - find co-captains of the selected captain (places that are within 15% range distance of the selected captain place)
             sorted_places_copy = sorted(places_list, key=lambda x: x['place_distances'][captain_id]) # sorted by distance 
+
+            print("SORTED")
+            print(sorted_places_copy)
 
             for place in sorted_places_copy:
 
@@ -130,8 +142,13 @@ def create_itinerary(places, duration):
 
                     if place['place_distances'][captain_id] < threshold_range:
                         days[day_num]['placeIds'].append(place['local_id'])
-                        place_index = places_list.index(places_dict[place['local_id']])
-                        places_copy.pop(place_index)
+
+                        print("LOCAL ID")
+                        print(place['local_id'])
+
+                        places_list = list(filter(lambda x : True if x['local_id'] != place['local_id'] else False, places_list ))
+                        # place_index = places_list.index(place['local_id'])
+                        # places_list.pop(place_index)
 
 
     # step 3 - add remaining places to day with closest day captain 
