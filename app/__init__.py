@@ -32,4 +32,3 @@ def kate():
     }
 
     return response_body
-
