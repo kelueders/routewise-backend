@@ -300,6 +300,7 @@ def add_get_place(trip_id):
 
     return jsonify(response['place_id'])
 
+# user flow for when the user is not logged in - it will create the trip and places at the same time
 @places.route('add-trip-and-places/', methods = ['GET', 'POST'])
 def add_trip_and_places():
 

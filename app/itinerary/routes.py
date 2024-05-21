@@ -74,9 +74,12 @@ def create_days(trip_id):
         for i in range(places_last):
             place = serialized_places[i + 1] 
 
-            db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
+            db_place = Place.query.filter_by(local_id = place['local_id'], trip_id = trip_id).first()
 
             serialized_places[i + 1]['day_id'] = db_place.day_id
+
+            # added so that it can coordinate with the front end, populates new 'id' key with 'local_id' then deletes the 'local_id' key
+            serialized_places[i + 1]['id'] = serialized_places[i + 1].pop('local_id') 
 
         # update the trip 'is_itinerary' key to 'True' since an itinerary has now been created
         trip = Trip.query.filter_by(trip_id = trip_id).first()
