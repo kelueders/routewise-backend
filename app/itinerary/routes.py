@@ -33,6 +33,7 @@ def create_days(trip_id):
 
         days = trip_itinerary['days']
         day_order = trip_itinerary['day_order']
+        serialized_places = trip_itinerary['serialized_places']
 
         for day_num in day_order:
             day = days[day_num]
@@ -63,12 +64,18 @@ def create_days(trip_id):
 
             days[day_num]['day_id'] = new_day.day_id
 
+            # looping through the places in the itinerary (excludes saved_places)
             for place_id in day['placeIds']:
                 place = Place.query.filter_by(local_id = place_id, trip_id = trip_id).first()
 
                 place.day_id = new_day.day_id
+                place.in_itinerary = True
+                serialized_places[place_id]['in_itinerary'] = True
             
                 db.session.commit()
+
+        for saved_place_id in saved_places:
+            serialized_places[saved_place_id]['in_itinerary'] = False
 
         # Assign the day_id to each place in the serialized_places object
         for i in range(places_last):
@@ -76,7 +83,10 @@ def create_days(trip_id):
 
             db_place = Place.query.filter_by(local_id = place['local_id'], trip_id = trip_id).first()
 
-            serialized_places[i + 1]['day_id'] = db_place.day_id
+            if db_place.day_id:
+                serialized_places[i + 1]['day_id'] = db_place.day_id
+            else:
+                serialized_places[i + 1]['day_id'] = None
 
             # added so that it can coordinate with the front end, populates new 'id' key with 'local_id' then deletes the 'local_id' key
             serialized_places[i + 1]['id'] = serialized_places[i + 1].pop('local_id') 

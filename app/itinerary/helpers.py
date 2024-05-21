@@ -12,7 +12,7 @@ all the information needed for that day: such as all the trips associated with i
 places - dict type
 places_copy - dict type
 '''
-def create_itinerary(places, duration):
+def create_itinerary(serialized_places, duration):
 
     days = {}
     day_order = []    # [day-1, day-2, day-3, ...]
@@ -24,7 +24,7 @@ def create_itinerary(places, duration):
         day_order.append(f'day-{i + 1}') 
 
     # if only one place given - create days dict and day_order list, then return simply itinerary
-    if len(places) < 2:
+    if len(serialized_places) < 2:
 
         days['day-1']['placeIds'] = [1]
 
@@ -35,19 +35,18 @@ def create_itinerary(places, duration):
 
     # create a list just containing the coordinates to be used to create the matrix of all the distances
     coords = []
-    for place in places.values():
+    for place in serialized_places.values():
 
         coord = (place['lat'], place['long'])
         coords.append(coord)
 
     # creates a matrix of all the distances between each point and every other point
     all_dist = distance.cdist(coords, coords, 'euclidean')
-    # print(all_dist)
 
-    places_copy = places.copy()    # creates a copy of the places dict to be manipulated without altering the original
+    serialized_places_copy = serialized_places.copy()    # creates a copy of the places dict to be manipulated without altering the original
     dist_range = 0
 
-    places_list = list(places_copy.values())
+    places_list = list(serialized_places_copy.values())
 
     # creates a key within the places_copy dict that holds a dict containing the distances to each of the other locations
     i = 0
@@ -87,7 +86,8 @@ def create_itinerary(places, duration):
 
             # step 1b - add captain's place id to the current day 
             captain_id = max_place_id
-            days[day_num]['placeIds'] = [captain_id]                                   # WHY IS THIS IN BRACKETS?
+            days[day_num]['placeIds'] = [captain_id]     # in brackets because we're putting the captain_id into an array before putting it in the placesIds key
+            # serialized_places[captain_id]['in_itinerary'] = True
 
             captain_dict = list(filter(lambda x : True if x['local_id'] == captain_id else False, places_list ))
 
@@ -105,12 +105,13 @@ def create_itinerary(places, duration):
 
                     if place['place_distances'][captain_id] < threshold_range:
                         days[day_num]['placeIds'].append(place['local_id'])
+                        # serialized_places[place['local_id']]['in_itinerary'] = True
 
                         places_list = list(filter(lambda x : True if x['local_id'] != place['local_id'] else False, places_list ))
 
 
-    # create places_list remove list
-    remove_list = [] # place ids to remove from places_list after finishing the loop
+    # create saved_places list to hold places not in the itinerary
+    saved_places = [] 
 
     # loop thru the remaining places in places_list
     # for place in places_copy.values():
@@ -144,16 +145,27 @@ def create_itinerary(places, duration):
         if closest_day_num: # if closest day_num is falsey, all of the days are full
 
             days[closest_day_num]['placeIds'].append(place['local_id'])
+            # serialized_places[place['local_id']]['in_itinerary'] = True
 
-            # add the place id to a places_list remove list
-            remove_list.append(place['local_id'])
+        else:
 
-    saved_places = list(filter(lambda x : True if x['local_id'] not in remove_list else False, places_list))
+            # add the place id to list 'saved_places'
+            saved_places.append(place['local_id'])
+
+
+    # saved_places = list(filter(lambda x : True if x['local_id'] not in remove_list else False, places_list))
+    # saved_places = list(filter(lambda x : True if 'in_itinerary' not in x.keys() else False, places_list))
+
+    # saved_places_ids = list(map(lambda x : x['local_id'], saved_places))
+
+    # places_list = list(map(lambda x : x['in_itinerary'] == False, saved_places))
+
 
     return {
         "days": days,
         "day_order": day_order,
-        "saved_places": saved_places
+        "saved_places": saved_places,    # this will be a list of id's
+        "serialized_places": serialized_places
     }
 
 def add_places(trip_id, places_last, places_arr):
