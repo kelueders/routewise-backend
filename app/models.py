@@ -14,13 +14,15 @@ class User(db.Model):
     uid = db.Column(db.String, unique=True)
     username = db.Column(db.String(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
+    has_access = db.Column(db.Boolean, default=False, nullable=True)
     user_info = db.relationship('UserInfo', back_populates = 'user')
     trip = db.relationship('Trip', back_populates = 'user')
 
-    def __init__(self, uid, username, email):
+    def __init__(self, uid, username, email, has_access):
         self.uid = uid
         self.username = username
         self.email = email
+        self.has_access = has_access
 
     def __repr__(self):
         return f"User {self.username} has been added to the database." 
@@ -28,7 +30,7 @@ class User(db.Model):
 class UserSchema(ma.Schema):
     class Meta:
         # These fields will be posted or returned?
-        fields = ['uid', 'username', 'email']
+        fields = ['uid', 'username', 'email', 'has_access']
 
 user_schema = UserSchema()
 

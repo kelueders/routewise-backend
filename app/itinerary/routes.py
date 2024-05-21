@@ -74,7 +74,7 @@ def create_days(trip_id):
         for i in range(places_last):
             place = serialized_places[i + 1] 
 
-            db_place = Place.query.filter_by(local_id = place['local_id'], trip_id = trip_id).first()
+            db_place = Place.query.filter_by(local_id = place['id'], trip_id = trip_id).first()
 
             serialized_places[i + 1]['day_id'] = db_place.day_id
 
