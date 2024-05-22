@@ -271,7 +271,7 @@ def get_places(trip_id):
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
-
+# allows the user to add a place, commit it to the database, and then return the place_id to the front
 @places.route('add-get-place/<trip_id>', methods = ['GET', 'POST'])
 def add_get_place(trip_id):
 
@@ -287,9 +287,10 @@ def add_get_place(trip_id):
     info = place['info']
     lat = place['lat']
     long = place['long']
+    in_itinerary = place['in_itinerary']
 
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                    info, favorite, category, lat, long, trip_id)
+                    info, favorite, category, lat, long, in_itinerary, trip_id)
 
     db.session.add(place)
     db.session.commit()
