@@ -271,7 +271,7 @@ def get_places(trip_id):
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
-# allows the user to add a place, commit it to the database, and then return the place_id to the front
+# allows the user to add a place, commit it to the database, and then return the place_id to the frontend
 @places.route('add-get-place/<trip_id>', methods = ['GET', 'POST'])
 def add_get_place(trip_id):
 

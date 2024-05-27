@@ -119,7 +119,7 @@ def add_one_place(trip_id):
     data = request.get_json()
     place = data['place']
 
-    print(place)
+    # print(place)
 
     local_id = place['id']
     place_name = place['placeName']
@@ -137,6 +137,7 @@ def add_one_place(trip_id):
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
                 info, favorite, category, lat, long, trip_id)
     
+    # Why is this separate from the rest of the initialization?
     place.update_day_id(day_id)
 
     db.session.add(place)

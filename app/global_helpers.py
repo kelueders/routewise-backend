@@ -7,6 +7,7 @@ def create_places_last(places):
     This function goes through a list of places and return that local_id
     """
     max_local_id = 0
+    local_id = 0
     for place in places:
         if hasattr(place, 'id'):
             local_id = place.id
