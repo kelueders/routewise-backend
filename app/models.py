@@ -17,7 +17,7 @@ class User(db.Model):
     user_info = db.relationship('UserInfo', back_populates = 'user')
     trip = db.relationship('Trip', back_populates = 'user')
 
-    def __init__(self, uid, username, email):
+    def __init__(self, uid, username, email, has_acess):
         self.uid = uid
         self.username = username
         self.email = email
