@@ -8,6 +8,7 @@ from flask_cors import CORS
 from .profile.routes import profile
 from .places.routes import places
 from .itinerary.routes import itinerary
+from .auth.routes import auth
 from .models import db
 
 app = Flask(__name__)
@@ -16,6 +17,7 @@ app = Flask(__name__)
 app.register_blueprint(profile)
 app.register_blueprint(places)
 app.register_blueprint(itinerary)
+app.register_blueprint(auth)
 
 app.config.from_object(Config)
 
