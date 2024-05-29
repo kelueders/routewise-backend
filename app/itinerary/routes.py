@@ -112,7 +112,8 @@ def create_days(trip_id):
     
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
-    
+
+# When the user wants to add a place to a specific day in the trip when there is already an itinerary created    
 @itinerary.route('/add-one-place/<trip_id>', methods = ['POST', 'GET'])
 def add_one_place(trip_id):
 
@@ -132,10 +133,11 @@ def add_one_place(trip_id):
     lat = place['lat']
     long = place['long']
     day_id = data['day_id']
+    in_itinerary = True
     
 
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                info, favorite, category, lat, long, trip_id)
+                info, favorite, category, lat, long, in_itinerary, trip_id)
     
     # Why is this separate from the rest of the initialization?
     place.update_day_id(day_id)
