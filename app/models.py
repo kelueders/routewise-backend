@@ -18,11 +18,11 @@ class User(db.Model):
     user_info = db.relationship('UserInfo', back_populates = 'user')
     trip = db.relationship('Trip', back_populates = 'user')
 
-    def __init__(self, uid, username, email, has_acess):
+    def __init__(self, uid, username, email, has_access):
         self.uid = uid
         self.username = username
         self.email = email
-        self.has_access = has_acess
+        self.has_access = has_access
 
     def __repr__(self):
         return f"User {self.username} has been added to the database." 
@@ -30,7 +30,7 @@ class User(db.Model):
 class UserSchema(ma.Schema):
     class Meta:
         # These fields will be posted or returned?
-        fields = ['uid', 'username', 'email']
+        fields = ['uid', 'username', 'email', 'has_access']
 
 user_schema = UserSchema()
 
@@ -142,12 +142,13 @@ class Place(db.Model):
     category = db.Column(db.String)
     lat = db.Column(db.Float)
     long = db.Column(db.Float)
+    in_itinerary = db.Column(db.Boolean, default=False)
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
     day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
     trip = db.relationship('Trip', back_populates='place')
     day = db.relationship('Day', back_populates='place')
 
-    def __init__(self, local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, trip_id):
+    def __init__(self, local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, lat, long, in_itinerary, trip_id):
         self.local_id = local_id
         self.place_name = place_name
         self.geoapify_placeId = geoapify_placeId
@@ -158,6 +159,7 @@ class Place(db.Model):
         self.category = category
         self.lat = lat
         self.long = long
+        self.in_itinerary = in_itinerary
         self.trip_id = trip_id
 
     def update_day_id(self, day_id):
@@ -169,7 +171,7 @@ class Place(db.Model):
 class PlaceSchema(ma.Schema):
     class Meta:
         fields = ['local_id', 'place_id', 'place_name', 'geoapify_placeId', 'place_address', 'place_img', 'info', 
-                  'favorite', 'category', 'lat', 'long', 'trip_id']
+                  'favorite', 'category', 'lat', 'long', 'in_itinerary', 'trip_id']
 
 place_schema = PlaceSchema()
 places_schema = PlaceSchema(many = True)

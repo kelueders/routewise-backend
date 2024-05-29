@@ -7,6 +7,7 @@ def create_places_last(places):
     This function goes through a list of places and return that local_id
     """
     max_local_id = 0
+    local_id = 0
     for place in places:
         if hasattr(place, 'id'):
             local_id = place.id
@@ -66,13 +67,13 @@ def serialize_places(places, places_last, trip_id):
         place['favorite'] = place_data.favorite
         place['geocode'] = [place_data.lat, place_data.long]
 
-        places_serial[place['id']] = place
+        places_serial[place['local_id']] = place
 
     for i in range(places_last):
         place = places_serial[i + 1] 
 
         db_place = Place.query.filter_by(local_id = place['local_id'], trip_id = trip_id).first()
 
-        places_serial[i + 1]['id'] = db_place.place_id
+        places_serial[i + 1]['place_id'] = db_place.place_id
 
     return places_serial

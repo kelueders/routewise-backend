@@ -271,7 +271,9 @@ def get_places(trip_id):
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
-
+# Allows the user to add a place before there is an itinerary created, commit it to the database
+# Also allows the user to add a place to the saved places list even after the itinerary is created
+# and then return the place_id to the frontend
 @places.route('add-get-place/<trip_id>', methods = ['GET', 'POST'])
 def add_get_place(trip_id):
 
@@ -287,9 +289,10 @@ def add_get_place(trip_id):
     info = place['info']
     lat = place['lat']
     long = place['long']
+    in_itinerary = False
 
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                    info, favorite, category, lat, long, trip_id)
+                    info, favorite, category, lat, long, in_itinerary, trip_id)
 
     db.session.add(place)
     db.session.commit()
@@ -300,6 +303,7 @@ def add_get_place(trip_id):
 
     return jsonify(response['place_id'])
 
+# user flow for when the user is not logged in - it will create the trip and places at the same time
 @places.route('add-trip-and-places/', methods = ['GET', 'POST'])
 def add_trip_and_places():
 

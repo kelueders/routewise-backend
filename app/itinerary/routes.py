@@ -33,6 +33,7 @@ def create_days(trip_id):
 
         days = trip_itinerary['days']
         day_order = trip_itinerary['day_order']
+        serialized_places = trip_itinerary['serialized_places']
 
         for day_num in day_order:
             day = days[day_num]
@@ -63,12 +64,18 @@ def create_days(trip_id):
 
             days[day_num]['day_id'] = new_day.day_id
 
+            # looping through the places in the itinerary (excludes saved_places)
             for place_id in day['placeIds']:
                 place = Place.query.filter_by(local_id = place_id, trip_id = trip_id).first()
 
                 place.day_id = new_day.day_id
+                place.in_itinerary = True
+                serialized_places[place_id]['in_itinerary'] = True
             
                 db.session.commit()
+
+        for saved_place_id in saved_places:
+            serialized_places[saved_place_id]['in_itinerary'] = False
 
         # Assign the day_id to each place in the serialized_places object
         for i in range(places_last):
@@ -76,7 +83,13 @@ def create_days(trip_id):
 
             db_place = Place.query.filter_by(local_id = place['local_id'], trip_id = trip_id).first()
 
-            serialized_places[i + 1]['day_id'] = db_place.day_id
+            if db_place.day_id:
+                serialized_places[i + 1]['day_id'] = db_place.day_id
+            else:
+                serialized_places[i + 1]['day_id'] = None
+
+            # added so that it can coordinate with the front end, populates new 'id' key with 'local_id' then deletes the 'local_id' key
+            serialized_places[i + 1]['id'] = serialized_places[i + 1].pop('local_id') 
 
         # update the trip 'is_itinerary' key to 'True' since an itinerary has now been created
         trip = Trip.query.filter_by(trip_id = trip_id).first()
@@ -99,14 +112,15 @@ def create_days(trip_id):
     
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
-    
+
+# When the user wants to add a place to a specific day in the trip when there is already an itinerary created    
 @itinerary.route('/add-one-place/<trip_id>', methods = ['POST', 'GET'])
 def add_one_place(trip_id):
 
     data = request.get_json()
     place = data['place']
 
-    print(place)
+    # print(place)
 
     local_id = place['id']
     place_name = place['placeName']
@@ -119,11 +133,13 @@ def add_one_place(trip_id):
     lat = place['lat']
     long = place['long']
     day_id = data['day_id']
+    in_itinerary = True
     
 
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                info, favorite, category, lat, long, trip_id)
+                info, favorite, category, lat, long, in_itinerary, trip_id)
     
+    # Why is this separate from the rest of the initialization?
     place.update_day_id(day_id)
 
     db.session.add(place)
