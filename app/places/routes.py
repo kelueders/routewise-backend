@@ -1,6 +1,5 @@
 # EXTERNAL
 from flask import Blueprint, redirect, request, jsonify, url_for
-from datetime import datetime
 
 # INTERNAL
 from ..models import Trip, Place, Day, db, trip_schema, trips_schema, places_schema, place_schema
@@ -68,7 +67,7 @@ def get_trip(trip_id):
 
         # creates a dictionary with format:
         '''
-        "places_serial: {
+        "serialized_places: {
             1: {
                 id:
                 place_id:
@@ -86,7 +85,9 @@ def get_trip(trip_id):
             }
         }
         '''
-        places_serial = {}
+        serialized_places = {}
+
+        saved_places_ids = []
 
         for i, place_data in enumerate(places):
 
@@ -103,7 +104,11 @@ def get_trip(trip_id):
             place['long'] = place_data.long
             place['favorite'] = place_data.favorite
             place['geocode'] = [place_data.lat, place_data.long]
-            places_serial[place_data.local_id] = place
+            place['day_id'] = place_data.day_id
+            serialized_places[place_data.local_id] = place
+
+            if place_data.in_itinerary != True and not place_data.day_id:
+                saved_places_ids.append(place_data.local_id)
 
         # creates a dict of days with format:
         '''
@@ -147,9 +152,13 @@ def get_trip(trip_id):
         itinerary_data = {
             "trip_id": int(trip_id),
             "places_last": places_last,
-            "places": places_serial,
+            "places": serialized_places,
             "days": days,
-            "day_order": day_order
+            "day_order": day_order,
+            "saved_places": { "placesIds": saved_places_ids,
+                            "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
+                        }
+
         }
 
         return itinerary_data
@@ -338,4 +347,3 @@ def add_trip_and_places():
     add_places(trip.trip_id, places_last, places)
 
     return "Trip and places have been added to the database."
-

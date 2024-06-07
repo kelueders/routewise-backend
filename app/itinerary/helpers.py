@@ -110,8 +110,8 @@ def create_itinerary(serialized_places, duration):
                         places_list = list(filter(lambda x : True if x['local_id'] != place['local_id'] else False, places_list ))
 
 
-    # create saved_places list to hold places not in the itinerary
-    saved_places = [] 
+    # create saved_places_ids list to hold places not in the itinerary
+    saved_places_ids = [] 
 
     # loop thru the remaining places in places_list
     # for place in places_copy.values():
@@ -149,22 +149,14 @@ def create_itinerary(serialized_places, duration):
 
         else:
 
-            # add the place id to list 'saved_places'
-            saved_places.append(place['local_id'])
-
-
-    # saved_places = list(filter(lambda x : True if x['local_id'] not in remove_list else False, places_list))
-    # saved_places = list(filter(lambda x : True if 'in_itinerary' not in x.keys() else False, places_list))
-
-    # saved_places_ids = list(map(lambda x : x['local_id'], saved_places))
-
-    # places_list = list(map(lambda x : x['in_itinerary'] == False, saved_places))
+            # add the place id to list 'saved_places_ids'
+            saved_places_ids.append(place['local_id'])
 
 
     return {
         "days": days,
         "day_order": day_order,
-        "saved_places": saved_places,    # this will be a list of id's
+        "saved_places_ids": saved_places_ids,    # this will be a list of id's
         "serialized_places": serialized_places
     }
 

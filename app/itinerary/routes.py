@@ -27,7 +27,7 @@ def create_days(trip_id):
         # Creates an itinerary for the trip, dividing the places into separate days
         trip_itinerary = create_itinerary(serialized_places, trip.duration)
 
-        saved_places = trip_itinerary['saved_places']
+        saved_places_ids = trip_itinerary['saved_places_ids']
 
         current_date = trip.start_date
 
@@ -74,7 +74,7 @@ def create_days(trip_id):
             
                 db.session.commit()
 
-        for saved_place_id in saved_places:
+        for saved_place_id in saved_places_ids:
             serialized_places[saved_place_id]['in_itinerary'] = False
 
         # Assign the day_id to each place in the serialized_places object
@@ -104,7 +104,9 @@ def create_days(trip_id):
             "places": serialized_places,
             "days": days,
             "day_order": day_order,
-            "saved_places": saved_places
+            "saved_places": { "placesIds": saved_places_ids,
+                            "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
+                            }
         }
                 
         return itinerary_data
