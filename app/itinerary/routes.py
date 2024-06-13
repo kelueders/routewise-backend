@@ -134,8 +134,13 @@ def add_one_place(trip_id):
     info = place['info']
     lat = place['lat']
     long = place['long']
-    day_id = data['day_id']
-    in_itinerary = True
+
+    if data['day_id']:
+        day_id = data['day_id']
+        in_itinerary = True
+    else:
+        day_id = None
+        in_itinerary = False
     
 
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
@@ -173,9 +178,13 @@ def update_place(place_id):
 
     data = request.get_json()
 
-    print(data)
+    # print(data)
 
     place.day_id = data['day_id']
+    if data['in_itinerary']:
+        place.in_itinerary = True
+    else:
+        place.in_itinerary = False
 
     db.session.commit()
 
