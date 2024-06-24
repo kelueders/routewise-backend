@@ -12,11 +12,12 @@ def add_user():
     uid = request.json['uid']
     username = request.json['displayName']
     email = request.json['email']
+    has_access = request.json['has_access']
 
     if User.query.filter_by(uid = uid).first():
         return "User has already been added to the database."
 
-    new_user = User(uid, username, email)
+    new_user = User(uid, username, email, has_access)
 
     db.session.add(new_user)
     db.session.commit()
