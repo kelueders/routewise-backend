@@ -24,7 +24,7 @@ def create_days(trip_id):
 
         trip = Trip.query.filter_by(trip_id = trip_id).first()
         
-        # Creates an itinerary for the trip, dividing the places into separate days
+        # Creates an itinerary for the trip, dividing the places into separate days - see itinerary/helpers.py
         trip_itinerary = create_itinerary(serialized_places, trip.duration)
 
         saved_places_ids = trip_itinerary['saved_places_ids']

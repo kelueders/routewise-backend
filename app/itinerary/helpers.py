@@ -7,7 +7,7 @@ from app.models import Place, db
 
 '''
 Takes a list of Place objects and a trip duration and returns a dictionary of days that contains 
-all the information needed for that day: such as all the trips associated with it
+all the information needed for that day: such as all the places associated with it
 
 places - dict type
 places_copy - dict type
@@ -46,9 +46,10 @@ def create_itinerary(serialized_places, duration):
     serialized_places_copy = serialized_places.copy()    # creates a copy of the places dict to be manipulated without altering the original
     dist_range = 0
 
+    # creates a non-serialized data structure
     places_list = list(serialized_places_copy.values())
 
-    # creates a key within the places_copy dict that holds a dict containing the distances to each of the other locations
+    # creates a key called 'place_distances' within the places_copy dict that holds a dict containing the distances to each of the other locations
     i = 0
     for place in places_list:
 
@@ -62,7 +63,7 @@ def create_itinerary(serialized_places, duration):
                 
             j += 1
         
-        # creates a key within places_copy that holds the sum of distances calculated above
+        # creates a key within the place object inside places_copy that holds the sum of distances calculated above
         place['sum_dist'] = sum(all_dist[i])
         i += 1
 

@@ -1,4 +1,42 @@
-Meaning of Variable Names:
+## Meaning of Variable Names: 
 
-- places_last: The last local id in a list of places. This tells you how many places there are.
-- places_serial: Serialization of the list of places. 
+* places_last: The last local id in a list of places. This tells you how many places there are in that trip.
+* places_serial: Serialization of the list of places.
+* place_id: An index number for all the places for all the trips in the database (can be a large number)
+* local_id: A way of indexing the places within a trip beginning with 1, 2, 3... (should be relatively small number)
+
+## Object Formats: 
+
+### places
+* Location: /global_helpers.py in create_places_last(), serialize_places() functions
+* Type: list
+* Format: 
+
+### serialized_places
+* Description: The dictionary returned from the serialize_places() function
+* Location: /itinerary/helpers.py in create_itinerary() function
+    * /places/routes.py - Another version is created in get_trip() route here
+* Type: dictionary
+* Format: 
+
+{
+    1: {
+        "local_id": 1,
+        "placeName": "Hyde Park",
+        "address": "Hyde Park, Albion Street, London, W2 2LG, United Kingdom",
+        "imgURL": "https://images.unsplash.com/",
+        "place_id": 2535,
+        "info": "No hours information",
+        "lat": 51.5074889,
+        "long": -0.162236683080672,
+        "favorite": false,
+        "geocode": [51.5074889, -0.162236683080672]
+    },
+    2: {
+        ...
+    }
+}
+
+
+
+

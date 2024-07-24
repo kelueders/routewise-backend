@@ -84,6 +84,7 @@ def get_trip(trip_id):
                 ALL PLACE DATA
             }
         }
+        This is a repeat of the serialize_places() function in global_helpers.py ??
         '''
         serialized_places = {}
 
