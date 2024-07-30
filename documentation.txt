@@ -5,12 +5,13 @@
 * place_id: An index number for all the places for all the trips in the database (can be a large number)
 * local_id: A way of indexing the places within a trip beginning with 1, 2, 3... (should be relatively small number)
 
+
 ## Object Formats: 
 
 ### places
 * Location: /global_helpers.py in create_places_last(), serialize_places() functions
 * Type: list
-* Format: 
+* Format: list of Place objects
 
 ### serialized_places
 * Description: The dictionary returned from the serialize_places() function
