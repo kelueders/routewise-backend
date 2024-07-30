@@ -14,7 +14,7 @@ def create_days(trip_id):
 
     places = Place.query.filter_by(trip_id = trip_id).all()
 
-    # finds the largest local_id in the list of places for that trip = places_last
+    # finds the largest local_id in the list of places for that trip = places_last (type: int)
     places_last = create_places_last(places)
 
     # Serializes the list of places (see global_helpers.py)
