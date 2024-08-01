@@ -1,6 +1,12 @@
 # RouteWise Backend
 The project is built using the Flask framework in Python. The backend is hosted on Render. For data management, the project uses PostgreSQL.
 
+### Tech Stack
+- Python
+- Flask Framework
+- PostgreSQL
+- Render
+
 ## How to Run and Test
 1. Install the dependencies. Note: you may need to comment out some depenencies and manually install it.
 
