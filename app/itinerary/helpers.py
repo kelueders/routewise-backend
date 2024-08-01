@@ -223,6 +223,20 @@ def create_itinerary(serialized_places, duration):
 #     }
 # }
 
+def calculate_mean_and_std_dev(nums_list):
+    # Calculate the mean of values in list
+    mean = sum(nums_list) / len(nums_list)
+ 
+    # Calculate the variance of values
+    variance = sum(((x - mean) ** 2) for x in nums_list) / len(nums_list)
+    # Calculate the standard deviation from the variance
+    standard_deviation = variance ** 0.5
+
+    # Calculate the upper limit (mean + 3 standard deviations)
+    upper_limit = mean + (3 * standard_deviation)
+    
+    return mean, upper_limit
+
 def add_places(trip_id, places_last, places_arr):
 
 
