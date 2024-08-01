@@ -1,5 +1,5 @@
 # RouteWise Backend
-The project is built using the Flask framework in Python. The backend is hosted on Render. For data management, the project uses PostgreSQL.
+The backend includes the api endpoints for the frontend to access the database and includes the algorithm for creating an itinerary. The project is built using the Flask framework in Python. The backend is hosted on Render. For data management, the project uses PostgreSQL.
 
 ### Tech Stack
 - Python
