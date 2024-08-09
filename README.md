@@ -8,7 +8,7 @@ The backend includes the api endpoints for the frontend to access the database a
 - Render
 
 ## How to Run and Test
-1. Install the dependencies. Note: you may need to comment out some depenencies and manually install it.
+1. Install the dependencies. **Note**: you may need to comment out some depenencies and manually install it.
 
     ``` 
     pip install -r requirements.txt 
@@ -27,6 +27,31 @@ The backend includes the api endpoints for the frontend to access the database a
 3. Run the program. This will launch the test environment on port 5000.
 
     ` flask run `
+
+### UPDATE: Run in docker container
+Running the program in a docker container ensures it runs in a clean enviornment.
+
+1. Install docker on your machine following the instructions on docker.com
+
+2. Navigate to the directory with the dockerfile. Build the image with the tag flask-run.
+
+    `docker build -t flask-run .`
+
+3. Run the image with the -d tag to have the container running in the background and -p localhost:5000 to connect with the port
+
+    `docker run -dp 127.0.0.1:5000:5000 flask run`
+
+4. View if the container is active and running
+
+    `docker ps`
+
+5. To access the workspace inside the container, exec into the container using a shell space.
+
+    `docker exec -it container_id sh`
+
+4. Stop a running docker container, replace container_id with the actual ID that can be found by running the `docker ps` command.
+
+    `docker stop container_id`
 
 ## Code Structure
 - /app : The Flask code is contained in the app directory. It also initiates the webpage for port 5000.
