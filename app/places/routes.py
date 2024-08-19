@@ -109,11 +109,11 @@ def get_trip(trip_id):
             place['lat'] = place_data.lat
             place['long'] = place_data.long
             place['favorite'] = place_data.favorite
-            place['category'] = place.get('category', None)
-            place['phoneNum'] = place.get('phone_number', None)
-            place['rating'] = place.get('rating', None)
-            place['summary'] = place.get('summary', None)
-            place['website'] = place.get('website', None)
+            place['category'] = place_data.category
+            place['phoneNum'] = place_data.phone_number
+            place['rating'] = place_data.rating
+            place['summary'] = place_data.summary
+            place['website'] = place_data.website
             place['geocode'] = [place_data.lat, place_data.long]
             place['day_id'] = place_data.day_id
             serialized_places[place_data.local_id] = place
