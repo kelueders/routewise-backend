@@ -29,17 +29,17 @@ The backend includes the api endpoints for the frontend to access the database a
     ` flask run `
 
 ### UPDATE: Run in docker container
-Running the program in a docker container ensures it runs in a clean enviornment.
+Running the program in a docker container ensures it runs in a clean enviornment. The environment is specified in dockerfile.
 
-1. Install docker on your machine following the instructions on docker.com
+1. Install docker on your machine following the instructions on [docker](https://www.docker.com/)
 
-2. Navigate to the directory with the dockerfile. Build the image with the tag flask-run.
+2. Navigate to the directory with the dockerfile. Build the image with the tag flask-run. Make sure docker is running in the background.
 
     `docker build -t flask-run .`
 
-3. Run the image with the -d tag to have the container running in the background and -p localhost:5000 to connect with the port
+3. Run the image with the -d tag to have the container running in the background and -p localhost:8000 to connect with the port. This will allow users to access the routes using port 8000.
 
-    `docker run -dp 127.0.0.1:5000:5000 flask run`
+    `docker run -dp 127.0.0.1:8000:5000 flask-run`
 
 4. View if the container is active and running
 

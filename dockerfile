@@ -7,4 +7,6 @@ RUN pip install -r requirements.txt \
     && pip install scipy \
     && pip install numpy
 
-CMD ["flask", "run"]
+EXPOSE 8000
+
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
