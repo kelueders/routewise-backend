@@ -250,8 +250,12 @@ def add_places(trip_id, places_last, places_arr):
             geoapify_placeId = place['placeId']
             place_address = place['address']
             place_img = place['imgURL']
-            category = place['category']
-            favorite = place['favorite']
+            favorite = place['favorite']            
+            category = place.get('category', None)
+            phone_number = place.get('phoneNum', None)
+            rating = place.get('rating', None)
+            summary = place.get('summary', None)
+            website = place.get('website', None)
             info = place['info']
             lat = place['lat']
             long = place['long']   
@@ -264,14 +268,18 @@ def add_places(trip_id, places_last, places_arr):
             geoapify_placeId = place['place_id']
             place_address = place['address']
             place_img = place['imgURL']
-            category = place['category']
+            category = place.get('category', None)
+            phone_number = place.get('phoneNum', None)
+            rating = place.get('rating', None)
+            summary = place.get('summary', None)
+            website = place.get('website', None)
             favorite = place['favorite']
             info = place['info']
             lat = place['lat']
             long = place['long']        
 
         place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                      info, favorite, category, lat, long, trip_id)
+                      info, favorite, category, phone_number, rating, summary, website, lat, long, trip_id)
 
         db.session.add(place)
         db.session.commit()

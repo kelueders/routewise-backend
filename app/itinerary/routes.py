@@ -129,8 +129,12 @@ def add_one_place(trip_id):
     geoapify_placeId = place['placeId']
     place_address = place['address']
     place_img = place['imgURL']
-    category = place['category']
     favorite = place['favorite']
+    category = place.get('category', None)
+    phone_number = place.get('phoneNum', None)
+    rating = place.get('rating', None)
+    summary = place.get('summary', None)
+    website = place.get('website', None)
     info = place['info']
     lat = place['lat']
     long = place['long']
@@ -143,8 +147,8 @@ def add_one_place(trip_id):
         in_itinerary = False
     
 
-    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                info, favorite, category, lat, long, in_itinerary, trip_id)
+    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, 
+                  category, phone_number, rating, summary, website, lat, long, in_itinerary, trip_id)
     
     # Why is this separate from the rest of the initialization?
     place.update_day_id(day_id)

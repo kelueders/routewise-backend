@@ -78,6 +78,11 @@ def get_trip(trip_id):
                 lat:
                 long:
                 favorite:
+                category:
+                phoneNum:
+                rating:
+                summary:
+                website:
                 geocode:
             },
             2: {
@@ -104,6 +109,11 @@ def get_trip(trip_id):
             place['lat'] = place_data.lat
             place['long'] = place_data.long
             place['favorite'] = place_data.favorite
+            place['category'] = place.get('category', None)
+            place['phoneNum'] = place.get('phone_number', None)
+            place['rating'] = place.get('rating', None)
+            place['summary'] = place.get('summary', None)
+            place['website'] = place.get('website', None)
             place['geocode'] = [place_data.lat, place_data.long]
             place['day_id'] = place_data.day_id
             serialized_places[place_data.local_id] = place
@@ -294,15 +304,19 @@ def add_get_place(trip_id):
     geoapify_placeId = place['placeId']
     place_address = place['address']
     place_img = place['imgURL']
-    category = place['category']
+    category = place.get('category', None)
+    phone_number = place.get('phoneNum', None)
+    rating = place.get('rating', None)
+    summary = place.get('summary', None)
+    website = place.get('website', None)
     favorite = place['favorite']
     info = place['info']
     lat = place['lat']
     long = place['long']
     in_itinerary = False
 
-    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                    info, favorite, category, lat, long, in_itinerary, trip_id)
+    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, 
+                  category, phone_number, rating, summary, website, lat, long, in_itinerary, trip_id)
 
     db.session.add(place)
     db.session.commit()
