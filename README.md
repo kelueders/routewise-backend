@@ -62,3 +62,264 @@ Running the program in a docker container ensures it runs in a clean enviornment
     - /places : contains the api routes to handle getting and manipulating trip and places data from the database.
     - /profile : contains the api route to handle getting and manipulating user data in the database.
 - / : outlines the necessary requirements to run the program
+
+## API Documentation
+
+### `GET|PATCH /auth/check_code`
+- **Description**: Verify user access.
+- **Request Body**:
+    ```json
+    {
+        "uid": "",
+        "passcode": ""
+    }
+    ```
+- **Response**: code 200, "Access granted" or "Access not granted".
+
+### `GET|PATCH /itinerary/createdays/<trip_id>`
+- **Description**: 
+- **Response**: 
+
+### `POST|GET /itinerary/add-one-place/<trip_id>`
+- **Description**: 
+- **Request Body**:
+- **Response**: 
+
+### `DELETE /itinerary/delete-place/<place_id>`
+- **Description**: Deletes place.
+- **Response**: 
+
+### `PATCH /itinerary/update-place/<place_id>`
+- **Description**: 
+- **Request Body**:
+- **Response**: 
+
+### `POST|GET /places/trip`
+- **Description**: Adds a new empty trip.
+- **Request Body**:
+  ```json
+  {
+    "uid": "",
+    "tripData": {
+      "tripName": "",
+      "cityName": "",
+      "state": "",
+      "country": "",
+      "country_2letter": "",
+      "destinationLat": ,
+      "destinationLong": ,
+      "destinationImg": "",
+      "startDate": "",
+      "endDate": ""
+    }
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "trip_id": ,
+    "start_date": "",
+    "end_date": "",
+    "duration":
+  }
+  ```
+
+### `GET /places/trip/<trip_id>`
+- **Description**: Gets specific trip.
+- **Response**: 
+    ```json
+    {
+        "day_order": [
+            "day-1"
+        ],
+        "days": {
+            "day-1": {
+                "date_converted": "",
+                "date_short": "",
+                "dayName": "",
+                "day_short": "",
+                "db_id": ,
+                "id": "day-1",
+                "placeIds": [
+                ]
+            }
+        },
+        "places": {
+            "1": {
+                "address": "",
+                "day_id": ,
+                "favorite": false,
+                "geocode": [
+                ],
+                "id": 1,
+                "imgURL": "",
+                "info": "",
+                "lat": ,
+                "long": ,
+                "placeName": "",
+                "place_id":
+            }
+        },
+        "places_last": ,
+        "saved_places": {
+            "addresses": [
+            ],
+            "placesIds": [
+            ]
+        },
+        "trip_id": 
+    }
+    ```
+
+### `DELETE /places/delete-trip/<trip_id>`
+- **Description**: Delete specified trip.
+- **Response**: Success or error message.
+
+### `PATCH|POST|GET|DELETE /places/update-trip/<trip_id>`
+- **Description**: Update trip info.
+- **Request Body**:
+    ```json
+    {
+        "tripName": "",
+        "startDate": "",
+        "endDate": ""
+    }
+    ```
+
+### `POST /places/add-place/<trip_id>`
+- **Description**: Add place to trip.
+- **Request Body**:
+    ```json
+    {
+        "tripId": ,
+        "placesLast": ,
+        "places_serial": [
+            {
+                "id": 1,
+                "placeName": "",
+                "placeId": "",
+                "address": "",
+                "imgURL": "",
+                "category": "",
+                "favorite": false,
+                "info": "",
+                "lat": ,
+                "long": 
+            }
+        ]
+    }
+    ```
+
+### `GET /places/get-places/<trip_id>`
+- **Description**: Gets places in trip.
+- **Response**: 
+    ```json
+    [
+        {
+            "category": "",
+            "favorite": ,
+            "geoapify_placeId": "",
+            "in_itinerary": true,
+            "info": "",
+            "lat": ,
+            "local_id": ,
+            "long": ,
+            "place_address": "",
+            "place_id": ,
+            "place_img": "",
+            "place_name": "",
+            "trip_id": 
+        }
+    ]
+    ```
+
+### `GET|POST /places/add-get-place/<trip_id>`
+- **Description**: Add a place to empty itinerary.
+- **Request Body**:
+    ```json
+    {
+        "id": ,
+        "placeName": "",
+        "placeId": "",
+        "address": "",
+        "imgURL": "",
+        "category": "",
+        "favorite": false,
+        "info": "",
+        "lat": ,
+        "long":
+    }
+    ```
+- **Response**: Place ID.
+
+### `GET|POST /places/add-trip-and-places`
+- **Description**: Add a new trip with places.
+- **Request Body**:
+    ```json
+    {
+        "uid": "",
+        "currentTrip": {
+            "tripName": "",
+            "city": "",
+            "state": "",
+            "country": "",
+            "country_2letter": "",
+            "geocode": [],
+            "imgUrl": "",
+            "startDate": "",
+            "endDate": "",
+            "places": [
+                {
+                    "id": 1,
+                    "placeName": "",
+                    "placeId": "",
+                    "address": "",
+                    "imgURL": "",
+                    "category": "",
+                    "favorite": false,
+                    "info": "",
+                    "lat": ,
+                    "long": 
+                }
+            ]
+        }
+    }
+    ```
+
+### `POST /profile/user`
+- **Description**: Creates new user.
+- **Request Body**:
+    ```json
+    {
+        "uid": "",
+        "displayName": "",
+        "email": ""
+    }
+    ```
+- **Response**: 
+    ```json
+    {
+        "email": "",
+        "has_access": ,
+        "uid": "",
+        "username": ""
+    }
+    ```
+
+### `POST|GET /profile/user_info`
+- **Description**: Adds user info to user.
+- **Request Body**:
+    ```json
+    {
+        "uid": "",
+        "categories": {
+            "shopping": ,
+            "nature": ,
+            "landmarks": ,
+            "entertainment": ,
+            "relaxation": ,
+            "food": ,
+            "arts": 
+        }
+    }
+    ```
