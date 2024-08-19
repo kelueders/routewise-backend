@@ -1,7 +1,7 @@
 # EXTERNAL
 from scipy.spatial import distance
 import numpy as np
-import pprint
+from pprint import pprint
 
 # INTERNAL
 from app.models import Place, db
@@ -95,14 +95,15 @@ def create_itinerary(serialized_places, duration):
             captain_id = max_place_id
             days[day_num]['placeIds'] = [captain_id]     # in brackets because we're putting the captain_id into an array before putting it in the placesIds key
             
-            trip_manager["day_captains"][captain_id] = day_num
-            trip_manager["day_monitor"][captain_id] = {
-                "place_ids": [],
-                "total": 1,
-                "weakest_link": {
-                    "id": None,
-                    "distance": None
-                    }}
+            # COMMENT OUT TEMPORARILY
+            # trip_manager["day_captains"][captain_id] = day_num
+            # trip_manager["day_monitor"][captain_id] = {
+            #     "place_ids": [],
+            #     "total": 1,
+            #     "weakest_link": {
+            #         "id": None,
+            #         "distance": None
+            #         }}
 
             captain_dict = list(filter(lambda x : True if x['local_id'] == captain_id else False, places_list ))
 
@@ -121,24 +122,25 @@ def create_itinerary(serialized_places, duration):
                     if place['place_distances'][captain_id] < threshold_range:
                         days[day_num]['placeIds'].append(place['local_id'])
 
-                        print(trip_manager)
-                        print(trip_manager["day_monitor"][captain_id])
+                        # COMMENT OUT TEMPORARILY
+                        # print(trip_manager)
+                        # print(trip_manager["day_monitor"][captain_id])
 
-                        trip_manager["day_monitor"][captain_id]["place_ids"].append(place['local_id'])
-                        trip_manager["day_monitor"][captain_id]["total"] += 1
+                        # trip_manager["day_monitor"][captain_id]["place_ids"].append(place['local_id'])
+                        # trip_manager["day_monitor"][captain_id]["total"] += 1
 
-                        weakest_link = trip_manager["day_monitor"][captain_id]["weakest_link"]
+                        # weakest_link = trip_manager["day_monitor"][captain_id]["weakest_link"]
 
-                        if not weakest_link["distance"] or weakest_link["distance"] < place["place_distances"][captain_id]:
-                            weakest_link["id"] = place["local_id"]
-                            weakest_link["distance"] = place["place_distances"][captain_id]
-                            trip_manager["day_monitor"][captain_id]["weakest_link"] = weakest_link
+                        # if not weakest_link["distance"] or weakest_link["distance"] < place["place_distances"][captain_id]:
+                        #     weakest_link["id"] = place["local_id"]
+                        #     weakest_link["distance"] = place["place_distances"][captain_id]
+                        #     trip_manager["day_monitor"][captain_id]["weakest_link"] = weakest_link
 
             
 
                         places_list = list(filter(lambda x : True if x['local_id'] != place['local_id'] else False, places_list ))
 
-    print(trip_manager)
+    # print(trip_manager)
 
 
     # create saved_places_ids list to hold places not in the itinerary
@@ -220,6 +222,20 @@ def create_itinerary(serialized_places, duration):
 #         }
 #     }
 # }
+
+def calculate_mean_and_std_dev(nums_list):
+    # Calculate the mean of values in list
+    mean = sum(nums_list) / len(nums_list)
+ 
+    # Calculate the variance of values
+    variance = sum(((x - mean) ** 2) for x in nums_list) / len(nums_list)
+    # Calculate the standard deviation from the variance
+    standard_deviation = variance ** 0.5
+
+    # Calculate the upper limit (mean + 3 standard deviations)
+    upper_limit = mean + (3 * standard_deviation)
+    
+    return mean, upper_limit
 
 def add_places(trip_id, places_last, places_arr):
 
