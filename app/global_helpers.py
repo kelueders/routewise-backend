@@ -37,7 +37,7 @@ def serialize_places(places, places_last, trip_id):
             "long": -0.162236683080672,
             "favorite": false,
             "category": "park",
-            "phoneNum": "604-000-0000",
+            "phoneNumber": "604-000-0000",
             "rating": "5",
             "summary": "",
             "website": "www.website.com",
@@ -71,7 +71,7 @@ def serialize_places(places, places_last, trip_id):
         place['long'] = place_data.long
         place['favorite'] = place_data.favorite
         place['category'] = place_data.category
-        place['phoneNum'] = place_data.phone_number
+        place['phoneNumber'] = place_data.phone_number
         place['rating'] = place_data.rating
         place['summary'] = place_data.summary
         place['website'] = place_data.website

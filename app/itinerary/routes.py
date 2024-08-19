@@ -131,7 +131,7 @@ def add_one_place(trip_id):
     place_img = place['imgURL']
     favorite = place['favorite']
     category = place.get('category', None)
-    phone_number = place.get('phoneNum', None)
+    phone_number = place.get('phoneNumber', None)
     rating = place.get('rating', None)
     summary = place.get('summary', None)
     website = place.get('website', None)

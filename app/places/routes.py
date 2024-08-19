@@ -79,7 +79,7 @@ def get_trip(trip_id):
                 long:
                 favorite:
                 category:
-                phoneNum:
+                phoneNumber:
                 rating:
                 summary:
                 website:
@@ -110,7 +110,7 @@ def get_trip(trip_id):
             place['long'] = place_data.long
             place['favorite'] = place_data.favorite
             place['category'] = place_data.category
-            place['phoneNum'] = place_data.phone_number
+            place['phoneNumber'] = place_data.phone_number
             place['rating'] = place_data.rating
             place['summary'] = place_data.summary
             place['website'] = place_data.website
@@ -305,7 +305,7 @@ def add_get_place(trip_id):
     place_address = place['address']
     place_img = place['imgURL']
     category = place.get('category', None)
-    phone_number = place.get('phoneNum', None)
+    phone_number = place.get('phoneNumber', None)
     rating = place.get('rating', None)
     summary = place.get('summary', None)
     website = place.get('website', None)

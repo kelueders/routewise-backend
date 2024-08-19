@@ -252,7 +252,7 @@ def add_places(trip_id, places_last, places_arr):
             place_img = place['imgURL']
             favorite = place['favorite']            
             category = place.get('category', None)
-            phone_number = place.get('phoneNum', None)
+            phone_number = place.get('phoneNumber', None)
             rating = place.get('rating', None)
             summary = place.get('summary', None)
             website = place.get('website', None)
@@ -269,7 +269,7 @@ def add_places(trip_id, places_last, places_arr):
             place_address = place['address']
             place_img = place['imgURL']
             category = place.get('category', None)
-            phone_number = place.get('phoneNum', None)
+            phone_number = place.get('phoneNumber', None)
             rating = place.get('rating', None)
             summary = place.get('summary', None)
             website = place.get('website', None)
