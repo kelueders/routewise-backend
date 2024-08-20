@@ -27,7 +27,9 @@ The backend includes the api endpoints for the frontend to access the database a
 
 3. Run the program. This will launch the test environment on port 5000.
 
-    ` flask run `
+    ``` 
+    flask run 
+    ```
 
 ### UPDATE: Run in docker container
 Running the program in a docker container ensures it runs in a clean enviornment. The environment is specified in dockerfile.
@@ -36,23 +38,33 @@ Running the program in a docker container ensures it runs in a clean enviornment
 
 2. Navigate to the directory with the dockerfile. Build the image with the tag flask-run. Make sure docker is running in the background.
 
-    `docker build -t flask-run .`
+    ```
+    docker build -t flask-run .
+    ```
 
 3. Run the image with the -d tag to have the container running in the background and -p localhost:8000 to connect with the port. This will allow users to access the routes using port 8000.
 
-    `docker run -dp 127.0.0.1:8000:5000 flask-run`
+    ```
+    docker run -dp 127.0.0.1:8000:5000 flask-run
+    ```
 
 4. View if the container is active and running
 
-    `docker ps`
+    ```
+    docker ps
+    ```
 
 5. To access the workspace inside the container, exec into the container using a shell space.
 
-    `docker exec -it container_id sh`
+    ```
+    docker exec -it container_id sh
+    ```
 
 4. Stop a running docker container, replace container_id with the actual ID that can be found by running the `docker ps` command.
 
-    `docker stop container_id`
+    ```
+    docker stop container_id
+    ```
 
 ## Code Structure
 - /app : The Flask code is contained in the app directory. It also initiates the webpage for port 5000.
