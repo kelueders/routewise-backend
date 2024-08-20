@@ -6,6 +6,7 @@ The backend includes the api endpoints for the frontend to access the database a
 - Flask Framework
 - PostgreSQL
 - Render
+- Docker
 
 ## How to Run and Test
 1. Install the dependencies. **Note**: you may need to comment out some depenencies and manually install it.
