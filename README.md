@@ -147,6 +147,7 @@ Running the program in a docker container ensures it runs in a clean enviornment
         "places": {
             "1": {
                 "address": "",
+                "category": "",
                 "day_id": ,
                 "favorite": false,
                 "geocode": [
@@ -156,8 +157,12 @@ Running the program in a docker container ensures it runs in a clean enviornment
                 "info": "",
                 "lat": ,
                 "long": ,
+                "phoneNumber": "",
                 "placeName": "",
-                "place_id":
+                "place_id": ,
+                "rating": "",
+                "summary": "",
+                "website": ""
             }
         },
         "places_last": ,
@@ -201,6 +206,10 @@ Running the program in a docker container ensures it runs in a clean enviornment
                 "address": "",
                 "imgURL": "",
                 "category": "",
+                "phoneNumber": "",
+                "rating": "",
+                "summary": "",
+                "website": "",
                 "favorite": false,
                 "info": "",
                 "lat": ,
@@ -224,11 +233,15 @@ Running the program in a docker container ensures it runs in a clean enviornment
             "lat": ,
             "local_id": ,
             "long": ,
+            "phoneNumber": "",
             "place_address": "",
             "place_id": ,
             "place_img": "",
             "place_name": "",
-            "trip_id": 
+            "rating": "",
+            "summary": "",
+            "trip_id": ,
+            "website": ""
         }
     ]
     ```
@@ -245,9 +258,13 @@ Running the program in a docker container ensures it runs in a clean enviornment
         "imgURL": "",
         "category": "",
         "favorite": false,
+        "phoneNumber": "",
+        "rating": "",
+        "summary": "",
+        "website": "",
         "info": "",
         "lat": ,
-        "long":
+        "long": 
     }
     ```
 - **Response**: Place ID.
@@ -277,6 +294,10 @@ Running the program in a docker container ensures it runs in a clean enviornment
                     "imgURL": "",
                     "category": "",
                     "favorite": false,
+                    "phoneNumber": "",
+                    "rating": "",
+                    "summary": "",
+                    "website": "",
                     "info": "",
                     "lat": ,
                     "long": 
