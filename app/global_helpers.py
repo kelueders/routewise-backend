@@ -36,6 +36,11 @@ def serialize_places(places, places_last, trip_id):
             "lat": 51.5074889,
             "long": -0.162236683080672,
             "favorite": false,
+            "category": "park",
+            "phoneNumber": "604-000-0000",
+            "rating": "5",
+            "summary": "",
+            "website": "www.website.com",
             "geocode": [51.5074889, -0.162236683080672]
         },
         2: {
@@ -65,6 +70,11 @@ def serialize_places(places, places_last, trip_id):
         place['lat'] = place_data.lat
         place['long'] = place_data.long
         place['favorite'] = place_data.favorite
+        place['category'] = place_data.category
+        place['phoneNumber'] = place_data.phone_number
+        place['rating'] = place_data.rating
+        place['summary'] = place_data.summary
+        place['website'] = place_data.website
         place['geocode'] = [place_data.lat, place_data.long]
 
         # making the local_id one of the keys with the place dictionary as the value

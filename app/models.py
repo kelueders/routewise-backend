@@ -139,7 +139,11 @@ class Place(db.Model):
     place_img = db.Column(db.String)
     info = db.Column(db.String)
     favorite = db.Column(db.Boolean, default=False)
-    category = db.Column(db.String)
+    category = db.Column(db.String, default=None, nullable=True)
+    phone_number = db.Column(db.String, default=None, nullable=True)
+    rating = db.Column(db.String, default=None, nullable=True)
+    summary = db.Column(db.String, default=None, nullable=True)
+    website = db.Column(db.String, default=None, nullable=True)
     avg_duration = db.Column(db.Float)
     lat = db.Column(db.Float)
     long = db.Column(db.Float)
@@ -149,7 +153,8 @@ class Place(db.Model):
     trip = db.relationship('Trip', back_populates='place')
     day = db.relationship('Day', back_populates='place')
 
-    def __init__(self, local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, category, avg_duration, lat, long, in_itinerary, trip_id):
+    def __init__(self, local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, 
+                 category, phone_number, rating, summary, website, lat, long, in_itinerary, trip_id):
         self.local_id = local_id
         self.place_name = place_name
         self.geoapify_placeId = geoapify_placeId
@@ -159,6 +164,10 @@ class Place(db.Model):
         self.favorite = favorite
         self.category = category
         self.avg_duration = avg_duration;
+        self.phone_number = phone_number
+        self.rating = rating
+        self.summary = summary
+        self.website = website
         self.lat = lat
         self.long = long
         self.in_itinerary = in_itinerary
@@ -172,8 +181,8 @@ class Place(db.Model):
     
 class PlaceSchema(ma.Schema):
     class Meta:
-        fields = ['local_id', 'place_id', 'place_name', 'geoapify_placeId', 'place_address', 'place_img', 'info', 
-                  'favorite', 'category', 'avg_duration', 'lat', 'long', 'in_itinerary', 'trip_id']
+        fields = ['local_id', 'place_id', 'place_name', 'geoapify_placeId', 'place_address', 'place_img', 'info', 'favorite', 
+                  'category', 'avg_duration', 'phone_number', 'rating', 'summary', 'website', 'lat', 'long', 'in_itinerary', 'trip_id']
 
 place_schema = PlaceSchema()
 places_schema = PlaceSchema(many = True)
