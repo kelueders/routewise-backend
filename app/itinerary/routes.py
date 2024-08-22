@@ -220,9 +220,9 @@ def move_day_places(trip_id):
 
         db.session.commit()
 
-        return "Successfully moved places"
+        return "Successfully moved places", 200
     except Exception as e:
-        return f'Failed: {e}'
+        return f'Failed: {e}', 502
 
 def replace_day_id(places, day_id_1, day_id_2):
     # validate if theres any places in day
