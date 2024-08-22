@@ -199,3 +199,36 @@ def update_place(place_id):
     # return jsonify(response['place_id'])
 
     
+@itinerary.route('/move-day-places/<trip_id>', methods = ['PATCH'])
+def move_day_places(trip_id):
+    data = request.get_json()
+    src_day_id = data['sourceDayId']
+    dest_day_id = data['destDayId']
+    swap = data['swap']
+
+    try:
+        # get all the places in the specified days
+        src_places = Place.query.filter_by(trip_id = trip_id, day_id = src_day_id).all()
+        dest_places = Place.query.filter_by(trip_id = trip_id, day_id = dest_day_id).all()
+
+        # move places from source day to destination day
+        replace_day_id(src_places, src_day_id, dest_day_id)
+        
+        if(swap):
+            # move places from destination day to source day
+            replace_day_id(dest_places, dest_day_id, src_day_id)
+
+        db.session.commit()
+
+        return "Successfully moved places", 200
+    except Exception as e:
+        return f'Failed: {e}', 502
+
+def replace_day_id(places, day_id_1, day_id_2):
+    # validate if theres any places in day
+    if(places is None or len(places) <= 0):
+        raise Exception(f'No places for day {day_id_1}')
+    
+    # update day id for each place
+    for place in places:
+        place.day_id = day_id_2
