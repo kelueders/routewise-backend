@@ -5,12 +5,16 @@ from sklearn.metrics import silhouette_score
 
 from ..models import Place, Trip
 
+max_duration_per_day = 480  # minutes
+
 class Itinerary:
+
 
     def __init__(self, trip_id):
         self.trip_id = trip_id                  # int - index value from Trip table
         self.places = self.get_places()         # list - of Place objects
         self.duration = self.get_duration()     # int - length of the trip in days
+        self.sorted_places = {}
 
     def get_places(self):
         return Place.query.filter_by(trip_id = self.trip_id).all()
@@ -35,46 +39,46 @@ class Itinerary:
 
         return pd.DataFrame(data)
 
-    def refine_clusters_based_on_duration(df, lat_long_dur_scaled, max_duration_per_day=480):
-        while True:
-            cluster_durations = df.groupby('Day')['duration'].sum()
-            if all(cluster_durations <= max_duration_per_day):
-                break
-            else:
-                global optimal_n_clusters
-                optimal_n_clusters += 1
-                kmeans = KMeans(n_clusters=optimal_n_clusters, random_state=42)
-                df['Day'] = kmeans.fit_predict(lat_long_dur_scaled)
+    def split_clusters_on_duration(df):
+        cluster_days = df.groupby('day').sum()
+        for i, day in cluster_days.iterrows():
+            total_day_duration = day['duration']
+            if total_day_duration > max_duration_per_day:
+                # Get all places in the overloaded cluster
+                overloaded_cluster = df[df['day'] == i]
+                
+                # Determine how many additional clusters are needed
+                n_splits = int((total_day_duration // max_duration_per_day) + 1)
+            
+                # Re-cluster the overloaded cluster
+                X_overloaded = overloaded_cluster[['lat', 'long']]
+                kmeans_overloaded = KMeans(n_clusters=n_splits, random_state=42)
+                overloaded_cluster.loc[:, 'new_day'] = kmeans_overloaded.fit_predict(X_overloaded)
+
+                # Adjust day numbers for the new clusters
+                max_existing_day = df['day'].max()
+                overloaded_cluster.loc[:, 'day'] = overloaded_cluster['new_day'] + max_existing_day + 1
+                
+                # Drop the intermediate 'new_day' column
+                overloaded_cluster = overloaded_cluster.drop(columns=['new_day'])
+
+                # Update the main dataframe with the new clusters
+                df.loc[overloaded_cluster.index, 'day'] = overloaded_cluster['day']
         return df
 
     def cluster_analysis(self):
         places_df = self.create_dataframe(self.places)
 
-        lat_long_dur = places_df[['lat', 'long', 'avg_duration']]
-
+        lat_long = places_df[['lat', 'long']]
         scaler = StandardScaler()
-        lat_long_dur_scaled = scaler.fit_transform(lat_long_dur)
-
-        # Silhouette Analysis to determine optimal number of clusters
-        silhouette_avg = []
-        range_n_clusters = range(2, 11)  # Start from 2 because silhouette score is not defined for 1 cluster
-
-        for n_clusters in range_n_clusters:
-            kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-            cluster_labels = kmeans.fit_predict(lat_long_dur_scaled)
-            
-            # Compute the silhouette score
-            score = silhouette_score(lat_long_dur_scaled, cluster_labels)
-            silhouette_avg.append(score)
-        optimal_n_clusters = range_n_clusters[silhouette_avg.index(max(silhouette_avg))]
-        
-        kmeans = KMeans(n_clusters=optimal_n_clusters, random_state=42)
-
-        kmeans.fit(lat_long_dur_scaled)
-
+        lat_long_scaled = scaler.fit_transform(lat_long)
+        kmeans = KMeans(n_clusters=self.distance, random_state=42)
+        kmeans.fit(lat_long_scaled)
         places_df['Day'] = kmeans.labels_
-        df_refined = self.refine_clusters_based_on_duration(places_df)
-        return df_refined
+        df_refined = self.split_clusters_on_duration(places_df)
+
+        self.sorted_places = df_refined.to_dict()
+        return self.sorted_places
     
     def __repr__(self):
         return f"trip_id: {self.trip_id}\nplaces: {self.places}\nduration: {self.duration} days"
