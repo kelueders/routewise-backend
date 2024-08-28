@@ -189,6 +189,18 @@ Running the program in a docker container ensures it runs in a clean enviornment
     ```
 - **Response**: Success message
 
+### `PATCH /itinerary/move-day-places/<trip_id>`
+- **Description**: Moves/swaps all places in a day to a destination day.
+- **Request Body**:
+    ```json
+    {
+        "sourceDayId": ,
+        "destDayId" : ,
+        "swap": true
+    }
+    ```
+- **Response**: success message
+
 ### `POST|GET /places/trip`
 - **Description**: Adds a new empty trip.
 - **Request Body**:
