@@ -15,22 +15,20 @@ def create_days(trip_id):
     if not trip_id:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
-    places = Place.query.filter_by(trip_id = trip_id).all()
-
-    # Finds the largest local_id in the list of places for that trip = places_last (type: int)
+    trip = Trip.query.filter_by(trip_id=trip_id).first()
+    if trip is None:
+        return jsonify({'message': 'No Trip for trip ID'}), 404
+    
+    places = Place.query.filter_by(trip_id=trip_id).all()
+    # Finds the largest local_id in the list of places for that trip (type: int)
     places_last = create_places_last(places)
 
-    trip = Trip.query.filter_by(trip_id = trip_id).first()
-    if trip_id is None:
-        return jsonify({'message': 'No Trip for trip ID'}), 404
-
     # Create days if they havent been created already
-    days_data = Day.query.filter_by(trip_id = trip_id).all()
+    days_data = Day.query.filter_by(trip_id=trip_id).all()
     days = {}
     if days_data is not None:
         # serialize days
         for i, day_data in enumerate(days_data):
-            # serialize days
             day_id = f'day-{i + 1}'
             days[day_id] = {
                 'id': day_id,
@@ -50,7 +48,7 @@ def create_days(trip_id):
             week_day = current_date.strftime('%a')
             day_name = ""
 
-            # Day dict
+            # Serialize day
             day_id = f'day-{i}'
             days[day_id] = {
                 'id': day_id,
@@ -75,18 +73,18 @@ def create_days(trip_id):
 
     # Populate saved_places and days with places from itinerary_data
     saved_places_ids = []
-    for i in range(len(itinerary_data)):
-        for j in range(len(itinerary_data[i])):
+    for i, day_row in enumerate(itinerary_data):
+        for j, place_id in enumerate(day_row):
             # Get place
-            place_id = itinerary_data[i][j]
-            place = Place.query.filter_by(local_id = place_id, trip_id = trip_id).first()
+            place = Place.query.filter_by(local_id=place_id, trip_id=trip_id).first()
 
-            days_day_id = f'day-{i+1}'
+            days_day_id = f'day-{i + 1}'
             if days_day_id in days:
                 # Place is in an existing day
                 # Add place_id to days
                 day = days[days_day_id]
-                new_day = Day.query.filter_by(date_formatted = day['date_formatted'], trip_id = trip_id).first()
+                new_day = Day.query.filter_by(date_formatted=day['date_formatted'], 
+                                              trip_id=trip_id).first()
                 day['placeIds'].append(place_id)
                 day['day_id'] = new_day.day_id
 
@@ -108,7 +106,8 @@ def create_days(trip_id):
     db.session.commit()
 
     # Serializes the list of places (see global_helpers.py)
-    serialized_places = serialize_places(Place.query.filter_by(trip_id = trip_id).all(), places_last, trip_id)
+    serialized_places = serialize_places(Place.query.filter_by(trip_id = trip_id).all(), 
+                                         places_last, trip_id)
     # Remove local_id to coordinate with the front end
     for place_id in serialized_places:
         serialized_places[place_id]['id'] = serialized_places[place_id].pop('local_id') 
@@ -120,9 +119,10 @@ def create_days(trip_id):
         "places": serialized_places,
         "days": days,
         "day_order": list(days.keys()),
-        "saved_places": { "placesIds": saved_places_ids,
-                        "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
-                        }
+        "saved_places": { 
+            "placesIds": saved_places_ids,
+            "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
+        }
     }
 
 # When the user wants to add a place to a specific day in the trip when there is already an itinerary created    
