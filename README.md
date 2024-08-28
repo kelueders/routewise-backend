@@ -145,18 +145,49 @@ Running the program in a docker container ensures it runs in a clean enviornment
     ```
 
 ### `POST|GET /itinerary/add-one-place/<trip_id>`
-- **Description**: 
+- **Description**: Adds new place if itinerary hasn't been created.
 - **Request Body**:
-- **Response**: 
+    ```json
+    {
+        "day_id": null,
+        "place":{
+            "id": ,
+            "placeName": "",
+            "info": "",
+            "summary": "",
+            "address": "",
+            "phoneNumber": "",
+            "website": "",
+            "imgURL": "",
+            "category": "",
+            "favorite": false,
+            "lat": ,
+            "long": ,
+            "geocode": [
+                ,
+                
+            ],
+            "placeId": "",
+            "rating": ""
+        }
+    }
+    ```
+- **Response**: Place id in list.
 
 ### `DELETE /itinerary/delete-place/<place_id>`
-- **Description**: Deletes place.
-- **Response**: 
+- **Description**: Deletes place in its entirety.
+- **Response**: Success message
 
 ### `PATCH /itinerary/update-place/<place_id>`
-- **Description**: 
+- **Description**: Updates place specified.
 - **Request Body**:
-- **Response**: 
+    ```json
+    {
+        "day_id": ,
+        "in_itinerary": false
+    }
+    ```
+- **Response**: Success message
 
 ### `POST|GET /places/trip`
 - **Description**: Adds a new empty trip.
