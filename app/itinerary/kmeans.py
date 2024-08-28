@@ -36,19 +36,23 @@ class Itinerary:
         return trip.duration
 
     def cluster_analysis(self):
+        n_clusters = self.duration
+        if len(self.places) < self.duration:
+            n_clusters = len(self.places)
+
         places_df = self.create_dataframe()
         lat_long = places_df[['lat', 'long']]       # features for clustering
         scaler = StandardScaler()
         lat_long_scaled = scaler.fit_transform(lat_long)
 
         # Cluster into the amount of trip days
-        kmeans = KMeans(n_clusters=self.duration, random_state=42)
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
         kmeans.fit(lat_long_scaled)
         places_df['day'] = kmeans.labels_
         print(places_df)
 
         # Re-cluster to limit day visit time
-        df_refined = self.split_clusters_on_duration(places_df)
+        df_refined = self.split_clusters_on_time_limit(places_df)
         print(df_refined)
 
         # Create sorted_days 2D array with places going into corresponding day
@@ -82,7 +86,9 @@ class Itinerary:
 
         return pd.DataFrame(data)
 
-    def split_clusters_on_duration(self, df):
+    def split_clusters_on_time_limit(self, df):
+        if len(self.places) <= self.duration:
+            return df
         cluster_days = df.groupby('day').sum()
         for i, day in cluster_days.iterrows():
             total_day_visit_time = day['avg_visit_time']
