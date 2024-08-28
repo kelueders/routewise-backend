@@ -5,7 +5,7 @@ from datetime import timedelta
 # INTERNAL
 from ..models import Place, Trip, Day, db, place_schema
 from .helpers import create_itinerary, add_places
-from ..global_helpers import create_places_last, serialize_places
+from ..global_helpers import create_places_last, serialize_places, serialize_day
 from .kmeans import Itinerary
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
@@ -17,41 +17,57 @@ def create_days(trip_id):
     
     places = Place.query.filter_by(trip_id = trip_id).all()
 
-    # finds the largest local_id in the list of places for that trip = places_last (type: int)
+    # Finds the largest local_id in the list of places for that trip = places_last (type: int)
     places_last = create_places_last(places)
 
     trip = Trip.query.filter_by(trip_id = trip_id).first()
     if trip_id is None:
         return jsonify({'message': 'No Trip for trip ID'}), 404
 
-    # Create days
+    # Create days if they havent been created already
+    days_data = Day.query.filter_by(trip_id = trip_id).all()
     days = {}
-    current_date = trip.start_date
-    for i in range(1, trip.duration + 1):
-        # Day info
-        date_converted = current_date.strftime('%A, %B %#d')
-        date_short = current_date.strftime('%m/%d')
-        week_day = current_date.strftime('%a')
-        day_name = ""
+    if days_data is not None:
+        # serialize days
+        for i, day_data in enumerate(days_data):
+            # serialize days
+            day_id = f'day-{i + 1}'
+            days[day_id] = {
+                'id': day_id,
+                'placeIds': [],
+                'date_formatted': day_data.date_formatted,
+                'date_converted': day_data.date_converted,
+                'date_short': day_data.date_short,
+                'day_short': day_data.week_day,
+                'dayName': day_data.day_name
+            } 
+    else:
+        current_date = trip.start_date
+        for i in range(1, trip.duration + 1):
+            # Day info
+            date_converted = current_date.strftime('%A, %B %#d')
+            date_short = current_date.strftime('%m/%d')
+            week_day = current_date.strftime('%a')
+            day_name = ""
 
-        # Response day dict
-        day_id = f'day-{i}'
-        days[day_id] = {
-            'id': day_id,
-            'placeIds': [],
-            'date_formatted': current_date,
-            'date_converted': date_converted,
-            'date_short': date_short,
-            'day_short': week_day,
-            'dayName': day_name
-        } 
+            # Day dict
+            day_id = f'day-{i}'
+            days[day_id] = {
+                'id': day_id,
+                'placeIds': [],
+                'date_formatted': current_date,
+                'date_converted': date_converted,
+                'date_short': date_short,
+                'day_short': week_day,
+                'dayName': day_name
+            } 
 
-        # Create and add day to database
-        new_day = Day(current_date, date_converted, date_short, week_day, day_name, trip_id)
-        db.session.add(new_day)
+            # Create and add day to database
+            new_day = Day(current_date, date_converted, date_short, week_day, day_name, trip_id)
+            db.session.add(new_day)
 
-        # increments by 1 the day that is added to the trip, starting at the trip start date
-        current_date += timedelta(1)
+            # Increments by 1 the day that is added to the trip, starting at the trip start date
+            current_date += timedelta(1)
 
     # Create Itinerary and cluster data
     itinerary = Itinerary(trip_id)
@@ -67,7 +83,7 @@ def create_days(trip_id):
 
             days_day_id = f'day-{i+1}'
             if days_day_id in days:
-                # Place is in a valid day
+                # Place is in an existing day
                 # Add place_id to days
                 day = days[days_day_id]
                 new_day = Day.query.filter_by(date_formatted = day['date_formatted'], trip_id = trip_id).first()
@@ -79,7 +95,7 @@ def create_days(trip_id):
                 place.in_itinerary = True
                 
             else:
-                # Place is not in a valid day
+                # Place is not in an existing day
                 # Set day_id to None, and in_itinerary to false
                 place.day_id = None
                 place.in_itinerary = False

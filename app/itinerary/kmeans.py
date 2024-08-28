@@ -5,7 +5,8 @@ from sklearn.metrics import silhouette_score
 
 from ..models import Place, Trip
 
-max_duration_per_day = 540  # minutes
+max_duration_per_day = 540      # minutes
+default_avg_visit_time = 60     # minutes
 
 class Itinerary:
 
@@ -35,7 +36,7 @@ class Itinerary:
             data['lat'].append(place.lat)
             data['long'].append(place.long)
             if place.avg_visit_time is None:
-                data['avg_visit_time'].append(60)
+                data['avg_visit_time'].append(default_avg_visit_time)
             else:
                 data['avg_visit_time'].append(place.avg_visit_time)
 
