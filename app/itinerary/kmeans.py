@@ -27,21 +27,24 @@ class Itinerary:
             'local_id': [],
             'lat': [],
             'long': [],
-            'avg_duration': []
+            'avg_visit_time': []
         }
 
         for place in self.places:
             data['local_id'].append(place.local_id)
             data['lat'].append(place.lat)
             data['long'].append(place.long)
-            data['avg_duration'].append(place.avg_duration)
+            if place.avg_visit_time is None:
+                data['avg_visit_time'].append(60)
+            else:
+                data['avg_visit_time'].append(place.avg_visit_time)
 
         return pd.DataFrame(data)
 
-    def split_clusters_on_duration(df):
+    def split_clusters_on_duration(self, df):
         cluster_days = df.groupby('day').sum()
         for i, day in cluster_days.iterrows():
-            total_day_duration = day['duration']
+            total_day_duration = day['avg_visit_time']
             if total_day_duration > max_duration_per_day:
                 # Get all places in the overloaded cluster
                 overloaded_cluster = df[df['day'] == i]
@@ -66,59 +69,32 @@ class Itinerary:
         return df
 
     def cluster_analysis(self):
-        places_df = self.create_dataframe(self.places)
-
-        lat_long = places_df[['lat', 'long']]
+        places_df = self.create_dataframe()
+        lat_long = places_df[['lat', 'long']]       # features for clustering
         scaler = StandardScaler()
         lat_long_scaled = scaler.fit_transform(lat_long)
-        kmeans = KMeans(n_clusters=self.distance, random_state=42)
+
+        # Cluster into the amount of trip days
+        kmeans = KMeans(n_clusters=self.duration, random_state=42)
         kmeans.fit(lat_long_scaled)
-        places_df['Day'] = kmeans.labels_
+        places_df['day'] = kmeans.labels_
+        print(places_df)
+
+        # Re-cluster to limit day visit time
         df_refined = self.split_clusters_on_duration(places_df)
+        print(df_refined)
+
+        # Create sorted_days 2D array with places going into corresponding day
+        self.sorted_days = [[] for _ in range(df_refined['day'].max() + 1)]
+        for _, row in df_refined.iterrows():
+            self.sorted_days[int(row['day'])].append(int(row['local_id']))
+        print(self.sorted_days)
 
         # sort df_refined by size
-
-        # create sorted_days 2D array with places going into corresponding day
+        self.sorted_days.sort(reverse = True, key = len)
+        print(self.sorted_days)
 
         return self.sorted_days
-    
-    def serialize_itineray(self):
-
-        days = {}
-        day_order = []    # [day-1, day-2, day-3, ...]
-        for i in range(self.duration):
-            days[f'day-{i + 1}'] = {
-                'id': f'day-{i + 1}',
-                'placeIds': []
-            } 
-            day_order.append(f'day-{i + 1}') 
-
-        # one place given - return simple itinerary
-        if len(self.places) < 2:
-
-            days['day-1']['placeIds'] = [1]
-
-            return {
-                "days": days,
-                "day_order": day_order
-            }
-        
-        # create saved_places_ids list to hold places not in the itinerary
-        saved_places_ids = []
-
-        # loop through all days, add in place ids of each that go in that day
-        for place in self.sorted_days['day']:
-            day_num = self.sorted_days['day'][place]
-            if day_num in range(self.duration + 1):
-                days[f'day-{day_num}']['placeIds'].append(self.sorted_days['id'][place])
-            else:
-                saved_places_ids.append(self.sorted_days['id'][place])
-
-        return {
-            "days": days,
-            "day_order": day_order,
-            "saved_places_ids": saved_places_ids    # this will be a list of id's
-        }
     
     def __repr__(self):
         return f"trip_id: {self.trip_id}\nplaces: {self.places}\nduration: {self.duration} days"

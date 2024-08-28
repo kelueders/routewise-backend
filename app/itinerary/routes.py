@@ -21,18 +21,17 @@ def create_days(trip_id):
     if trip_id:
         trip = Trip.query.filter_by(trip_id = trip_id).first()
 
-        # CREATE DAYS
-        saved_places_ids = []
-
+        # Create days
         days = {}
         current_date = trip.start_date
         for i in range(1, trip.duration + 1):
+            # Day info
+            date_converted = current_date.strftime('%A, %B %#d')
             date_short = current_date.strftime('%m/%d')
             week_day = current_date.strftime('%a')
-            date_converted = current_date.strftime('%A, %B %#d')
             day_name = ""
 
-
+            # Response day dict
             day_id = f'day-{i}'
             days[day_id] = {
                 'id': day_id,
@@ -44,45 +43,50 @@ def create_days(trip_id):
                 'dayName': day_name
             } 
 
+            # Create and add day to database
             new_day = Day(current_date, date_converted, date_short, week_day, day_name, trip_id)
             db.session.add(new_day)
 
-            current_date += timedelta(1)       # increments by 1 the day that is added to the trip, starting at the trip start date
+            # increments by 1 the day that is added to the trip, starting at the trip start date
+            current_date += timedelta(1)
 
-        # CREATE ITINERARY OBJECT AND CLUSTER
+        # Create Itinerary and cluster data
         itinerary = Itinerary(trip_id)
-        itinerary_data = itinerary.cluster_analysis()
+        itinerary_data = itinerary.cluster_analysis()       # 2D array - rows are days, columns are place_ids
 
-        # ADD PLACES FROM ITINERARY TO DAYS
+        # Populate saved_places and days with places from itinerary_data
+        saved_places_ids = []
         for i in range(len(itinerary_data)):
             for j in range(len(itinerary_data[i])):
+                # Get place
                 place_id = itinerary_data[i][j]
                 place = Place.query.filter_by(local_id = place_id, trip_id = trip_id).first()
-                days_day_id = f'day-{i}'
+
+                days_day_id = f'day-{i+1}'
                 # if i in range(1, trip.duration + 1):
                 if days_day_id in days:
-                    # place in valid day
+                    # Place is in a valid day
+                    # Add place_id to days
                     day = days[days_day_id]
-
-                    # add day_id to place
                     new_day = Day.query.filter_by(date_formatted = day['date_formatted'], trip_id = trip_id).first()
-                    day['placeIds'].append(place)
+                    day['placeIds'].append(place_id)
                     day['day_id'] = new_day.day_id
 
-                    # add place_id to days, and set in_itinerary true
+                    # Add day_id to place, and set in_itinerary true
                     place.day_id = new_day.day_id
                     place.in_itinerary = True
                     
                     # db.session.commit()
                 else:
-                    # set day_id to None, and in_itinerary to false
+                    # Place is not in a valid day
+                    # Set day_id to None, and in_itinerary to false
                     place.day_id = None
                     place.in_itinerary = False
 
-                    # add to saved places
-                    saved_places_ids.append(place)
+                    # Add place_id to saved places
+                    saved_places_ids.append(place_id)
 
-        # update the trip 'is_itinerary' key to 'True'
+        # Update the trip 'is_itinerary' key to 'True'
         trip.is_itinerary = True
         db.session.commit()
 
@@ -90,11 +94,11 @@ def create_days(trip_id):
         # days = Day.query.filter_by(trip_id = trip_id).all()
         # Serializes the list of places (see global_helpers.py)
         serialized_places = serialize_places(Place.query.filter_by(trip_id = trip_id).all(), places_last, trip_id)
-        # added so that it can coordinate with the front end
+        # Remove local_id to coordinate with the front end
         serialized_places.pop('local_id', None)
 
-        # packages the itinerary data in order to be rendered on the frontend
-        itinerary_data = {
+        # Packages the data in order to be rendered on the frontend
+        return {
             "trip_id": trip_id,
             "places_last": places_last,
             "places": serialized_places,
@@ -104,8 +108,6 @@ def create_days(trip_id):
                             "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
                             }
         }
-                
-        return itinerary_data
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
 
@@ -129,6 +131,7 @@ def add_one_place(trip_id):
     rating = place.get('rating', None)
     summary = place.get('summary', None)
     website = place.get('website', None)
+    avg_visit_time = place.get('avg_visit_time', 60)
     info = place['info']
     lat = place['lat']
     long = place['long']
@@ -142,7 +145,7 @@ def add_one_place(trip_id):
     
 
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, 
-                  category, phone_number, rating, summary, website, lat, long, in_itinerary, trip_id)
+                  category, phone_number, rating, summary, website, avg_visit_time, lat, long, in_itinerary, trip_id)
     
     # Why is this separate from the rest of the initialization?
     place.update_day_id(day_id)

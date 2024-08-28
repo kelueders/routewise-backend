@@ -75,6 +75,7 @@ def serialize_places(places, places_last, trip_id):
         place['rating'] = place_data.rating
         place['summary'] = place_data.summary
         place['website'] = place_data.website
+        place['avg_visit_time'] = place_data.avg_visit_time
         place['geocode'] = [place_data.lat, place_data.long]
 
         # making the local_id one of the keys with the place dictionary as the value
