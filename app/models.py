@@ -144,7 +144,7 @@ class Place(db.Model):
     rating = db.Column(db.String, default=None, nullable=True)
     summary = db.Column(db.String, default=None, nullable=True)
     website = db.Column(db.String, default=None, nullable=True)
-    avg_duration = db.Column(db.Float)
+    # avg_duration = db.Column(db.Float)
     lat = db.Column(db.Float)
     long = db.Column(db.Float)
     in_itinerary = db.Column(db.Boolean, default=False)
@@ -154,7 +154,7 @@ class Place(db.Model):
     day = db.relationship('Day', back_populates='place')
 
     def __init__(self, local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, 
-                 category, phone_number, rating, summary, website, avg_duration, lat, long, in_itinerary, trip_id):
+                 category, phone_number, rating, summary, website, lat, long, in_itinerary, trip_id):
         self.local_id = local_id
         self.place_name = place_name
         self.geoapify_placeId = geoapify_placeId
@@ -163,7 +163,7 @@ class Place(db.Model):
         self.info = info
         self.favorite = favorite
         self.category = category
-        self.avg_duration = avg_duration;
+        # self.avg_duration = avg_duration
         self.phone_number = phone_number
         self.rating = rating
         self.summary = summary
@@ -182,7 +182,7 @@ class Place(db.Model):
 class PlaceSchema(ma.Schema):
     class Meta:
         fields = ['local_id', 'place_id', 'place_name', 'geoapify_placeId', 'place_address', 'place_img', 'info', 'favorite', 
-                  'category', 'phone_number', 'rating', 'summary', 'website', 'avg_duration', 'lat', 'long', 'in_itinerary', 'trip_id']
+                  'category', 'phone_number', 'rating', 'summary', 'website', 'lat', 'long', 'in_itinerary', 'trip_id']
 
 place_schema = PlaceSchema()
 places_schema = PlaceSchema(many = True)
