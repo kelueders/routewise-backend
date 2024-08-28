@@ -12,7 +12,6 @@ itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
 @itinerary.route('/createdays/<trip_id>', methods=['GET', 'PATCH'])
 def create_days(trip_id):
-
     if not trip_id:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
@@ -67,7 +66,6 @@ def create_days(trip_id):
             place = Place.query.filter_by(local_id = place_id, trip_id = trip_id).first()
 
             days_day_id = f'day-{i+1}'
-            # if i in range(1, trip.duration + 1):
             if days_day_id in days:
                 # Place is in a valid day
                 # Add place_id to days
@@ -80,7 +78,6 @@ def create_days(trip_id):
                 place.day_id = new_day.day_id
                 place.in_itinerary = True
                 
-                # db.session.commit()
             else:
                 # Place is not in a valid day
                 # Set day_id to None, and in_itinerary to false
@@ -94,13 +91,12 @@ def create_days(trip_id):
     trip.is_itinerary = True
     db.session.commit()
 
-    days.pop('date_formatted', None)
-    # days = Day.query.filter_by(trip_id = trip_id).all()
     # Serializes the list of places (see global_helpers.py)
     serialized_places = serialize_places(Place.query.filter_by(trip_id = trip_id).all(), places_last, trip_id)
     # Remove local_id to coordinate with the front end
-    serialized_places.pop('local_id', None)
-
+    for place_id in serialized_places:
+        serialized_places[place_id]['id'] = serialized_places[place_id].pop('local_id') 
+    
     # Packages the data in order to be rendered on the frontend
     return {
         "trip_id": trip_id,

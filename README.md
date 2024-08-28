@@ -90,8 +90,59 @@ Running the program in a docker container ensures it runs in a clean enviornment
 - **Response**: code 200, "Access granted" or "Access not granted".
 
 ### `GET|PATCH /itinerary/createdays/<trip_id>`
-- **Description**: 
+- **Description**: Create itinerary for places and creates corresponding days.
 - **Response**: 
+    ```json
+    {
+        "day_order": [
+            "day-1"
+        ],
+        "days": {
+            "day-1": {
+                "date_converted": "",
+                "date_formatted": "",
+                "date_short": "",
+                "dayName": "",
+                "day_id": ,
+                "day_short": "",
+                "id": "day-1",
+                "placeIds": [
+                    
+                ]
+            }
+        },
+        "places": {
+            "1": {
+                "address": "",
+                "avg_visit_time": ,
+                "category": "",
+                "day_id": ,
+                "favorite": ,
+                "geocode": [
+                    
+                ],
+                "id": 1,
+                "imgURL": "",
+                "in_itinerary": true,
+                "info": "",
+                "lat": ,
+                "long": ,
+                "phoneNumber": ,
+                "placeName": "",
+                "place_id": ,
+                "rating": "",
+                "summary": "",
+                "website": 
+            }
+        },
+        "places_last": ,
+        "saved_places": {
+            "addresses": [],
+            "placesIds": []
+        },
+        "trip_id": ""
+    }
+    ```
 
 ### `POST|GET /itinerary/add-one-place/<trip_id>`
 - **Description**: 

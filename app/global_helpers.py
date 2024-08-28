@@ -65,6 +65,11 @@ def serialize_places(places, places_last, trip_id):
             place['address'] = place_data.address
             place['imgURL'] = place_data.imgURL
 
+        if hasattr(place_data, 'day_id'):
+            place['day_id'] = place_data.day_id
+        if hasattr(place_data, 'in_itinerary'):
+            place['in_itinerary'] = place_data.in_itinerary
+
         place['place_id'] = place_data.place_id
         place['info'] = place_data.info
         place['lat'] = place_data.lat
