@@ -90,104 +90,22 @@ Running the program in a docker container ensures it runs in a clean enviornment
 - **Response**: code 200, "Access granted" or "Access not granted".
 
 ### `GET|PATCH /itinerary/createdays/<trip_id>`
-- **Description**: Create itinerary for places and creates corresponding days.
+- **Description**: 
 - **Response**: 
-    ```json
-    {
-        "day_order": [
-            "day-1"
-        ],
-        "days": {
-            "day-1": {
-                "date_converted": "",
-                "date_formatted": "",
-                "date_short": "",
-                "dayName": "",
-                "day_id": ,
-                "day_short": "",
-                "id": "day-1",
-                "placeIds": [
-                    
-                ]
-            }
-        },
-        "places": {
-            "1": {
-                "address": "",
-                "avg_visit_time": ,
-                "category": "",
-                "day_id": ,
-                "favorite": ,
-                "geocode": [
-                    
-                ],
-                "id": 1,
-                "imgURL": "",
-                "in_itinerary": true,
-                "info": "",
-                "lat": ,
-                "long": ,
-                "phoneNumber": ,
-                "placeName": "",
-                "place_id": ,
-                "rating": "",
-                "summary": "",
-                "website": 
-            }
-        },
-        "places_last": ,
-        "saved_places": {
-            "addresses": [],
-            "placesIds": []
-        },
-        "trip_id": ""
-    }
-    ```
 
 ### `POST|GET /itinerary/add-one-place/<trip_id>`
-- **Description**: Adds new place if itinerary hasn't been created.
+- **Description**: 
 - **Request Body**:
-    ```json
-    {
-        "day_id": null,
-        "place":{
-            "id": ,
-            "placeName": "",
-            "info": "",
-            "summary": "",
-            "address": "",
-            "phoneNumber": "",
-            "website": "",
-            "imgURL": "",
-            "category": "",
-            "favorite": false,
-            "lat": ,
-            "long": ,
-            "geocode": [
-                ,
-                
-            ],
-            "placeId": "",
-            "rating": ""
-        }
-    }
-    ```
-- **Response**: Place id in list.
+- **Response**: 
 
 ### `DELETE /itinerary/delete-place/<place_id>`
-- **Description**: Deletes place in its entirety.
-- **Response**: Success message
+- **Description**: Deletes place.
+- **Response**: 
 
 ### `PATCH /itinerary/update-place/<place_id>`
-- **Description**: Updates place specified.
+- **Description**: 
 - **Request Body**:
-    ```json
-    {
-        "day_id": ,
-        "in_itinerary": false
-    }
-    ```
-- **Response**: Success message
+- **Response**: 
 
 ### `PATCH /itinerary/move-day-places/<trip_id>`
 - **Description**: Moves/swaps all places in a day to a destination day.
