@@ -6,7 +6,7 @@ from datetime import timedelta
 from ..models import Place, Trip, Day, db, place_schema
 from .helpers import add_places
 from ..global_helpers import create_places_last, serialize_places
-from .kmeans import Itinerary
+from .itinerary import Itinerary
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 

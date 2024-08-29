@@ -49,21 +49,17 @@ class Itinerary:
         kmeans = KMeans(n_clusters=n_clusters, random_state=42)
         kmeans.fit(lat_long_scaled)
         places_df['day'] = kmeans.labels_
-        print(places_df)
 
         # Re-cluster to limit day visit time
         df_refined = self.split_clusters_on_time_limit(places_df)
-        print(df_refined)
 
         # Create sorted_days 2D array with places going into corresponding day
         self.sorted_days = [[] for _ in range(df_refined['day'].max() + 1)]
         for _, row in df_refined.iterrows():
             self.sorted_days[int(row['day'])].append(int(row['local_id']))
-        print(self.sorted_days)
 
         # sort df_refined by size
         self.sorted_days.sort(reverse=True, key=len)
-        print(self.sorted_days)
 
         return self.sorted_days
     
