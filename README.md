@@ -5,6 +5,7 @@ The backend includes the api endpoints for the frontend to access the database a
 - Python
 - Flask Framework
 - PostgreSQL
+- AWS RDS for PostrgreSQL
 - Render
 - Docker
 

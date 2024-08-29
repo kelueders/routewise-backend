@@ -1,7 +1,6 @@
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score
 
 from ..models import Place, Trip
 
@@ -36,12 +35,13 @@ class Itinerary:
         return trip.duration
 
     def cluster_analysis(self):
+        # Set number of starting clusters
         n_clusters = self.duration
         if len(self.places) < self.duration:
             n_clusters = len(self.places)
 
         places_df = self.create_dataframe()
-        lat_long = places_df[['lat', 'long']]       # features for clustering
+        lat_long = places_df[['lat', 'long']]       # Features for clustering
         scaler = StandardScaler()
         lat_long_scaled = scaler.fit_transform(lat_long)
 
@@ -58,7 +58,7 @@ class Itinerary:
         for _, row in df_refined.iterrows():
             self.sorted_days[int(row['day'])].append(int(row['local_id']))
 
-        # sort df_refined by size
+        # sort df_refined by day size (descending)
         self.sorted_days.sort(reverse=True, key=len)
 
         return self.sorted_days
@@ -85,6 +85,7 @@ class Itinerary:
     def split_clusters_on_time_limit(self, df):
         if len(self.places) <= self.duration:
             return df
+        
         cluster_days = df.groupby('day').sum()
         for i, day in cluster_days.iterrows():
             total_day_visit_time = day['avg_visit_time']

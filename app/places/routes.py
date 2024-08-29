@@ -3,8 +3,7 @@ from flask import Blueprint, redirect, request, jsonify, url_for
 
 # INTERNAL
 from ..models import Trip, Place, Day, db, trip_schema, trips_schema, places_schema, place_schema
-from ..itinerary.helpers import add_places
-from ..global_helpers import create_places_last, serialize_places
+from ..global_helpers import create_places_last, serialize_places, add_places
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
