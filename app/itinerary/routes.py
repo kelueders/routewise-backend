@@ -4,7 +4,7 @@ from datetime import timedelta
 
 # INTERNAL
 from ..models import Place, Trip, Day, db, place_schema
-from .helpers import create_itinerary, add_places
+from .helpers import add_places
 from ..global_helpers import create_places_last, serialize_places
 from .kmeans import Itinerary
 
