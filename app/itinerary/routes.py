@@ -25,7 +25,7 @@ def create_days(trip_id):
     # Create days if they havent been created already
     days_data = Day.query.filter_by(trip_id=trip_id).all()
     days = {}
-    if not days_data:
+    if days_data:
         # serialize days
         for i, day_data in enumerate(days_data):
             day_id = f'day-{i + 1}'
@@ -39,6 +39,7 @@ def create_days(trip_id):
                 'dayName': day_data.day_name
             } 
     else:
+        print("get here")
         current_date = trip.start_date
         for i in range(1, trip.duration + 1):
             # Day info
@@ -69,7 +70,7 @@ def create_days(trip_id):
     # Create Itinerary and cluster data
     itinerary = Itinerary(trip_id)
     itinerary_data = itinerary.cluster_analysis()       # 2D array - rows are days, columns are place_ids
-
+    print(itinerary_data)
     # Populate saved_places and days with places from itinerary_data
     saved_places_ids = []
     for i, day_row in enumerate(itinerary_data):
