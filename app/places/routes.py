@@ -3,8 +3,7 @@ from flask import Blueprint, redirect, request, jsonify, url_for
 
 # INTERNAL
 from ..models import Trip, Place, Day, db, trip_schema, trips_schema, places_schema, place_schema
-from ..itinerary.helpers import add_places
-from ..global_helpers import create_places_last, serialize_places
+from ..global_helpers import create_places_last, serialize_places, add_places
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -114,6 +113,7 @@ def get_trip(trip_id):
             place['rating'] = place_data.rating
             place['summary'] = place_data.summary
             place['website'] = place_data.website
+            place['avg_visit_time'] = place_data.avg_visit_time
             place['geocode'] = [place_data.lat, place_data.long]
             place['day_id'] = place_data.day_id
             serialized_places[place_data.local_id] = place
@@ -309,6 +309,7 @@ def add_get_place(trip_id):
     rating = place.get('rating', None)
     summary = place.get('summary', None)
     website = place.get('website', None)
+    avg_visit_time = place.get('avg_visit_time', 60)
     favorite = place['favorite']
     info = place['info']
     lat = place['lat']
@@ -316,7 +317,7 @@ def add_get_place(trip_id):
     in_itinerary = False
 
     place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, 
-                  category, phone_number, rating, summary, website, lat, long, in_itinerary, trip_id)
+                  category, phone_number, rating, summary, website, avg_visit_time, lat, long, in_itinerary, trip_id)
 
     db.session.add(place)
     db.session.commit()
@@ -335,7 +336,6 @@ def add_trip_and_places():
 
     uid = data['uid']
     trip_data = data['currentTrip']
-
 
     trip_name = trip_data['tripName']
     dest_city = trip_data['city']
