@@ -15,7 +15,7 @@ def create_days(trip_id):
         return jsonify({'message': 'Trip ID is missing'}), 401
     
     trip = Trip.query.filter_by(trip_id=trip_id).first()
-    if trip is None:
+    if not trip:
         return jsonify({'message': 'No Trip for trip ID'}), 404
     
     places = Place.query.filter_by(trip_id=trip_id).all()
@@ -25,7 +25,7 @@ def create_days(trip_id):
     # Create days if they havent been created already
     days_data = Day.query.filter_by(trip_id=trip_id).all()
     days = {}
-    if days_data is not None:
+    if not days_data:
         # serialize days
         for i, day_data in enumerate(days_data):
             day_id = f'day-{i + 1}'
