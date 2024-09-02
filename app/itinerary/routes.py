@@ -4,7 +4,7 @@ from datetime import timedelta
 
 # INTERNAL
 from ..models import Place, Trip, Day, db, place_schema
-from ..global_helpers import create_places_last, serialize_places
+from ..global_helpers import create_places_last, serialize_places, replace_day_id
 from .itinerary import Itinerary
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
@@ -39,7 +39,6 @@ def create_days(trip_id):
                 'dayName': day_data.day_name
             } 
     else:
-        print("get here")
         current_date = trip.start_date
         for i in range(1, trip.duration + 1):
             # Day info
@@ -69,8 +68,8 @@ def create_days(trip_id):
 
     # Create Itinerary and cluster data
     itinerary = Itinerary(trip_id)
-    itinerary_data = itinerary.cluster_analysis()       # 2D array - rows are days, columns are place_ids
-    print(itinerary_data)
+    itinerary_data = itinerary.cluster_analysis()       # multi-dimen array - rows=days, cols=place_ids
+
     # Populate saved_places and days with places from itinerary_data
     saved_places_ids = []
     for i, day_row in enumerate(itinerary_data):
@@ -145,7 +144,7 @@ def add_one_place(trip_id):
     rating = place.get('rating', None)
     summary = place.get('summary', None)
     website = place.get('website', None)
-    avg_visit_time = place.get('avg_visit_time', 60)
+    avg_visit_time = place.get('avgVisitTime', 60)
     info = place['info']
     lat = place['lat']
     long = place['long']
@@ -234,12 +233,3 @@ def move_day_places(trip_id):
         return "Successfully moved places", 200
     except Exception as e:
         return f'Failed: {e}', 502
-
-def replace_day_id(places, day_id_1, day_id_2):
-    # validate if theres any places in day
-    if(places is None or len(places) <= 0):
-        raise Exception(f'No places for day {day_id_1}')
-    
-    # update day id for each place
-    for place in places:
-        place.day_id = day_id_2

@@ -24,17 +24,6 @@ def add_trip():
     start_date = trip_data['startDate']
     end_date = trip_data['endDate']
 
-
-    # ''' Calculates duration of the trip '''
-    # # Determining duration of trip by converting string to datetime object
-    # start_obj = datetime.strptime(start_date, '%m/%d/%Y').date()
-    # end_obj = datetime.strptime(end_date, '%m/%d/%Y').date()
-
-    # # then subtract and return type INT for days
-    # duration = end_obj - start_obj
-    # duration = duration.days + 1
-
-
     trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_2letter, dest_lat, dest_long, 
                 dest_url, start_date, end_date, uid)
 
@@ -83,6 +72,8 @@ def get_trip(trip_id):
                 summary:
                 website:
                 geocode:
+                apiPlaceId:
+                avgVisitTime:
             },
             2: {
                 ALL PLACE DATA
@@ -113,9 +104,10 @@ def get_trip(trip_id):
             place['rating'] = place_data.rating
             place['summary'] = place_data.summary
             place['website'] = place_data.website
-            place['avg_visit_time'] = place_data.avg_visit_time
+            place['avgVisitTime'] = place_data.avg_visit_time
             place['geocode'] = [place_data.lat, place_data.long]
             place['day_id'] = place_data.day_id
+            place['apiPlaceId'] = place_data.geoapify_placeId
             serialized_places[place_data.local_id] = place
 
             if place_data.in_itinerary != True and not place_data.day_id:
@@ -285,9 +277,9 @@ def get_places(trip_id):
 
     if trip_id:
         places = Place.query.filter_by(trip_id = trip_id).all()
-        response = places_schema.dump(places)
-        print(response)
-        return jsonify(response)
+        places_last = create_places_last(places)
+        serialized_places = serialize_places(places, places_last, trip_id)
+        return serialized_places
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
@@ -309,7 +301,7 @@ def add_get_place(trip_id):
     rating = place.get('rating', None)
     summary = place.get('summary', None)
     website = place.get('website', None)
-    avg_visit_time = place.get('avg_visit_time', 60)
+    avg_visit_time = place.get('avgVisitTime', 60)
     favorite = place['favorite']
     info = place['info']
     lat = place['lat']

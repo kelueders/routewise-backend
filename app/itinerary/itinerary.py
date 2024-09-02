@@ -15,9 +15,10 @@ The algorithm uses kmeans to cluster places that
     the algorithm goes through clusters and
     re-clusters if the total visit time per day 
     breaches the max duration per day.
-The data is stored in a 2D array with the rows
-    being the days and columns being the placeIds
-    and is ordered by most to least filled days.
+The data is stored in a multi-dimensional array 
+    with the rows being the days and columns being 
+    the placeIds and is ordered by most to least 
+    filled days.
 '''
 class Itinerary:
 
@@ -25,7 +26,7 @@ class Itinerary:
         self.trip_id = trip_id                  # int - index value from Trip table
         self.places = self.get_places()         # list - Place objects
         self.duration = self.get_duration()     # int - length of the trip in days
-        self.sorted_days = []                   # 2D array - row is day, column is placeId
+        self.sorted_days = []                   # Multi-dimen array - row is day, column is placeId
 
     def get_places(self):
         return Place.query.filter_by(trip_id = self.trip_id).all()
@@ -53,7 +54,7 @@ class Itinerary:
         # Re-cluster to limit day visit time
         df_refined = self.split_clusters_on_time_limit(places_df)
 
-        # Create sorted_days 2D array with places going into corresponding day
+        # Create sorted_days multi-dimens array with places going into corresponding day
         self.sorted_days = [[] for _ in range(df_refined['day'].max() + 1)]
         for _, row in df_refined.iterrows():
             self.sorted_days[int(row['day'])].append(int(row['local_id']))
