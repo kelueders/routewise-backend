@@ -63,64 +63,14 @@ def get_trip(trip_id):
 
         # finds the largest local_id in the list of places for that trip = places_last
         places_last = create_places_last(places)
-
         # creates a dictionary with format:
-        '''
-        "serialized_places: {
-            1: {
-                id:
-                place_id:
-                placeName:
-                info:
-                address:
-                imgURL:
-                lat:
-                long:
-                favorite:
-                category:
-                phoneNumber:
-                rating:
-                summary:
-                website:
-                geocode:
-            },
-            2: {
-                ALL PLACE DATA
-            }
-        }
-        This is a repeat of the serialize_places() function in global_helpers.py ??
-        '''
-        serialized_places = {}
+        serialized_places = serialize_places(places, places_last, trip_id)
 
         saved_places_ids = []
-
         for i, place_data in enumerate(places):
-
-            # data = place_schema.dump(place)
-            place = {}
-
-            place['id'] = place_data.local_id
-            place['place_id'] = place_data.place_id
-            place['placeName'] = place_data.place_name
-            place['info'] = place_data.info
-            place['address'] = place_data.place_address
-            place['imgURL'] = place_data.place_img
-            place['lat'] = place_data.lat
-            place['long'] = place_data.long
-            place['favorite'] = place_data.favorite
-            place['category'] = place_data.category
-            place['phoneNumber'] = place_data.phone_number
-            place['rating'] = place_data.rating
-            place['summary'] = place_data.summary
-            place['website'] = place_data.website
-            place['avg_visit_time'] = place_data.avg_visit_time
-            place['geocode'] = [place_data.lat, place_data.long]
-            place['day_id'] = place_data.day_id
-            serialized_places[place_data.local_id] = place
-
             if place_data.in_itinerary != True and not place_data.day_id:
                 saved_places_ids.append(place_data.local_id)
-
+        
         # creates a dict of days with format:
         '''
         "days": {
@@ -137,42 +87,38 @@ def get_trip(trip_id):
         '''
         days = {}
 
-        # creates a list of day numbered labels in format: [day-1, day-2, day-3, ...]
-        day_order = []    
-
         # creates a key in the days dict corresponding to "day-1", etc.  which contains data for that day
         for i, day in enumerate(days_db):
-            days[f'day-{i + 1}'] = {
-                'id': f'day-{i + 1}',
-                'db_id': day.day_id,
+            day_id = f'day-{i + 1}'
+            days[day_id] = {
+                'id': day_id,
+                'day_id': day.day_id,
+                'placeIds': [],
+                'date_formatted': day.date_formatted,
                 'date_converted': day.date_converted,
-                'day_short': day.week_day,
                 'date_short': day.date_short,
-                'dayName': day.day_name,
-                'placeIds': []
+                'day_short': day.week_day,
+                'dayName': day.day_name
             } 
-            day_order.append(f'day-{i + 1}') 
 
             # adds the places for that day to the placeIds list of local_id 's
             places_in_day = Place.query.filter_by(trip_id = trip_id, day_id = day.day_id).all()
 
             for place in places_in_day:
-                days[f'day-{i + 1}']['placeIds'].append(place.local_id)
+                days[day_id]['placeIds'].append(place.local_id)
             
-        # final format of data to be sent to the front end    
-        itinerary_data = {
+        # final format of data to be sent to the front end
+        return {
             "trip_id": int(trip_id),
             "places_last": places_last,
             "places": serialized_places,
             "days": days,
-            "day_order": day_order,
-            "saved_places": { "placesIds": saved_places_ids,
-                            "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
-                        }
-
-        }
-
-        return itinerary_data
+            "day_order": list(days.keys()),
+            "saved_places": { 
+                "placesIds": saved_places_ids,
+                "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
+                }
+            }
     
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
