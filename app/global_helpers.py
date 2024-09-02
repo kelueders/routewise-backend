@@ -41,7 +41,8 @@ def serialize_places(places, places_last, trip_id):
             "rating": "5",
             "summary": "",
             "website": "www.website.com",
-            "geocode": [51.5074889, -0.162236683080672]
+            "geocode": [51.5074889, -0.162236683080672],
+            "apiPlaceId": "ADxmjKepdsfL"
         },
         2: {
             ...
@@ -82,6 +83,7 @@ def serialize_places(places, places_last, trip_id):
         place['website'] = place_data.website
         place['avg_visit_time'] = place_data.avg_visit_time
         place['geocode'] = [place_data.lat, place_data.long]
+        place['apiPlaceId'] = place_data.geoapify_placeId
 
         # making the local_id one of the keys with the place dictionary as the value
         places_serial[place['local_id']] = place

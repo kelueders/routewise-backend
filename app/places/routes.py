@@ -83,6 +83,7 @@ def get_trip(trip_id):
                 summary:
                 website:
                 geocode:
+                apiPlaceId:
             },
             2: {
                 ALL PLACE DATA
@@ -116,6 +117,7 @@ def get_trip(trip_id):
             place['avg_visit_time'] = place_data.avg_visit_time
             place['geocode'] = [place_data.lat, place_data.long]
             place['day_id'] = place_data.day_id
+            place['apiPlaceId'] = place_data.geoapify_placeId
             serialized_places[place_data.local_id] = place
 
             if place_data.in_itinerary != True and not place_data.day_id:
@@ -285,9 +287,9 @@ def get_places(trip_id):
 
     if trip_id:
         places = Place.query.filter_by(trip_id = trip_id).all()
-        response = places_schema.dump(places)
-        print(response)
-        return jsonify(response)
+        places_last = create_places_last(places)
+        serialized_places = serialize_places(places, places_last, trip_id)
+        return serialized_places
     else:
         return jsonify({'message': 'Trip ID is missing'}), 401
     
