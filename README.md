@@ -6,7 +6,7 @@ The backend includes the api endpoints for the frontend to access the database a
 - Flask Framework
 - PostgreSQL
 - AWS RDS for PostrgreSQL
-- Render
+- Render (Python version: 3.11.9)
 - Docker
 
 ## How to Run and Test
@@ -33,7 +33,7 @@ The backend includes the api endpoints for the frontend to access the database a
     ```
 
 ### UPDATE: Run in docker container
-Running the program in a docker container ensures it runs in a clean enviornment. The environment is specified in dockerfile.
+Running the program in a docker container ensures it runs in a clean enviornment. Additionally, you won't need to install the required libraries on your local machine. The environment is specified in dockerfile.
 
 1. Install docker on your machine following the instructions on [docker](https://www.docker.com/)
 
@@ -115,7 +115,8 @@ Running the program in a docker container ensures it runs in a clean enviornment
         "places": {
             "1": {
                 "address": "",
-                "avg_visit_time": ,
+                "apiPlaceId": "",
+                "avgVisitTime": ,
                 "category": "",
                 "day_id": ,
                 "favorite": ,
@@ -255,6 +256,8 @@ Running the program in a docker container ensures it runs in a clean enviornment
         "places": {
             "1": {
                 "address": "",
+                "apiPlaceId": "",
+                "avgVisitTime": ,
                 "category": "",
                 "day_id": ,
                 "favorite": false,
@@ -331,27 +334,29 @@ Running the program in a docker container ensures it runs in a clean enviornment
 - **Description**: Gets places in trip.
 - **Response**: 
     ```json
-    [
-        {
+    {
+        "1": {
+            "address": "",
+            "apiPlaceId": "",
+            "avgVisitTime": 60.0,
             "category": "",
-            "favorite": ,
-            "geoapify_placeId": "",
+            "day_id": ,
+            "favorite": false,
+            "geocode": [ , ],
+            "imgURL": "",
             "in_itinerary": true,
             "info": "",
             "lat": ,
-            "local_id": ,
+            "local_id": 1,
             "long": ,
             "phoneNumber": "",
-            "place_address": "",
+            "placeName": "",
             "place_id": ,
-            "place_img": "",
-            "place_name": "",
             "rating": "",
             "summary": "",
-            "trip_id": ,
             "website": ""
         }
-    ]
+    }
     ```
 
 ### `GET|POST /places/add-get-place/<trip_id>`

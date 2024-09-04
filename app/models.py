@@ -75,7 +75,7 @@ class Trip(db.Model):
     trip_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     trip_name = db.Column(db.String)
     dest_city = db.Column(db.String)
-    dest_state = db.Column(db.String)
+    dest_state = db.Column(db.String(255))
     dest_country = db.Column(db.String)
     dest_country_2letter = db.Column(db.String(10))
     dest_lat = db.Column(db.Float)

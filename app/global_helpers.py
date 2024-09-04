@@ -41,7 +41,8 @@ def serialize_places(places, places_last, trip_id):
             "rating": "5",
             "summary": "",
             "website": "www.website.com",
-            "geocode": [51.5074889, -0.162236683080672]
+            "geocode": [51.5074889, -0.162236683080672],
+            "apiPlaceId": "ADxmjKepdsfL"
         },
         2: {
             ...
@@ -80,8 +81,9 @@ def serialize_places(places, places_last, trip_id):
         place['rating'] = place_data.rating
         place['summary'] = place_data.summary
         place['website'] = place_data.website
-        place['avg_visit_time'] = place_data.avg_visit_time
+        place['avgVisitTime'] = place_data.avg_visit_time
         place['geocode'] = [place_data.lat, place_data.long]
+        place['apiPlaceId'] = place_data.geoapify_placeId
 
         # making the local_id one of the keys with the place dictionary as the value
         places_serial[place['local_id']] = place
@@ -119,7 +121,7 @@ def add_places(trip_id, places_last, places_arr):
             rating = place.get('rating', None)
             summary = place.get('summary', None)
             website = place.get('website', None)
-            avg_visit_time = place.get('avg_visit_time', 60)
+            avg_visit_time = place.get('avgVisitTime', 60)
             info = place['info']
             lat = place['lat']
             long = place['long']   
@@ -137,7 +139,7 @@ def add_places(trip_id, places_last, places_arr):
             rating = place.get('rating', None)
             summary = place.get('summary', None)
             website = place.get('website', None)
-            avg_visit_time = place.get('avg_visit_time', 60)
+            avg_visit_time = place.get('avgVisitTime', 60)
             favorite = place['favorite']
             info = place['info']
             lat = place['lat']
@@ -149,3 +151,11 @@ def add_places(trip_id, places_last, places_arr):
         db.session.add(place)
         db.session.commit()
 
+def replace_day_id(places, day_id_1, day_id_2):
+    # validate if theres any places in day
+    if(places is None or len(places) <= 0):
+        raise Exception(f'No places for day {day_id_1}')
+    
+    # update day id for each place
+    for place in places:
+        place.day_id = day_id_2
