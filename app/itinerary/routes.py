@@ -9,6 +9,7 @@ from .itinerary import Itinerary
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
+# Create itinerary with places sorted into days
 @itinerary.route('/createdays/<trip_id>', methods=['GET', 'PATCH'])
 def create_days(trip_id):
     if not trip_id:
@@ -19,8 +20,7 @@ def create_days(trip_id):
         return jsonify({'message': 'No Trip for trip ID'}), 404
     
     places = Place.query.filter_by(trip_id=trip_id).all()
-    # Finds the largest local_id in the list of places for that trip (type: int)
-    places_last = create_places_last(places)
+    places_last_id = create_places_last(places)
 
     # Create days if they havent been created already
     days_data = Day.query.filter_by(trip_id=trip_id).all()
@@ -105,8 +105,8 @@ def create_days(trip_id):
     db.session.commit()
 
     # Serializes the list of places (see global_helpers.py)
-    serialized_places = serialize_places(Place.query.filter_by(trip_id = trip_id).all(), 
-                                         places_last, trip_id)
+    serialized_places = serialize_places(Place.query.filter_by(trip_id=trip_id).all(), 
+                                         places_last_id, trip_id)
     # Remove local_id to coordinate with the front end
     for place_id in serialized_places:
         serialized_places[place_id]['id'] = serialized_places[place_id].pop('local_id') 
@@ -114,7 +114,7 @@ def create_days(trip_id):
     # Packages the data in order to be rendered on the frontend
     return {
         "trip_id": trip_id,
-        "places_last": places_last,
+        "places_last": places_last_id,
         "places": serialized_places,
         "days": days,
         "day_order": list(days.keys()),
@@ -124,31 +124,30 @@ def create_days(trip_id):
         }
     }
 
-# When the user wants to add a place to a specific day in the trip when there is already an itinerary created    
-@itinerary.route('/add-one-place/<trip_id>', methods = ['POST', 'GET'])
+
+# Add a place to a specific day in the trip when there is already an itinerary created    
+@itinerary.route('/add-one-place/<trip_id>', methods=['POST', 'GET'])
 def add_one_place(trip_id):
-
+    # Get data from request
     data = request.get_json()
-    place = data['place']
+    place_data = data['place']
+    local_id = place_data['id']
+    place_name = place_data['placeName']
+    geoapify_placeId = place_data['placeId']
+    place_address = place_data['address']
+    place_img = place_data['imgURL']
+    favorite = place_data['favorite']
+    category = place_data.get('category', None)
+    phone_number = place_data.get('phoneNumber', None)
+    rating = place_data.get('rating', None)
+    summary = place_data.get('summary', None)
+    website = place_data.get('website', None)
+    avg_visit_time = place_data.get('avgVisitTime', 60)
+    info = place_data['info']
+    lat = place_data['lat']
+    long = place_data['long']
 
-    # print(place)
-
-    local_id = place['id']
-    place_name = place['placeName']
-    geoapify_placeId = place['placeId']
-    place_address = place['address']
-    place_img = place['imgURL']
-    favorite = place['favorite']
-    category = place.get('category', None)
-    phone_number = place.get('phoneNumber', None)
-    rating = place.get('rating', None)
-    summary = place.get('summary', None)
-    website = place.get('website', None)
-    avg_visit_time = place.get('avgVisitTime', 60)
-    info = place['info']
-    lat = place['lat']
-    long = place['long']
-
+    # Add in day_id if place is assigned a day in itinerary
     if data['day_id']:
         day_id = data['day_id']
         in_itinerary = True
@@ -156,76 +155,88 @@ def add_one_place(trip_id):
         day_id = None
         in_itinerary = False
     
-
-    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, 
-                  category, phone_number, rating, summary, website, avg_visit_time, lat, long, in_itinerary, trip_id)
-    
-    # Why is this separate from the rest of the initialization?
+    # Create new place
+    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, info, 
+                  favorite, category, phone_number, rating, summary, website, avg_visit_time, 
+                  lat, long, in_itinerary, trip_id)
     place.update_day_id(day_id)
-
+    
+    # Add new place to database
     db.session.add(place)
     db.session.commit()
 
-    #### NEED TO RETURN THE place_id to the front end
-    place = Place.query.filter_by(local_id = local_id, trip_id = trip_id).first()
+    # RETURN THE place_id to the front end if successfully added to database
+    place_record = Place.query.filter_by(local_id=local_id, trip_id=trip_id).first()
+    if place_record:
+        return str(place_record.place_id), 200
+    else:
+        return "Place could not be added", 500
 
-    response = place_schema.dump(place)
 
-    return jsonify(response['place_id'])
-
-
-@itinerary.route('/delete-place/<place_id>', methods = ['DELETE'])
+# Deletes place
+@itinerary.route('/delete-place/<place_id>', methods=['DELETE'])
 def delete_place(place_id):
-
+    # Get place
     place = Place.query.get(place_id)
+    if not place:
+        return f"No such place {place_id}", 400
     
+    # Update database
     db.session.delete(place)
     db.session.commit()
 
-    return "Place deleted"
-
-
-@itinerary.route('/update-place/<place_id>', methods = ['PATCH'])
-def update_place(place_id):
-
-    place = Place.query.get(place_id)
-
-    data = request.get_json()
-
-    # print(data)
-
-    place.day_id = data['day_id']
-    if data['in_itinerary']:
-        place.in_itinerary = True
+    # Validate that the place has been deleted
+    place_record = Place.query.get(place_id)
+    if not place_record:
+        return "Place deleted", 200
     else:
-        place.in_itinerary = False
+        return f"Place {place_id} deletion failed", 500
 
+
+# Moves place to new day
+@itinerary.route('/update-place/<place_id>', methods=['PATCH'])
+def update_place(place_id):
+    # Get requested data
+    data = request.get_json()
+    new_day_id = data['day_id']
+    place = Place.query.get(place_id)
+    if not place:
+        return f"No place {place_id}", 400
+
+    # Update place with new day_id
+    place.day_id = new_day_id
+    place.in_itinerary = data['in_itinerary']
+
+    # Update database
     db.session.commit()
 
-    return "Place Updated"
+    # Validate data has been updated
+    place_record = Place.query.get(place_id)
+    if place_record.day_id == new_day_id:
+        return f"Place updated to day: {new_day_id}", 200
+    else:
+        return "Place failed to update", 500
 
-    # response = place_schema.dump(place)
 
-    # return jsonify(response['place_id'])
-
-    
-@itinerary.route('/move-day-places/<trip_id>', methods = ['PATCH'])
+# Move/Swap all places in a day to another day
+@itinerary.route('/move-day-places/<trip_id>', methods=['PATCH'])
 def move_day_places(trip_id):
+    # Get requested data
     data = request.get_json()
     src_day_id = data['sourceDayId']
     dest_day_id = data['destDayId']
     swap = data['swap']
 
     try:
-        # get all the places in the specified days
-        src_places = Place.query.filter_by(trip_id = trip_id, day_id = src_day_id).all()
-        dest_places = Place.query.filter_by(trip_id = trip_id, day_id = dest_day_id).all()
+        # Get all the places in the specified days
+        src_places = Place.query.filter_by(trip_id=trip_id, day_id=src_day_id).all()
+        dest_places = Place.query.filter_by(trip_id=trip_id, day_id=dest_day_id).all()
 
-        # move places from source day to destination day
+        # Move places from source day to destination day
         replace_day_id(src_places, src_day_id, dest_day_id)
         
         if(swap):
-            # move places from destination day to source day
+            # Move places from destination day to source day
             replace_day_id(dest_places, dest_day_id, src_day_id)
 
         db.session.commit()

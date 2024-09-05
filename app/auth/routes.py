@@ -11,18 +11,25 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 @auth.route('/check_code/', methods = ['GET', 'PATCH'])
 def check_code():
 
-    entry_code = "124453"
+    # temporarily set as the access code
+    access_code = "124453"
 
+    # get user information
     uid = request.json['uid']
     passcode = request.json['passcode']
 
-    user = User.query.filter_by(uid = uid).first()
-
-    if passcode == entry_code:
+    user = User.query.filter_by(uid=uid).first()
+    if not user:
+        return f'No User {uid}', 400
+    
+    # Validate access code
+    if passcode == access_code:
+        # Grant access to user
         user.has_access = True
         db.session.commit()
-        return "Access granted"
+        return "Access granted", 200
     else:
-        return "Access NOT granted"
+        # Access denied to user
+        return "Access NOT granted", 200
 
 

@@ -131,7 +131,7 @@ def add_places(trip_id, places_last, places_arr):
 
             local_id = place['id']
             place_name = place['placeName']
-            geoapify_placeId = place['place_id']
+            geoapify_placeId = place['placeId']
             place_address = place['address']
             place_img = place['imgURL']
             category = place.get('category', None)
@@ -146,7 +146,8 @@ def add_places(trip_id, places_last, places_arr):
             long = place['long']        
 
         place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, 
-                      info, favorite, category, phone_number, rating, summary, website, avg_visit_time, lat, long, trip_id)
+                      info, favorite, category, phone_number, rating, summary, website, 
+                      avg_visit_time, lat, long, False, trip_id)
 
         db.session.add(place)
         db.session.commit()
@@ -159,3 +160,18 @@ def replace_day_id(places, day_id_1, day_id_2):
     # update day id for each place
     for place in places:
         place.day_id = day_id_2
+
+# def create_day_dict():
+#     '''
+#     "days": {
+#         "day-1": {
+#             "id": "day-1",
+#             "date_converted": "Thursday, November 9",
+#             "day_short": "Thurs",
+#             "date_short": "11/9",
+#             "dayName": "",
+#             "placeIds": []
+#             NEED TO ADD REST OF THE DAY DATA *******
+#         }
+#     }
+#     '''
