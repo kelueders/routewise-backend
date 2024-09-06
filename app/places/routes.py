@@ -3,7 +3,7 @@ from flask import Blueprint, redirect, request, jsonify, url_for
 
 # INTERNAL
 from ..models import Trip, Place, Day, db, trip_schema, trips_schema, places_schema, place_schema
-from ..global_helpers import create_places_last, serialize_places, add_places, create_day_dict
+from ..global_helpers import create_places_last_id, serialize_places, add_places, create_day_dict
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -56,7 +56,7 @@ def get_trip(trip_id):
     if not places or not day_records:
         return jsonify({"message": "No places or days associated with trip"}), 400
     
-    places_last_id = create_places_last(places)
+    places_last_id = len(places) + 1
     serialized_places = serialize_places(places, places_last_id, trip_id)
 
     # Create list of place ids that are not in the itinerary
@@ -199,7 +199,7 @@ def get_places(trip_id):
         return jsonify({"message": f"No places for trip {trip_id}"}), 400
     
     # Format places to send to frontend
-    places_last_id = create_places_last(places)
+    places_last_id = len(places) + 1
     serialized_places = serialize_places(places, places_last_id, trip_id)
     return serialized_places, 200
 
@@ -272,7 +272,7 @@ def add_trip_and_places():
 
     # Get places data
     places = trip_data['places']
-    places_last_id = create_places_last(places)
+    places_last_id = len(places) + 1
 
     # Create and add places to database
     add_places(trip.id, places_last_id, places)
@@ -280,7 +280,7 @@ def add_trip_and_places():
     # Validate trip and places were added successfully
     trip_record = Trip.query.filter_by(trip_id=trip.id)
     place_records = Place.query.filter_by(trip_id=trip.id).all()
-    if trip_record and (create_places_last(place_records) == (places_last_id + len(places))):
+    if trip_record and ((len(place_records) + 1) == (places_last_id + len(places))):
         return jsonify({"message": "Trip and places have been added to the database."}), 200
     else:
         return jsonify({"message": "Failed adding trip or places"}), 500

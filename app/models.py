@@ -185,7 +185,7 @@ class PlaceSchema(ma.Schema):
     class Meta:
         fields = ['apiId', 'positionId', 'name', 'address', 'imgUrl', 'info', 'favorite', 
                   'category', 'phoneNumber', 'rating', 'summary', 'website', 'avgVisitTime', 
-                  'lat', 'long', 'inItinerary', 'tripId']
+                  'lat', 'long', 'inItinerary', 'tripId', 'dayId']
 
 place_schema = PlaceSchema()
 places_schema = PlaceSchema(many=True)

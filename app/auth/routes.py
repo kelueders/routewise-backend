@@ -1,5 +1,5 @@
 # EXTERNAL
-from flask import Blueprint, request, redirect, url_for
+from flask import Blueprint, request, redirect, url_for, jsonify
 
 # INTERNAL
 from app.models import User, db
@@ -20,16 +20,16 @@ def check_code():
 
     user = User.query.filter_by(uid=uid).first()
     if not user:
-        return f'No User {uid}', 400
+        return jsonify({"message": f'No User {uid}'}), 400
     
     # Validate access code
     if passcode == access_code:
         # Grant access to user
         user.has_access = True
         db.session.commit()
-        return "Access granted", 200
+        return jsonify({"message": "Access granted"}), 200
     else:
         # Access denied to user
-        return "Access NOT granted", 200
+        return jsonify({"message": "Access NOT granted"}), 200
 
 

@@ -151,16 +151,17 @@ Running the program in a docker container ensures it runs in a clean enviornment
 - **Request Body**:
     ```json
     {
-        "day_id": null,
+        "dayId": null,
         "place":{
             "id": ,
-            "placeName": "",
+            "apiId": "",
+            "name": "",
             "info": "",
             "summary": "",
             "address": "",
             "phoneNumber": "",
             "website": "",
-            "imgURL": "",
+            "imgUrl": "",
             "category": "",
             "favorite": false,
             "lat": ,
@@ -169,8 +170,8 @@ Running the program in a docker container ensures it runs in a clean enviornment
                 ,
                 
             ],
-            "placeId": "",
-            "rating": ""
+            "rating": "",
+            "avgVisitTime": 
         }
     }
     ```
@@ -185,8 +186,8 @@ Running the program in a docker container ensures it runs in a clean enviornment
 - **Request Body**:
     ```json
     {
-        "day_id": ,
-        "in_itinerary": false
+        "dayId": ,
+        "inItinerary": false
     }
     ```
 - **Response**: Success message

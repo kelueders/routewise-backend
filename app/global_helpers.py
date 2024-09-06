@@ -1,25 +1,25 @@
-from .models import Place, db
+from .models import Place, db, place_schema
 
 # finds the largest local_id in the list of places for that trip = places_last
-def create_places_last(places):
+def create_places_last_id(places):
     """
     places_last = the largest local_id in the list of places for that trip
     This function goes through a list of places and return that local_id
     """
-    max_local_id = 0
-    local_id = 0
+    max_position_id = 0
+    position_id = 0
     for place in places:
         if hasattr(place, 'id'):
-            local_id = place.id
+            position_id = place.id
         elif hasattr(place, 'local_id'):
-            local_id = place.local_id
+            position_id = place.local_id
 
-        if local_id > max_local_id:
-                max_local_id = local_id
+        if position_id > max_position_id:
+                max_position_id = position_id
 
-    return max_local_id
+    return max_position_id
 
-def serialize_places(places, places_last, trip_id):
+def serialize_places(places):
     '''
     Serializes a list of Places.
         Returns a dictionary with  that each have a local_id as the KEY and the 
@@ -55,43 +55,12 @@ def serialize_places(places, places_last, trip_id):
 
         place = {}
 
-        place['id'] = place_data.id
-        place['apiId'] = place_data.api_id
-        place['positionId'] = place_data.position_id
-        place['name'] = place_data.name
-        place['address'] = place_data.address
-        place['imgUrl'] = place_data.img_url
-        place['info'] = place_data.info
-        place['favorite'] = place_data.favorite
-        place['category'] = place_data.category
-        place['phoneNumber'] = place_data.phone_number
-        place['rating'] = place_data.rating
-        place['summary'] = place_data.summary
-        place['website'] = place_data.website
-        place['avgVisitTime'] = place_data.avg_visit_time
+        place_schema.jsonify(place_data)
         place['geocode'] = [place_data.lat, place_data.long]
-        place['lat'] = place_data.lat
-        place['long'] = place_data.long
-
-        if hasattr(place_data, 'day_id'):
-            place['dayId'] = place_data.day_id
-        if hasattr(place_data, 'in_itinerary'):
-            place['inItinerary'] = place_data.in_itinerary
+        place['id'] = place.id
         
         # making the index one of the keys with the place dictionary as the value
         places_serial[place['positionId']] = place
-
-    # for i in range(places_last):
-
-    #     # extracts the places_serial dictionary (the value) at the corresponding serial number key.
-    #     place = places_serial[i + 1] 
-
-    #     db_place = Place.query.filter_by(position_id=place['positionId'], trip_id=trip_id).first()
-
-    #     # Are we repeating the assigning of the 'place_id' key because the first object originally fed into 
-    #     # the function may not always have the place_id?
-    #     # Like if the places are coming from the frontend and have not been inputted in the database yet?
-    #     places_serial[i + 1]['place_id'] = db_place.place_id
 
     return places_serial
 
