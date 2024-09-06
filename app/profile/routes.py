@@ -1,8 +1,8 @@
 # EXTERNAL
-from flask import Blueprint, request, jsonify, redirect, url_for
+from flask import Blueprint, request, jsonify
 
 # INTERNAL
-from app.models import User, UserInfo, user_schema, user_info_schema, db
+from app.models import User, UserInfo, user_schema, db
 
 profile = Blueprint('profile', __name__, url_prefix='/profile')
 
@@ -10,37 +10,37 @@ profile = Blueprint('profile', __name__, url_prefix='/profile')
 @profile.route('/user', methods=['POST'])
 def add_user():
     uid = request.json['uid']
-    username = request.json['displayName']
+    username = request.json['username']
     email = request.json['email']
     has_access = False
 
-    if User.query.filter_by(uid = uid).first():
-        return "User has already been added to the database."
+    # Check if the user exists
+    if User.query.filter_by(uid=uid).first():
+        return jsonify({"message": "User has already been added to the database."}), 400
 
     new_user = User(uid, username, email, has_access)
 
     db.session.add(new_user)
     db.session.commit()
 
-    # user = User.query.get(new_user.uid)
-
-    # will send back the row with name, email, and uid that matches this uid
+    # Send back user if correctly added to database
     user = User.query.filter_by(uid=new_user.uid).first()
-
-    return user_schema.jsonify(user)
-
-    # return f'It worked. ID: {new_user.uid} Username: {new_user.username} Email: {new_user.email}'
+    if user:
+        return user_schema.jsonify(user), 200
+    else:
+        return jsonify({"message": f'Failed adding user {uid}'}), 500
 
 @profile.route('/test', methods=['POST', 'GET'])
 def test():
-    return "Waking up!"
+    return "Waking up!", 200
 
 # Creates a user info row attached to a specific user
 @profile.route('/user_info', methods=['POST', 'GET'])
 def add_userinfo():
 
+    # Get requested data for user and categories
     uid = request.json['uid']
-    categories = request.json['categories']      # this returns a dictionary
+    categories = request.json['categories']
 
     shopping = categories['shopping']
     nature = categories['nature']
@@ -50,13 +50,14 @@ def add_userinfo():
     food = categories['food']
     arts = categories['arts']    
 
-    new_userinfo = UserInfo(uid, shopping, nature, landmarks, entertainment, relaxation, food, arts)
+    # Create new user info
+    user_info = UserInfo(uid, shopping, nature, landmarks, entertainment, relaxation, food, arts)
 
-    db.session.add(new_userinfo)
+    db.session.add(user_info)
     db.session.commit()
 
-    # user_info = UserInfo.query.get(new_userinfo.id)
-
-    # return user_info_schema.jsonify(user_info)
-
-    return 'hello'
+    user_info_record = UserInfo.query.get(uid)
+    if user_info_record:
+        return jsonify({"message": f"Hello {user_info_record.user.username}"}), 200
+    else:
+        return jsonify({"message": "Failed adding user info"}), 500

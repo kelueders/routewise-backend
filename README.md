@@ -399,7 +399,7 @@ Running the program in a docker container ensures it runs in a clean enviornment
     ```json
     {
         "uid": "",
-        "displayName": "",
+        "username": "",
         "email": ""
     }
     ```
@@ -407,7 +407,7 @@ Running the program in a docker container ensures it runs in a clean enviornment
     ```json
     {
         "email": "",
-        "has_access": ,
+        "hasAccess": ,
         "uid": "",
         "username": ""
     }

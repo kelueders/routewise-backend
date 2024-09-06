@@ -28,7 +28,7 @@ class User(db.Model):
 class UserSchema(ma.Schema):
     class Meta:
         # These fields will be posted or returned?
-        fields = ['uid', 'username', 'email', 'has_access']
+        fields = ['uid', 'username', 'email', 'hasAccess']
 
 user_schema = UserSchema()
 
@@ -62,7 +62,7 @@ class UserInfo(db.Model):
     
 class UserInfoSchema(ma.Schema):
     class Meta:
-        fields = ['user_uid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
+        fields = ['userUid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
 
 user_info_schema = UserInfoSchema()
 
@@ -121,12 +121,12 @@ class Trip(db.Model):
     
 class TripSchema(ma.Schema):
     class Meta:
-        fields = ['id', 'name', 'dest_city', 'dest_state', 'dest_country', 'dest_country_abbr', 
-                  'dest_lat', 'dest_long', 'dest_img_url', 'start_date', 'end_date', 'is_itinerary', 
-                  'user_uid', 'duration']
+        fields = ['id', 'name', 'destCity', 'destState', 'destCountry', 'destCountryAbbr', 
+                  'destLat', 'destLong', 'destImgUrl', 'startDate', 'endDate', 'isItinerary', 
+                  'userUid', 'duration']
 
 trip_schema = TripSchema()
-trips_schema = TripSchema(many = True)
+trips_schema = TripSchema(many=True)
 
 
 
@@ -183,12 +183,12 @@ class Place(db.Model):
     
 class PlaceSchema(ma.Schema):
     class Meta:
-        fields = ['api_id', 'position_id', 'name', 'address', 'img_url', 'info', 'favorite', 
-                  'category', 'phone_number', 'rating', 'summary', 'website', 'avg_visit_time', 
-                  'lat', 'long', 'in_itinerary', 'trip_id']
+        fields = ['apiId', 'positionId', 'name', 'address', 'imgUrl', 'info', 'favorite', 
+                  'category', 'phoneNumber', 'rating', 'summary', 'website', 'avgVisitTime', 
+                  'lat', 'long', 'inItinerary', 'tripId']
 
 place_schema = PlaceSchema()
-places_schema = PlaceSchema(many = True)
+places_schema = PlaceSchema(many=True)
 
 
 
@@ -217,7 +217,7 @@ class Day(db.Model):
     
 class DaySchema(ma.Schema):
     class Meta:
-        fields = ['id', 'name', 'date_formatted', 'date_converted', 'date_short', 'week_day', 'trip_id']
+        fields = ['id', 'name', 'dateFormatted', 'dateConverted', 'dateShort', 'weekDay', 'tripId']
 
 day_schema = DaySchema()
-days_schema = DaySchema(many = True)
+days_schema = DaySchema(many=True)
