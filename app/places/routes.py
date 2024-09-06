@@ -198,23 +198,6 @@ def update_trip(trip_id):
     return "Trip Name and/or Duration Updated", 200
 
 
-# Add a place to the user's list
-@places.route('/add-place/<trip_id>', methods=['POST'])
-def add_place(trip_id):
-    places_last_id = request.json['placesLast']
-    places_serial = request.json['places_serial']
-
-    # Add places serials to trip
-    add_places(trip_id, places_last_id, places_serial)
-
-    # Validate that place has been added
-    place_records = Place.query.filter_by(trip_id=trip_id).all()
-    if create_places_last(place_records) == (places_last_id + len(places_serial)):
-        return "It worked. The places were added!", 200
-    else:
-        return "Failed adding places to trip", 500
-
-
 # Return all the places for a specific trip  
 @places.route('/get-places/<trip_id>', methods=['GET'])
 def get_places(trip_id):
@@ -236,8 +219,8 @@ def get_places(trip_id):
 # Allows the user to add a place before there is an itinerary created, commit it to the database
 # Also allows the user to add a place to the saved places list even after the itinerary is created
 # and then return the place_id to the frontend
-@places.route('add-get-place/<trip_id>', methods = ['GET', 'POST'])
-def add_get_place(trip_id):
+@places.route('add-place/<trip_id>', methods = ['GET', 'POST'])
+def add_place(trip_id):
 
     # Get requested data about a place
     place_data = request.get_json()
