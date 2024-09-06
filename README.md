@@ -209,15 +209,15 @@ Running the program in a docker container ensures it runs in a clean enviornment
   ```json
   {
     "uid": "",
-    "tripData": {
-      "tripName": "",
-      "cityName": "",
+    "trip": {
+      "name": "",
+      "city": "",
       "state": "",
       "country": "",
-      "country_2letter": "",
-      "destinationLat": ,
-      "destinationLong": ,
-      "destinationImg": "",
+      "countryAbbr": "",
+      "lat": ,
+      "long": ,
+      "imgUrl": "",
       "startDate": "",
       "endDate": ""
     }
@@ -226,9 +226,9 @@ Running the program in a docker container ensures it runs in a clean enviornment
 - **Response**:
   ```json
   {
-    "trip_id": ,
-    "start_date": "",
-    "end_date": "",
+    "tripId": ,
+    "startDate": "",
+    "endDate": "",
     "duration":
   }
   ```
@@ -238,16 +238,16 @@ Running the program in a docker container ensures it runs in a clean enviornment
 - **Response**: 
     ```json
     {
-        "day_order": [
+        "dayOrder": [
             "day-1"
         ],
         "days": {
             "day-1": {
-                "date_converted": "",
-                "date_short": "",
+                "dateConverted": "",
+                "dateShort": "",
                 "dayName": "",
-                "day_short": "",
-                "db_id": ,
+                "dayShort": "",
+                "dayId": ,
                 "id": "day-1",
                 "placeIds": [
                 ]
@@ -256,10 +256,10 @@ Running the program in a docker container ensures it runs in a clean enviornment
         "places": {
             "1": {
                 "address": "",
-                "apiPlaceId": "",
+                "apiId": "",
                 "avgVisitTime": ,
                 "category": "",
-                "day_id": ,
+                "dayId": ,
                 "favorite": false,
                 "geocode": [
                 ],
@@ -270,20 +270,20 @@ Running the program in a docker container ensures it runs in a clean enviornment
                 "long": ,
                 "phoneNumber": "",
                 "placeName": "",
-                "place_id": ,
+                "placeId": ,
                 "rating": "",
                 "summary": "",
                 "website": ""
             }
         },
-        "places_last": ,
-        "saved_places": {
+        "placesLast": ,
+        "savedPlaces": {
             "addresses": [
             ],
             "placesIds": [
             ]
         },
-        "trip_id": 
+        "tripId": 
     }
     ```
 
@@ -302,34 +302,6 @@ Running the program in a docker container ensures it runs in a clean enviornment
     }
     ```
 
-### `POST /places/add-place/<trip_id>`
-- **Description**: Add place to trip.
-- **Request Body**:
-    ```json
-    {
-        "tripId": ,
-        "placesLast": ,
-        "places_serial": [
-            {
-                "id": 1,
-                "placeName": "",
-                "placeId": "",
-                "address": "",
-                "imgURL": "",
-                "category": "",
-                "phoneNumber": "",
-                "rating": "",
-                "summary": "",
-                "website": "",
-                "favorite": false,
-                "info": "",
-                "lat": ,
-                "long": 
-            }
-        ]
-    }
-    ```
-
 ### `GET /places/get-places/<trip_id>`
 - **Description**: Gets places in trip.
 - **Response**: 
@@ -337,21 +309,21 @@ Running the program in a docker container ensures it runs in a clean enviornment
     {
         "1": {
             "address": "",
-            "apiPlaceId": "",
+            "apiId": "",
             "avgVisitTime": 60.0,
             "category": "",
-            "day_id": ,
+            "dayId": ,
             "favorite": false,
             "geocode": [ , ],
-            "imgURL": "",
-            "in_itinerary": true,
+            "imgUrl": "",
+            "inItinerary": true,
             "info": "",
             "lat": ,
-            "local_id": 1,
+            "positonId": 1,
             "long": ,
             "phoneNumber": "",
             "placeName": "",
-            "place_id": ,
+            "id": ,
             "rating": "",
             "summary": "",
             "website": ""
@@ -359,23 +331,24 @@ Running the program in a docker container ensures it runs in a clean enviornment
     }
     ```
 
-### `GET|POST /places/add-get-place/<trip_id>`
+### `GET|POST /places/add-place/<trip_id>`
 - **Description**: Add a place to empty itinerary.
 - **Request Body**:
     ```json
     {
-        "id": ,
-        "placeName": "",
-        "placeId": "",
+        "apiId": ,
+        "positionId": "",
+        "name": "",
         "address": "",
         "imgURL": "",
-        "category": "",
+        "info": "",
         "favorite": false,
+        "category": "",
         "phoneNumber": "",
         "rating": "",
         "summary": "",
         "website": "",
-        "info": "",
+        "avgVisitTime": "",
         "lat": ,
         "long": 
     }
@@ -388,23 +361,23 @@ Running the program in a docker container ensures it runs in a clean enviornment
     ```json
     {
         "uid": "",
-        "currentTrip": {
-            "tripName": "",
+        "trip": {
+            "name": "",
             "city": "",
             "state": "",
             "country": "",
-            "country_2letter": "",
+            "countryAbbr": "",
             "geocode": [],
             "imgUrl": "",
             "startDate": "",
             "endDate": "",
             "places": [
                 {
-                    "id": 1,
-                    "placeName": "",
-                    "placeId": "",
+                    "positionId": 1,
+                    "name": "",
+                    "apiId": "",
                     "address": "",
-                    "imgURL": "",
+                    "imgUrl": "",
                     "category": "",
                     "favorite": false,
                     "phoneNumber": "",

@@ -11,53 +11,50 @@ places = Blueprint('places', __name__, url_prefix='/places')
 @places.route('/trip', methods=['POST', 'GET'])
 def add_trip():
     # Get requested data
-    uid = request.json['uid']
-    trip_data = request.json['tripData']
+    user_uid = request.json['uid']
+    trip_data = request.json['trip']
 
-    trip_name = trip_data['tripName']
-    dest_city = trip_data['cityName']
+    trip_name = trip_data['name']
+    dest_city = trip_data['city']
     dest_state = trip_data['state']
     dest_country = trip_data['country']
-    dest_country_2letter = trip_data['country_2letter']
+    dest_country_abbr = trip_data['countryAbbr']
     dest_lat = trip_data['destinationLat']
     dest_long = trip_data['destinationLong']
-    dest_url = trip_data['destinationImg']
+    dest_img_url = trip_data['destinationImgUrl']
     start_date = trip_data['startDate']
     end_date = trip_data['endDate']
 
     # Create trip object
-    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_2letter, dest_lat, dest_long, 
-                dest_url, start_date, end_date, uid)
+    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_abbr, dest_lat, dest_long, 
+                dest_img_url, start_date, end_date, user_uid)
 
     # Add trip to database
     db.session.add(trip)
     db.session.commit()
 
     # Validate and get new trip from database
-    trip_record = Trip.query.filter_by(trip_id=trip.trip_id).first()
+    trip_record = Trip.query.filter_by(id=trip.id).first()
     if trip_record:
         return {
-            "trip_id": trip_record.trip_id,
-            "start_date": trip_record.start_date,
-            "end_date": trip_record.end_date,
+            "tripId": trip_record.id,
+            "startDate": trip_record.start_date,
+            "endDate": trip_record.end_date,
             "duration": trip_record.duration
         }, 200
     else:
-        return "Failed to add trip", 500
+        return jsonify({"message": "Failed to add trip"}), 500
 
 
 # Return a specific trip from the database to the front-end
 @places.route('/trip/<trip_id>', methods=['GET'])
 def get_trip(trip_id):
 
-    if not trip_id:
-        return jsonify({'message': 'Trip ID is missing'}), 401
-
     # Get all the necessary data
     places = Place.query.filter_by(trip_id=trip_id).all()
     day_records = Day.query.filter_by(trip_id=trip_id).all()
     if not places or not day_records:
-        return jsonify({'message': 'No places or days associated with trip'}), 400
+        return jsonify({"message": "No places or days associated with trip"}), 400
     
     places_last_id = create_places_last(places)
     serialized_places = serialize_places(places, places_last_id, trip_id)
@@ -66,7 +63,7 @@ def get_trip(trip_id):
     saved_places_ids = []
     for i, place_data in enumerate(places):
         if place_data.in_itinerary != True and not place_data.day_id:
-            saved_places_ids.append(place_data.local_id)
+            saved_places_ids.append(place_data.position_id)
     
     # Create a dict of days with keys "day-#"
     days = {}
@@ -76,28 +73,28 @@ def get_trip(trip_id):
         # day_id = f'day-{i + 1}'
         # days[day_id] = {
         #     'id': day_id,
-        #     'day_id': day.day_id,
+        #     'dayId': day.id,
         #     'placeIds': [],
-        #     'date_formatted': day.date_formatted,
-        #     'date_converted': day.date_converted,
-        #     'date_short': day.date_short,
-        #     'day_short': day.week_day,
-        #     'dayName': day.day_name
+        #     'dateFormatted': day.date_formatted,
+        #     'dateConverted': day.date_converted,
+        #     'dateShort': day.date_short,
+        #     'dayShort': day.week_day,
+        #     'dayName': day.name
         # } 
 
         # Add the all the corresponding places id the day
-        places_in_day = Place.query.filter_by(trip_id=trip_id, day_id=day.day_id).all()
+        places_in_day = Place.query.filter_by(trip_id=trip_id, day_id=day.id).all()
         for place in places_in_day:
-            days[day_dict['id']]['placeIds'].append(place.local_id)
+            days[day_dict['id']]['placeIds'].append(place.position_id)
         
     # Format of data to be sent to the front end
     return {
-        "trip_id": int(trip_id),
-        "places_last": places_last_id,
+        "tripId": int(trip_id),
+        "placesLastId": places_last_id,
         "places": serialized_places,
         "days": days,
-        "day_order": list(days.keys()),
-        "saved_places": { 
+        "dayOrder": list(days.keys()),
+        "savedPlaces": { 
             "placesIds": saved_places_ids,
             "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
             }
@@ -107,26 +104,21 @@ def get_trip(trip_id):
 # Return all the trips for a specific user   
 @places.route('/trips/<uid>', methods=['GET'])
 def get_trips(uid):
-    if not uid:
-        return jsonify({'message': 'UID is missing'}), 401
-
     # Get all trips from user
-    trips = Trip.query.filter_by(uid=uid).all()
+    trips = Trip.query.filter_by(user_uid=uid).all()
     if trips:
         response = trips_schema.dump(trips)
         return jsonify(response), 200
     else:
-        return jsonify({'message': 'No user'}), 400
+        return jsonify({"message": "No user"}), 400
 
 
 # Delete a trip and its corresponding places and days
 @places.route('/delete-trip/<trip_id>', methods=['DELETE'])
 def delete_trip(trip_id):
-    if not trip_id:
-        return jsonify({'message': 'Trip ID is missing'}), 401
     
     # Get trip and corresponding places and days to delete
-    trip = Trip.query.filter_by(trip_id=trip_id).first()
+    trip = Trip.query.filter_by(id=trip_id).first()
     places = Place.query.filter_by(trip_id=trip_id).all()
     days = Day.query.filter_by(trip_id=trip_id).all()
 
@@ -143,12 +135,12 @@ def delete_trip(trip_id):
     db.session.commit()
 
     # Validate data has been deleted
-    if (not Trip.query.filter_by(trip_id=trip_id).first() and 
+    if (not Trip.query.filter_by(id=trip_id).first() and 
         not Place.query.filter_by(trip_id=trip_id).all() and 
         not Day.query.filter_by(trip_id=trip_id).all()):
-        return "Trip deleted yay", 200
+        return jsonify({"message": "Trip deleted yay"}), 200
     else:
-        return f"Failed to delete trip {trip_id}", 500
+        return jsonify({"message": f"Failed to delete trip {trip_id}"}), 500
 
 
 '''
@@ -164,12 +156,12 @@ def update_trip(trip_id):
     # Get requested data
     trip = Trip.query.get(trip_id)
     if not trip:
-        return f"No trip {trip_id}", 400
+        return jsonify({"message": f"No trip {trip_id}"}), 400
     data = request.get_json()
 
     # Rename trip
     if data['tripName']:
-        trip.trip_name = data['tripName']  
+        trip.name = data['tripName']  
         db.session.commit()
 
     # Edit trip dates
@@ -184,7 +176,6 @@ def update_trip(trip_id):
 
         # If itinerary has been already been created, delete old days and create new itinerary
         if trip.is_itinerary:
-            print("shouldnt be getting here")
             # delete old days
             days = Day.query.filter_by(trip_id=trip_id).all()
             for day in days:
@@ -195,20 +186,17 @@ def update_trip(trip_id):
             # create new itinerary
             return redirect(url_for('itinerary.create_days', trip_id=trip_id))
 
-    return "Trip Name and/or Duration Updated", 200
+    return jsonify({"message": "Trip Name and/or Duration Updated"}), 200
 
 
 # Return all the places for a specific trip  
 @places.route('/get-places/<trip_id>', methods=['GET'])
 def get_places(trip_id):
 
-    if not trip_id:
-        return jsonify({'message': 'Trip ID is missing'}), 401
-    
     # Get places for trip
     places = Place.query.filter_by(trip_id=trip_id).all()
     if not places:
-        return f"No places for trip {trip_id}", 400
+        return jsonify({"message": f"No places for trip {trip_id}"}), 400
     
     # Format places to send to frontend
     places_last_id = create_places_last(places)
@@ -224,35 +212,35 @@ def add_place(trip_id):
 
     # Get requested data about a place
     place_data = request.get_json()
-    local_id = place_data['id']
-    place_name = place_data['placeName']
-    geoapify_placeId = place_data['placeId']
-    place_address = place_data['address']
-    place_img = place_data['imgURL']
+    api_id = place_data['apiId']
+    position_id = place_data['positionId']
+    name = place_data['name']
+    address = place_data['address']
+    img_url = place_data['imgURL']
+    info = place_data['info']
+    favorite = place_data['favorite']
     category = place_data.get('category', None)
     phone_number = place_data.get('phoneNumber', None)
     rating = place_data.get('rating', None)
     summary = place_data.get('summary', None)
     website = place_data.get('website', None)
     avg_visit_time = place_data.get('avgVisitTime', 60)
-    favorite = place_data['favorite']
-    info = place_data['info']
     lat = place_data['lat']
     long = place_data['long']
     in_itinerary = False
 
-    place = Place(local_id, place_name, geoapify_placeId, place_address, place_img, info, favorite, 
+    place = Place(api_id, position_id, name, address, img_url, info, favorite, 
                   category, phone_number, rating, summary, website, avg_visit_time, lat, long, in_itinerary, trip_id)
 
     db.session.add(place)
     db.session.commit()
 
     # Validate that the place has been added and return place id
-    place_record = Place.query.filter_by(local_id=local_id, trip_id=trip_id).first()
+    place_record = Place.query.filter_by(position_id=position_id, trip_id=trip_id).first()
     if place_record:
-        return str(place_record.place_id), 200
+        return jsonify({"apiId": str(place_record.api_id)}), 200
     else:
-        return "Place could not be added", 500
+        return jsonify({"message": "Place could not be added"}), 500
 
 
 # User flow for when the user is not logged in - it will create the trip and places at the same time
@@ -262,13 +250,13 @@ def add_trip_and_places():
     # Get requested data about trip
     data = request.get_json()
 
-    uid = data['uid']
-    trip_data = data['currentTrip']
-    trip_name = trip_data['tripName']
+    user_uid = data['uid']
+    trip_data = data['trip']
+    trip_name = trip_data['name']
     dest_city = trip_data['city']
     dest_state = trip_data['state']
     dest_country = trip_data['country']
-    dest_country_2letter = trip_data['country_2letter']
+    dest_country_abbr = trip_data['countryAbbr']
     dest_lat = trip_data['geocode'][0]
     dest_long = trip_data['geocode'][1]
     dest_url = trip_data['imgUrl']
@@ -276,8 +264,8 @@ def add_trip_and_places():
     end_date = trip_data['endDate']
 
     # Create and add Trip to database
-    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_2letter, dest_lat, dest_long, 
-            dest_url, start_date, end_date, uid)
+    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_abbr, dest_lat, dest_long, 
+            dest_url, start_date, end_date, user_uid)
     
     db.session.add(trip)
     db.session.commit()
@@ -287,12 +275,12 @@ def add_trip_and_places():
     places_last_id = create_places_last(places)
 
     # Create and add places to database
-    add_places(trip.trip_id, places_last_id, places)
+    add_places(trip.id, places_last_id, places)
 
     # Validate trip and places were added successfully
-    trip_record = Trip.query.filter_by(trip_id=trip.trip_id)
-    place_records = Place.query.filter_by(trip_id=trip.trip_id).all()
+    trip_record = Trip.query.filter_by(trip_id=trip.id)
+    place_records = Place.query.filter_by(trip_id=trip.id).all()
     if trip_record and (create_places_last(place_records) == (places_last_id + len(places))):
-        return "Trip and places have been added to the database.", 200
+        return jsonify({"message": "Trip and places have been added to the database."}), 200
     else:
-        return "Failed adding trip or places", 500
+        return jsonify({"message": "Failed adding trip or places"}), 500
