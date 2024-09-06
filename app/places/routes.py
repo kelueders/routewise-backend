@@ -3,7 +3,7 @@ from flask import Blueprint, redirect, request, jsonify, url_for
 
 # INTERNAL
 from ..models import Trip, Place, Day, db, trip_schema, trips_schema, places_schema, place_schema
-from ..global_helpers import create_places_last, serialize_places, add_places
+from ..global_helpers import create_places_last, serialize_places, add_places, create_day_dict
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -71,22 +71,24 @@ def get_trip(trip_id):
     # Create a dict of days with keys "day-#"
     days = {}
     for i, day in enumerate(day_records):
-        day_id = f'day-{i + 1}'
-        days[day_id] = {
-            'id': day_id,
-            'day_id': day.day_id,
-            'placeIds': [],
-            'date_formatted': day.date_formatted,
-            'date_converted': day.date_converted,
-            'date_short': day.date_short,
-            'day_short': day.week_day,
-            'dayName': day.day_name
-        } 
+        day_dict = create_day_dict(i+1, day)
+        days[day_dict['id']] = day_dict
+        # day_id = f'day-{i + 1}'
+        # days[day_id] = {
+        #     'id': day_id,
+        #     'day_id': day.day_id,
+        #     'placeIds': [],
+        #     'date_formatted': day.date_formatted,
+        #     'date_converted': day.date_converted,
+        #     'date_short': day.date_short,
+        #     'day_short': day.week_day,
+        #     'dayName': day.day_name
+        # } 
 
         # Add the all the corresponding places id the day
         places_in_day = Place.query.filter_by(trip_id=trip_id, day_id=day.day_id).all()
         for place in places_in_day:
-            days[day_id]['placeIds'].append(place.local_id)
+            days[day_dict['id']]['placeIds'].append(place.local_id)
         
     # Format of data to be sent to the front end
     return {

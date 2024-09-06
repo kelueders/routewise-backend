@@ -161,17 +161,15 @@ def replace_day_id(places, day_id_1, day_id_2):
     for place in places:
         place.day_id = day_id_2
 
-# def create_day_dict():
-#     '''
-#     "days": {
-#         "day-1": {
-#             "id": "day-1",
-#             "date_converted": "Thursday, November 9",
-#             "day_short": "Thurs",
-#             "date_short": "11/9",
-#             "dayName": "",
-#             "placeIds": []
-#             NEED TO ADD REST OF THE DAY DATA *******
-#         }
-#     }
-#     '''
+def create_day_dict(day_num, day):
+    id = f'day-{day_num}'
+    return {
+        'id': id,
+        'day_id': day.day_id,
+        'placeIds': [],
+        'date_formatted': day.date_formatted,
+        'date_converted': day.date_converted,
+        'date_short': day.date_short,
+        'day_short': day.week_day,
+        'dayName': day.day_name
+    }
