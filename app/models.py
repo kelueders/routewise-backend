@@ -13,8 +13,8 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
     has_access = db.Column(db.Boolean, default=False, nullable=True)
-    user_info = db.relationship('UserInfo', back_populates = 'user')
-    trip = db.relationship('Trip', back_populates = 'user')
+    user_info = db.relationship('UserInfo', back_populates='user')
+    trip = db.relationship('Trip', back_populates='user')
 
     def __init__(self, uid, username, email, has_access):
         self.uid = uid
@@ -45,7 +45,7 @@ class UserInfo(db.Model):
     food = db.Column(db.Boolean, default=False, nullable=False)
     arts = db.Column(db.Boolean, default=False, nullable=False)
     user_uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
-    user = db.relationship('User', back_populates = 'user_info')
+    user = db.relationship('User', back_populates='user_info')
 
     def __init__(self, user_uid, shopping, nature, landmarks, entertainment, relaxation, food, arts):                       
         self.user_uid = user_uid
@@ -86,9 +86,9 @@ class Trip(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_itinerary = db.Column(db.Boolean, default=False, nullable=True)
     user_uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
-    user = db.relationship('User', back_populates = 'trip')
-    place = db.relationship('Place', back_populates = 'trip')
-    day = db.relationship('Day', back_populates = 'trip')
+    user = db.relationship('User', back_populates='trip')
+    place = db.relationship('Place', back_populates='trip')
+    day = db.relationship('Day', back_populates='trip')
 
     def __init__(self, name, dest_city, dest_state, dest_country, dest_country_abbr, dest_lat, dest_long, 
                  dest_img_url, start_date, end_date, user_uid):

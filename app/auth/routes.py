@@ -30,6 +30,6 @@ def check_code():
         return jsonify({"message": "Access granted"}), 200
     else:
         # Access denied to user
-        return jsonify({"message": "Access NOT granted"}), 200
+        return jsonify({"message": "Access NOT granted"}), 401
 
 
