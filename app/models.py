@@ -26,6 +26,8 @@ class User(db.Model):
         return f"User {self.username} has been added to the database." 
 
 class UserSchema(ma.Schema):
+    hasAccess = ma.Boolean(attribute='has_access')
+
     class Meta:
         # These fields will be posted or returned?
         fields = ['uid', 'username', 'email', 'hasAccess']
@@ -61,6 +63,8 @@ class UserInfo(db.Model):
         return f'{self.user_uid} User Object'
     
 class UserInfoSchema(ma.Schema):
+    userUid = ma.String(attribute='user_uid')
+    
     class Meta:
         fields = ['userUid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
 

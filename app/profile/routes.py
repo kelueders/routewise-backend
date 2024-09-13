@@ -26,7 +26,9 @@ def add_user():
     # Send back user if correctly added to database
     user = User.query.filter_by(uid=new_user.uid).first()
     if user:
-        return user_schema.jsonify(user), 200
+        response = user_schema.dump(user)
+        print(response)
+        return jsonify(response), 200
     else:
         return jsonify({"message": f'Failed adding user {uid}'}), 500
 
@@ -36,10 +38,14 @@ def test():
 
 # Creates a user info row attached to a specific user
 @profile.route('/user_info', methods=['POST', 'GET'])
-def add_userinfo():
+def add_user_info():
 
     # Get requested data for user and categories
     uid = request.json['uid']
+    # Make sure user exists
+    if not User.query.filter_by(uid=uid).first():
+        return jsonify({"message": "User has not been created."}), 400
+
     categories = request.json['categories']
 
     shopping = categories['shopping']
@@ -56,7 +62,7 @@ def add_userinfo():
     db.session.add(user_info)
     db.session.commit()
 
-    user_info_record = UserInfo.query.get(uid)
+    user_info_record = UserInfo.query.filter_by(user_uid=uid).first()
     if user_info_record:
         return jsonify({"message": f"Hello {user_info_record.user.username}"}), 200
     else:
