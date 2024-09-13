@@ -27,7 +27,6 @@ def add_user():
     user = User.query.filter_by(uid=new_user.uid).first()
     if user:
         response = user_schema.dump(user)
-        print(response)
         return jsonify(response), 200
     else:
         return jsonify({"message": f'Failed adding user {uid}'}), 500

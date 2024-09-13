@@ -1,11 +1,5 @@
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
-
 import pytest
-from tests.config import test_client
-from app.models import User, UserInfo, user_schema, db
+from ..config import test_client
 
 class TestProfileRoute():
     

@@ -67,6 +67,10 @@ Running the program in a docker container ensures it runs in a clean enviornment
     docker stop container_id
     ```
 
+### Running Unit Tests
+run pytest
+
+
 ## Code Structure
 - /app : The Flask code is contained in the app directory. It also initiates the webpage for port 5000.
     - models.py : contains the schema for database models.
