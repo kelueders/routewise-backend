@@ -29,13 +29,13 @@ class Itinerary:
         self.sorted_days = []                   # Multi-dimen array - row is day, column is placeId
 
     def get_places(self):
-        return Place.query.filter_by(trip_id = self.trip_id).all()
+        return Place.query.filter_by(trip_id=self.trip_id).all()
     
     def get_duration(self):
-        trip = Trip.query.filter_by(trip_id = self.trip_id).first()
+        trip = Trip.query.filter_by(id=self.trip_id).first()
         return trip.duration
 
-    def cluster_analysis(self):
+    def generate(self):
         # Set number of starting clusters
         n_clusters = self.duration
         if len(self.places) < self.duration:

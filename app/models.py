@@ -123,6 +123,9 @@ class Trip(db.Model):
 
         return duration
     
+    def convert_to_datetime(self, date):
+        return datetime.strptime(date, '%Y-%m-%d').date()
+    
 class TripSchema(ma.Schema):
     destCity = ma.String(attribute='dest_city')
     destState = ma.String(attribute='dest_state')
@@ -221,34 +224,33 @@ places_schema = PlaceSchema(many=True)
 class Day(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(60), nullable=True)
-    date_formatted = db.Column(db.Date)
-    date_converted = db.Column(db.String(60))
-    date_short = db.Column(db.String(60))
-    week_day = db.Column(db.String(60))
+    date_yyyy_mm_dd = db.Column(db.String)
+    date_weekday_month_day = db.Column(db.String(60))
+    date_mm_dd = db.Column(db.String(60))
+    weekday = db.Column(db.String(60))
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.id'), nullable=False)
     trip = db.relationship('Trip', back_populates='day')
     place = db.relationship('Place', back_populates='day')
 
-    def __init__(self, name, date_formatted, date_converted, date_short, week_day, trip_id):
+    def __init__(self, name, date, trip_id):
         self.name = name
-        self.date_formatted = date_formatted
-        self.date_converted = date_converted
-        self.date_short = date_short
-        self.week_day = week_day
+        self.date_yyyy_mm_dd = date.strftime('%Y-%m-%d')
+        self.date_weekday_month_day = date.strftime('%A, %B %#d')
+        self.date_mm_dd = date.strftime('%m/%d')
+        self.weekday = date.strftime('%a')
         self.trip_id = trip_id
     
     def __repr__(self):
         return f'{self.date_formatted} Day Object.'
     
 class DaySchema(ma.Schema):
-    dateFormatted = ma.Date(attribute='date_formatted')
-    dateConverted = ma.String(attribute='date_converted')
-    dateShort = ma.String(attribute='date_short')
-    weekDay = ma.String(attribute='week_day')
+    dateYYYYMMDD = ma.String(attribute='date_yyyy_mm_dd')
+    dateWeekdayMonthDay = ma.String(attribute='date_weekday_month_day')
+    dateMMDD = ma.String(attribute='date_mm_dd')
     tripId = ma.Integer(attribute='trip_id')
 
     class Meta:
-        fields = ['id', 'name', 'dateFormatted', 'dateConverted', 'dateShort', 'weekDay', 'tripId']
+        fields = ['id', 'name', 'dateYYYYMMDD', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday', 'tripId']
 
 day_schema = DaySchema()
 days_schema = DaySchema(many=True)

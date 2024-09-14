@@ -3,15 +3,15 @@ from flask import Blueprint, request, jsonify
 from datetime import timedelta
 
 # INTERNAL
-from ..models import Place, Trip, Day, db, place_schema
+from ..models import Place, Trip, Day, db, place_schema, day_schema
 from ..global_helpers import create_places_last_id, serialize_places, replace_day_id
 from .itinerary import Itinerary
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
 # Create itinerary with places sorted into days
-@itinerary.route('/createdays/<trip_id>', methods=['GET', 'PATCH'])
-def create_days(trip_id):
+@itinerary.route('/generate/<trip_id>', methods=['GET', 'PATCH'])
+def generate_itinerary(trip_id):
     
     # Check that there is a trip with the id
     trip = Trip.query.filter_by(id=trip_id).first()
@@ -19,7 +19,6 @@ def create_days(trip_id):
         return jsonify({'message': 'No Trip for trip ID'}), 404
     
     places = Place.query.filter_by(trip_id=trip_id).all()
-    places_last_id = len(places) + 1
 
     # Create days if they havent been created already
     days_data = Day.query.filter_by(trip_id=trip_id).all()
@@ -28,38 +27,23 @@ def create_days(trip_id):
         # serialize days
         for i, day_data in enumerate(days_data):
             day_id = f'day-{i + 1}'
-            days[day_id] = {
-                'id': day_id,
-                'placeIds': [],
-                'dateFormatted': day_data.date_formatted,
-                'dateConverted': day_data.date_converted,
-                'dateShort': day_data.date_short,
-                'dayShort': day_data.week_day,
-                'dayName': day_data.day_name
-            } 
+            days[day_id] = day_schema.dump(day_data)
+            days[day_id]['id'] = day_id
+            days[day_id]['placeIds'] = []
+            days[day_id].pop('tripId', None)
     else:
-        current_date = trip.start_date
+        current_date = trip.convert_to_datetime(trip.start_date)
         for i in range(1, trip.duration + 1):
-            # Day info
-            date_converted = current_date.strftime('%A, %B %#d')
-            date_short = current_date.strftime('%m/%d')
-            week_day = current_date.strftime('%a')
-            day_name = ""
+            # Create and add day to database
+            new_day = Day('', current_date, trip_id)
 
             # Serialize day
             day_id = f'day-{i}'
-            days[day_id] = {
-                'id': day_id,
-                'placeIds': [],
-                'dateFormatted': current_date,
-                'dateConverted': date_converted,
-                'dateShort': date_short,
-                'dayShort': week_day,
-                'dayName': day_name
-            } 
+            days[day_id] = day_schema.dump(new_day)
+            days[day_id]['id'] = day_id
+            days[day_id]['placeIds'] = []
+            days[day_id].pop('tripId', None)
 
-            # Create and add day to database
-            new_day = Day(current_date, date_converted, date_short, week_day, day_name, trip_id)
             db.session.add(new_day)
 
             # Increments by 1 the day that is added to the trip, starting at the trip start date
@@ -67,7 +51,7 @@ def create_days(trip_id):
 
     # Create Itinerary and cluster data
     itinerary = Itinerary(trip_id)
-    itinerary_data = itinerary.cluster_analysis()       # multi-dimen array - rows=days, cols=place_ids
+    itinerary_data = itinerary.generate()       # multi-dimen array - rows=days, cols=place_ids
 
     # Populate saved_places and days with places from itinerary_data
     saved_places_ids = []
@@ -81,10 +65,10 @@ def create_days(trip_id):
                 # Place is in an existing day
                 # Add place_id to days
                 day = days[days_day_id]
-                new_day = Day.query.filter_by(date_formatted=day['dateFormatted'], 
+                new_day = Day.query.filter_by(date_yyyy_mm_dd=day['dateYYYYMMDD'], 
                                               trip_id=trip_id).first()
                 day['placeIds'].append(place_position_id)
-                day['dayId'] = new_day.id
+                day['id'] = new_day.id
 
                 # Add day_id to place, and set in_itinerary true
                 place.day_id = new_day.id
@@ -104,20 +88,19 @@ def create_days(trip_id):
     db.session.commit()
 
     # Serializes the list of places (see global_helpers.py)
-    serialized_places = serialize_places(Place.query.filter_by(trip_id=trip_id).all(), 
-                                         places_last_id, trip_id)
+    serialized_places = serialize_places(Place.query.filter_by(trip_id=trip_id).all())
     # Remove position_id to coordinate with the front end
     for place_position_id in serialized_places:
-        serialized_places[place_position_id]['id'] = serialized_places[place_position_id].pop('position_id') 
+        serialized_places[place_position_id]['id'] = serialized_places[place_position_id].pop('positionId') 
     
     # Packages the data in order to be rendered on the frontend
     return {
-        "trip_id": trip_id,
-        "places_last": places_last_id,
+        "tripId": int(trip_id),
+        "lastPlaceId": len(places),
         "places": serialized_places,
         "days": days,
-        "day_order": list(days.keys()),
-        "saved_places": { 
+        "dayOrder": list(days.keys()),
+        "savedPlaces": { 
             "placesIds": saved_places_ids,
             "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
         }
@@ -130,7 +113,7 @@ def add_one_place(trip_id):
     # Get data from request
     data = request.get_json()
     place_data = data['place']
-    position_id = place_data['id']
+    position_id = place_data['positionId']
     api_Id = place_data['apiId']
     name = place_data['name']
     address = place_data['address']
@@ -167,7 +150,7 @@ def add_one_place(trip_id):
     # RETURN THE place_id to the front end if successfully added to database
     place_record = Place.query.filter_by(position_id=position_id, trip_id=trip_id).first()
     if place_record:
-        return str(place_record.place_id), 200
+        return str(place_record.id), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500
 
@@ -176,7 +159,7 @@ def add_one_place(trip_id):
 @itinerary.route('/delete-place/<place_id>', methods=['DELETE'])
 def delete_place(place_id):
     # Get place
-    place = Place.query.get(place_id)
+    place = Place.query.filter_by(id=place_id).first()
     if not place:
         return jsonify({"message": f"No such place {place_id}"}), 400
     
@@ -185,7 +168,7 @@ def delete_place(place_id):
     db.session.commit()
 
     # Validate that the place has been deleted
-    place_record = Place.query.get(place_id)
+    place_record = Place.query.filter_by(id=place_id).first()
     if not place_record:
         return jsonify({"message": "Place deleted"}), 200
     else:
@@ -198,7 +181,7 @@ def update_place(place_id):
     # Get requested data
     data = request.get_json()
     new_day_id = data['dayId']
-    place = Place.query.get(place_id)
+    place = Place.query.filter_by(id=place_id).first()
     if not place:
         return jsonify({"message": f"No place {place_id}"}) , 400
 
@@ -210,7 +193,7 @@ def update_place(place_id):
     db.session.commit()
 
     # Validate data has been updated
-    place_record = Place.query.get(place_id)
+    place_record = Place.query.filter_by(id=place_id).first()
     if place_record.day_id == new_day_id:
         return jsonify({"message": f"Place updated to day: {new_day_id}"}) , 200
     else:

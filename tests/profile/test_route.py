@@ -1,36 +1,28 @@
 from ..config import test_client
+from ..mock_data import MockData
 
 class TestProfileRoute():
     
+    # add user route
     def test_add_user(self, test_client):
         """Test adding a new user to the database."""
-        user_data = {
-            'uid': '12345',
-            'username': 'testuser',
-            'email': 'testuser@example.com'
-        }
-
-        response = test_client.post('/profile/user', json=user_data)
+        request = MockData.user1_data
+        response = test_client.post('/profile/user', json=request)
         assert response.status_code == 200
         data = response.get_json()
-        assert data['uid'] == user_data['uid']
-        assert data['username'] == user_data['username']
-        assert data['email'] == user_data['email']
+        assert data['uid'] == request['uid']
+        assert data['username'] == request['username']
+        assert data['email'] == request['email']
         assert data['hasAccess'] == False
     
-    def test_add_user_exisitng(self, test_client):
+    def test_add_user_existing(self, test_client):
         """Test adding an existing user to the database."""
-        user_data = {
-            'uid': '12345',
-            'username': 'testuser',
-            'email': 'testuser@example.com'
-        }
-
-        response = test_client.post('/profile/user', json=user_data)
+        response = test_client.post('/profile/user', json=MockData.user1_data)
         assert response.status_code == 400
     
+    # add user info route
     def test_user_info(self, test_client):
-        """Test adding a new user to the database."""
+        """Test adding user info to existing user."""
         user_info_data = {
             "uid": "12345",
             "categories": {
@@ -47,8 +39,8 @@ class TestProfileRoute():
         response = test_client.post('/profile/user_info', json=user_info_data)
         assert response.status_code == 200
     
-    def test_user_info_fail(self, test_client):
-        """Test adding a new user to the database."""
+    def test_user_info_invalid_user(self, test_client):
+        """Test adding user info to nonexisting user."""
         user_info_data = {
             "uid": "123345",
             "categories": {
