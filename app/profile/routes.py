@@ -61,7 +61,7 @@ def add_user_info():
     db.session.add(user_info)
     db.session.commit()
 
-    user_info_record = UserInfo.query.filter_by(user_uid=uid).first()
+    user_info_record = UserInfo.query.filter_by(uid=uid).first()
     if user_info_record:
         return jsonify({"message": f"Hello {user_info_record.user.username}"}), 200
     else:

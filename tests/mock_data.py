@@ -1,4 +1,3 @@
-
 class MockData():
     user1_data = {
         'uid': '12345',
@@ -14,11 +13,11 @@ class MockData():
             "state": "",
             "country": "France",
             "countryAbbr": "FR",
-            "destLat": 48.8588897,
-            "destLong": 2.3200410217200766,
-            "destImgUrl": "https://images.unsplash.com/photo-1525218291292-e46d2a90f77c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MzAyODV8MHwxfHNlYXJjaHwxfHxQYXJpcy1JbGUtZGUtRnJhbmNlLWxhbmRtYXJrc3xlbnwwfHx8fDE3MjYyNjYzMzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
-            "startDate": '2024-09-01',
-            "endDate": '2024-09-05'
+            "lat": 48.8588897,
+            "long": 2.3200410217200766,
+            "imgUrl": "https://images.unsplash.com/photo-1525218291292-e46d2a90f77c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MzAyODV8MHwxfHNlYXJjaHwxfHxQYXJpcy1JbGUtZGUtRnJhbmNlLWxhbmRtYXJrc3xlbnwwfHx8fDE3MjYyNjYzMzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
+            "startDate": '2024/09/01',
+            "endDate": '2024/09/05'
         }
     }
 
@@ -32,8 +31,8 @@ class MockData():
             "countryAbbr": "JP",
             "geocode": [35.6828387, 139.7594549],
             "imgUrl": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MzAyODV8MHwxfHNlYXJjaHwxfHxUb2t5by0tbGFuZG1hcmtzfGVufDB8fHx8MTcyNjMzMDE3OHww&ixlib=rb-4.0.3&q=80&w=1080",
-            "startDate": "2024-09-15",
-            "endDate": "2024-09-19",
+            "startDate": "2024/09/15",
+            "endDate": "2024/09/19",
             "places": [
                 {
                     "positionId": 1,
@@ -81,8 +80,8 @@ class MockData():
             "countryAbbr": "JP",
             "geocode": [35.6828387, 139.7594549],
             "imgUrl": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MzAyODV8MHwxfHNlYXJjaHwxfHxUb2t5by0tbGFuZG1hcmtzfGVufDB8fHx8MTcyNjMzMDE3OHww&ixlib=rb-4.0.3&q=80&w=1080",
-            "startDate": "2024-09-15",
-            "endDate": "2024-09-17",
+            "startDate": "2024/09/15",
+            "endDate": "2024/09/17",
             "places": [
                 {
                     "positionId": 1,
@@ -169,23 +168,6 @@ class MockData():
     }
 
     place1_data = {
-        "positionId": 3,
-        "name": "cherry blossom",
-        "apiId": "ChIJ39GHSE71GGARnwBli1-HcHM",
-        "address": "Japan, 〒211-0063 Kanagawa, Kawasaki, Nakahara Ward, Kosugimachi, 1-chōme−５２６−１７, Akiba Bld., 1階",
-        "imgUrl": "https://places.googleapis.com/v1/places/ChIJ39GHSE71GGARnwBli1-HcHM/photos/AXCi2Q4K8EV0ZBGj1TbQVZBg0N744CgDOFGHjdQnqyLFyO3S6obRhNgl_4HpixJtkey0THktUxI34OaGAWrQFWwxemqLoYSpdWJR8Phu4fC0YJpxrM3xN9Xmt7W9UoPgprwy-oTJ29z-RrdQkaFlGVpgO_o1JFPGJVocyTHl/media?maxWidthPx=1387&key=AIzaSyDSb_2EDA9dG4bMW6QtRcTrqHy3MkLmxPU",
-        "category": "Restaurant",
-        "favorite": False,
-        "phoneNumber": "+81 50-5462-3014",
-        "rating": "4.4",
-        "summary": "",
-        "website": "https://cherryblossom.foodre.jp/",
-        "info": "Mon: 5:00 – 10:00 PM, Tue: 11:30 AM – 2:00 PM; 5:00 PM – 12:00 AM, Wed: 11:30 AM – 2:00 PM; 5:00 PM – 12:00 AM, Thu: 11:30 AM – 2:00 PM; 5:00 PM – 12:00 AM, Fri: 5:00 PM – 12:00 AM, Sat: 5:00 PM – 12:00 AM, Sun: 5:00 – 10:00 PM",
-        "lat": 35.5783884,
-        "long": 139.65884269999998
-    }
-
-    place2_data = {
         "name": "Mikokuyu",
         "apiId": "ChIJm7-AtNKOGGARhV1nBG9UDtM",
         "address": "3-chōme-30-10 Ishiwara, Sumida City, Tokyo 130-0011, Japan",

@@ -3,7 +3,7 @@ from flask import Blueprint, redirect, request, jsonify, url_for
 
 # INTERNAL
 from ..models import Trip, Place, Day, db, trip_schema, trips_schema, places_schema, place_schema
-from ..global_helpers import create_places_last_id, serialize_places, add_places, create_day_dict
+from ..global_helpers import create_day_dict, serialize_places, add_places
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
@@ -11,23 +11,23 @@ places = Blueprint('places', __name__, url_prefix='/places')
 @places.route('/trip', methods=['POST', 'GET'])
 def add_trip():
     # Get requested data
-    user_uid = request.json['uid']
+    uid = request.json['uid']
     trip_data = request.json['trip']
 
     trip_name = trip_data['name']
-    dest_city = trip_data['city']
-    dest_state = trip_data['state']
-    dest_country = trip_data['country']
-    dest_country_abbr = trip_data['countryAbbr']
-    dest_lat = trip_data['destLat']
-    dest_long = trip_data['destLong']
-    dest_img_url = trip_data['destImgUrl']
+    city = trip_data['city']
+    state = trip_data['state']
+    country = trip_data['country']
+    country_abbr = trip_data['countryAbbr']
+    lat = trip_data['lat']
+    long = trip_data['long']
+    img_url = trip_data['imgUrl']
     start_date = trip_data['startDate']
     end_date = trip_data['endDate']
 
     # Create trip object
-    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_abbr, dest_lat, dest_long, 
-                dest_img_url, start_date, end_date, user_uid)
+    trip = Trip(trip_name, city, state, country, country_abbr, lat, long, 
+                img_url, start_date, end_date, uid)
 
     # Add trip to database
     db.session.add(trip)
@@ -67,19 +67,8 @@ def get_trip(trip_id):
     # Create a dict of days with keys "day-#"
     days = {}
     for i, day in enumerate(day_records):
-        day_dict = create_day_dict(i+1, day)
+        day_dict = create_day_dict(i + 1, day)
         days[day_dict['id']] = day_dict
-        # day_id = f'day-{i + 1}'
-        # days[day_id] = {
-        #     'id': day_id,
-        #     'dayId': day.id,
-        #     'placeIds': [],
-        #     'dateFormatted': day.date_formatted,
-        #     'dateConverted': day.date_converted,
-        #     'dateShort': day.date_short,
-        #     'dayShort': day.week_day,
-        #     'dayName': day.name
-        # } 
 
         # Add the all the corresponding places id the day
         places_in_day = Place.query.filter_by(trip_id=trip_id, day_id=day.id).all()
@@ -104,7 +93,7 @@ def get_trip(trip_id):
 @places.route('/trips/<uid>', methods=['GET'])
 def get_trips(uid):
     # Get all trips from user
-    trips = Trip.query.filter_by(user_uid=uid).all()
+    trips = Trip.query.filter_by(uid=uid).all()
     if trips:
         response = trips_schema.dump(trips)
         return jsonify(response), 200
@@ -248,22 +237,22 @@ def add_trip_and_places():
     # Get requested data about trip
     data = request.get_json()
 
-    user_uid = data['uid']
+    uid = data['uid']
     trip_data = data['trip']
     trip_name = trip_data['name']
-    dest_city = trip_data['city']
-    dest_state = trip_data['state']
-    dest_country = trip_data['country']
-    dest_country_abbr = trip_data['countryAbbr']
-    dest_lat = trip_data['geocode'][0]
-    dest_long = trip_data['geocode'][1]
-    dest_url = trip_data['imgUrl']
+    city = trip_data['city']
+    state = trip_data['state']
+    country = trip_data['country']
+    country_abbr = trip_data['countryAbbr']
+    lat = trip_data['geocode'][0]
+    long = trip_data['geocode'][1]
+    img_url = trip_data['imgUrl']
     start_date = trip_data['startDate']
     end_date = trip_data['endDate']
 
     # Create and add Trip to database
-    trip = Trip(trip_name, dest_city, dest_state, dest_country, dest_country_abbr, dest_lat, dest_long, 
-            dest_url, start_date, end_date, user_uid)
+    trip = Trip(trip_name, city, state, country, country_abbr, lat, long, 
+            img_url, start_date, end_date, uid)
     
     db.session.add(trip)
     db.session.commit()

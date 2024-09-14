@@ -4,7 +4,7 @@ from datetime import timedelta
 
 # INTERNAL
 from ..models import Place, Trip, Day, db, place_schema, day_schema
-from ..global_helpers import create_places_last_id, serialize_places, replace_day_id
+from ..global_helpers import create_day_dict, serialize_places, replace_day_id
 from .itinerary import Itinerary
 
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
@@ -26,11 +26,8 @@ def generate_itinerary(trip_id):
     if days_data:
         # serialize days
         for i, day_data in enumerate(days_data):
-            day_id = f'day-{i + 1}'
-            days[day_id] = day_schema.dump(day_data)
-            days[day_id]['id'] = day_id
-            days[day_id]['placeIds'] = []
-            days[day_id].pop('tripId', None)
+            day_dict = create_day_dict(i + 1, day_data)
+            days[day_dict['id']] = day_dict
     else:
         current_date = trip.convert_to_datetime(trip.start_date)
         for i in range(1, trip.duration + 1):
@@ -38,11 +35,8 @@ def generate_itinerary(trip_id):
             new_day = Day('', current_date, trip_id)
 
             # Serialize day
-            day_id = f'day-{i}'
-            days[day_id] = day_schema.dump(new_day)
-            days[day_id]['id'] = day_id
-            days[day_id]['placeIds'] = []
-            days[day_id].pop('tripId', None)
+            day_dict = create_day_dict(i, new_day)
+            days[day_dict['id']] = day_dict
 
             db.session.add(new_day)
 
@@ -68,7 +62,6 @@ def generate_itinerary(trip_id):
                 new_day = Day.query.filter_by(date_yyyy_mm_dd=day['dateYYYYMMDD'], 
                                               trip_id=trip_id).first()
                 day['placeIds'].append(place_position_id)
-                day['id'] = new_day.id
 
                 # Add day_id to place, and set in_itinerary true
                 place.day_id = new_day.id

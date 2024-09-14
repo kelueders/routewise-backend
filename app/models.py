@@ -46,11 +46,11 @@ class UserInfo(db.Model):
     relaxation = db.Column(db.Boolean, default=False, nullable=False)
     food = db.Column(db.Boolean, default=False, nullable=False)
     arts = db.Column(db.Boolean, default=False, nullable=False)
-    user_uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
+    uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates='user_info')
 
-    def __init__(self, user_uid, shopping, nature, landmarks, entertainment, relaxation, food, arts):                       
-        self.user_uid = user_uid
+    def __init__(self, uid, shopping, nature, landmarks, entertainment, relaxation, food, arts):                       
+        self.uid = uid
         self.shopping = shopping
         self.nature = nature
         self.landmarks = landmarks
@@ -60,13 +60,12 @@ class UserInfo(db.Model):
         self.arts = arts
 
     def __repr__(self):
-        return f'{self.user_uid} User Object'
+        return f'{self.uid} User Object'
     
 class UserInfoSchema(ma.Schema):
-    userUid = ma.String(attribute='user_uid')
 
     class Meta:
-        fields = ['userUid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
+        fields = ['uid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
 
 user_info_schema = UserInfoSchema()
 
@@ -76,37 +75,39 @@ user_info_schema = UserInfoSchema()
 class Trip(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String)
-    dest_city = db.Column(db.String)
-    dest_state = db.Column(db.String(255))
-    dest_country = db.Column(db.String)
-    dest_country_abbr = db.Column(db.String(10))
-    dest_lat = db.Column(db.Float)
-    dest_long = db.Column(db.Float)
-    dest_img_url = db.Column(db.String)
-    start_date = db.Column(db.String)
-    end_date = db.Column(db.String)
+    city = db.Column(db.String)
+    state = db.Column(db.String(255))
+    country = db.Column(db.String)
+    country_abbr = db.Column(db.String(10))
+    lat = db.Column(db.Float)
+    long = db.Column(db.Float)
+    img_url = db.Column(db.String)
+    start_date = db.Column(db.String)       # yyyy/mm/dd
+    end_date = db.Column(db.String)         # yyyy/mm/dd
     duration = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_itinerary = db.Column(db.Boolean, default=False, nullable=True)
-    user_uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
+    uid = db.Column(db.String, db.ForeignKey('user.uid'), nullable=False)
     user = db.relationship('User', back_populates='trip')
     place = db.relationship('Place', back_populates='trip')
     day = db.relationship('Day', back_populates='trip')
 
-    def __init__(self, name, dest_city, dest_state, dest_country, dest_country_abbr, dest_lat, dest_long, 
-                 dest_img_url, start_date, end_date, user_uid):
+    date_format = '%Y/%m/%d'
+
+    def __init__(self, name, city, state, country, country_abbr, lat, long, img_url, 
+                 start_date, end_date, uid):
         self.name = name
-        self.dest_city = dest_city
-        self.dest_state = dest_state
-        self.dest_country = dest_country
-        self.dest_country_abbr = dest_country_abbr
-        self.dest_lat = dest_lat
-        self.dest_long = dest_long
-        self.dest_img_url = dest_img_url
-        self.start_date = start_date
-        self.end_date = end_date
-        self.user_uid = user_uid
+        self.city = city
+        self.state = state
+        self.country = country
+        self.country_abbr = country_abbr
+        self.lat = lat
+        self.long = long
+        self.img_url = img_url
+        self.start_date = start_date                # yyyy/mm/dd
+        self.end_date = end_date                    # yyyy/mm/dd
+        self.uid = uid
         self.duration = self.calc_duration()
 
     def __repr__(self):
@@ -114,8 +115,8 @@ class Trip(db.Model):
     
     def calc_duration(self):
         # Determining duration of trip by converting string to datetime object
-        start_obj = datetime.strptime(self.start_date, '%Y-%m-%d').date()
-        end_obj = datetime.strptime(self.end_date, '%Y-%m-%d').date()
+        start_obj = datetime.strptime(self.start_date, self.date_format).date()
+        end_obj = datetime.strptime(self.end_date, self.date_format).date()
 
         # then subtract and return type INT for days
         duration = end_obj - start_obj
@@ -124,25 +125,18 @@ class Trip(db.Model):
         return duration
     
     def convert_to_datetime(self, date):
-        return datetime.strptime(date, '%Y-%m-%d').date()
+        return datetime.strptime(date, self.date_format).date()
     
 class TripSchema(ma.Schema):
-    destCity = ma.String(attribute='dest_city')
-    destState = ma.String(attribute='dest_state')
-    destCountry = ma.String(attribute='dest_country')
-    destCountryAbbr = ma.String(attribute='dest_country_abbr')
-    destLat = ma.Float(attribute='dest_lat')
-    destLong = ma.Float(attribute='dest_long')
-    destImgUrl = ma.String(attribute='dest_img_url')
+    countryAbbr = ma.String(attribute='country_abbr')
+    imgUrl = ma.String(attribute='img_url')
     startDate = ma.String(attribute='start_date')
     endDate = ma.String(attribute='end_date')
     isItinerary = ma.Boolean(attribute='is_itinerary')
-    userUid = ma.String(attribute='user_uid')
 
     class Meta:
-        fields = ['id', 'name', 'destCity', 'destState', 'destCountry', 'destCountryAbbr', 
-                  'destLat', 'destLong', 'destImgUrl', 'startDate', 'endDate', 'isItinerary', 
-                  'userUid', 'duration']
+        fields = ['id', 'name', 'city', 'state', 'country', 'countryAbbr', 'lat', 'long', 'imgUrl', 
+                  'startDate', 'endDate', 'isItinerary', 'uid', 'duration']
 
 trip_schema = TripSchema()
 trips_schema = TripSchema(many=True)
@@ -224,33 +218,32 @@ places_schema = PlaceSchema(many=True)
 class Day(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(60), nullable=True)
-    date_yyyy_mm_dd = db.Column(db.String)
-    date_weekday_month_day = db.Column(db.String(60))
-    date_mm_dd = db.Column(db.String(60))
-    weekday = db.Column(db.String(60))
+    date_yyyy_mm_dd = db.Column(db.String)              # yyyy/mm/dd
+    date_weekday_month_day = db.Column(db.String(60))   # Weekday, Month day
+    date_mm_dd = db.Column(db.String(60))               # mm/dd
+    weekday = db.Column(db.String(60))                  # Weekday abbreviation
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.id'), nullable=False)
     trip = db.relationship('Trip', back_populates='day')
     place = db.relationship('Place', back_populates='day')
 
     def __init__(self, name, date, trip_id):
         self.name = name
-        self.date_yyyy_mm_dd = date.strftime('%Y-%m-%d')
-        self.date_weekday_month_day = date.strftime('%A, %B %#d')
-        self.date_mm_dd = date.strftime('%m/%d')
-        self.weekday = date.strftime('%a')
+        self.date_yyyy_mm_dd = date.strftime('%Y/%m/%d')            # yyyy/mm/dd
+        self.date_weekday_month_day = date.strftime('%A, %B %#d')   # Weekday, Month day
+        self.date_mm_dd = date.strftime('%m/%d')                    # mm/dd
+        self.weekday = date.strftime('%a')                          # Weekday abbreviation
         self.trip_id = trip_id
     
     def __repr__(self):
-        return f'{self.date_formatted} Day Object.'
+        return f'{self.date_yyyy_mm_dd} Day Object.'
     
 class DaySchema(ma.Schema):
     dateYYYYMMDD = ma.String(attribute='date_yyyy_mm_dd')
     dateWeekdayMonthDay = ma.String(attribute='date_weekday_month_day')
     dateMMDD = ma.String(attribute='date_mm_dd')
-    tripId = ma.Integer(attribute='trip_id')
 
     class Meta:
-        fields = ['id', 'name', 'dateYYYYMMDD', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday', 'tripId']
+        fields = ['id', 'name', 'dateYYYYMMDD', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
 
 day_schema = DaySchema()
 days_schema = DaySchema(many=True)

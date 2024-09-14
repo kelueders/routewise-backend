@@ -1,23 +1,22 @@
-from .models import Place, db, place_schema
+from .models import Place, db, place_schema, day_schema
 
-# finds the largest local_id in the list of places for that trip = places_last
-def create_places_last_id(places):
-    """
-    places_last = the largest local_id in the list of places for that trip
-    This function goes through a list of places and return that local_id
-    """
-    max_position_id = 0
-    position_id = 0
-    for place in places:
-        if hasattr(place, 'id'):
-            position_id = place.id
-        elif hasattr(place, 'local_id'):
-            position_id = place.local_id
-
-        if position_id > max_position_id:
-                max_position_id = position_id
-
-    return max_position_id
+def create_day_dict(day_num, day):
+    '''
+    {
+        'dateMMDD': '09/15', 
+        'dateWeekdayMonthDay': 'Sunday, September 15', 
+        'dateYYYYMMDD': '2024/09/15', 
+        'id': 'day-1', 
+        'name': '', 
+        'placeIds': [2, 4, 5], 
+        'weekday': 'Sun'
+    }
+    '''
+    id = f'day-{day_num}'
+    day_dict = day_schema.dump(day)
+    day_dict['id'] = id
+    day_dict['placeIds'] = []
+    return day_dict
 
 def serialize_places(places):
     '''
@@ -30,7 +29,7 @@ def serialize_places(places):
             "local_id": 1,
             "placeName": "Hyde Park",
             "address": "Hyde Park, Albion Street, London, W2 2LG, United Kingdom",
-            "imgURL": "https://images.unsplash.com/",
+            "imgUrl": "https://images.unsplash.com/",
             "place_id": 2535,
             "info": "No hours information",
             "lat": 51.5074889,
@@ -106,16 +105,3 @@ def replace_day_id(places, day_id_1, day_id_2):
     # update day id for each place
     for place in places:
         place.day_id = day_id_2
-
-def create_day_dict(day_num, day):
-    id = f'day-{day_num}'
-    return {
-        'id': id,
-        'dayId': day.day_id,
-        'placeIds': [],
-        'dateFormatted': day.date_formatted,
-        'dateConverted': day.date_converted,
-        'dateShort': day.date_short,
-        'dayShort': day.week_day,
-        'dayName': day.day_name
-    }

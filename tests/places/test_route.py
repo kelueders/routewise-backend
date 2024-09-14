@@ -24,16 +24,17 @@ class TestPlacesRoute():
         response = test_client.get('/places/trips/12345')
         assert response.status_code == 200
         data = response.get_json()
+        print(data)
         assert data[0]['id'] == 1
         assert data[0]['name'] == valid_trip['trip']['name']
-        assert data[0]['userUid'] == valid_trip['uid']
-        assert data[0]['destCity'] == valid_trip['trip']['city']
-        assert data[0]['destCountry'] == valid_trip['trip']['country']
-        assert data[0]['destCountryAbbr'] == valid_trip['trip']['countryAbbr']
-        assert data[0]['destImgUrl'] == valid_trip['trip']['destImgUrl']
-        assert data[0]['destLat'] == valid_trip['trip']['destLat']
-        assert data[0]['destLong'] == valid_trip['trip']['destLong']
-        assert data[0]['destState'] == valid_trip['trip']['state']
+        assert data[0]['uid'] == valid_trip['uid']
+        assert data[0]['city'] == valid_trip['trip']['city']
+        assert data[0]['country'] == valid_trip['trip']['country']
+        assert data[0]['countryAbbr'] == valid_trip['trip']['countryAbbr']
+        assert data[0]['imgUrl'] == valid_trip['trip']['imgUrl']
+        assert data[0]['lat'] == valid_trip['trip']['lat']
+        assert data[0]['long'] == valid_trip['trip']['long']
+        assert data[0]['state'] == valid_trip['trip']['state']
         assert data[0]['endDate'] == valid_trip['trip']['endDate']
         assert data[0]['startDate'] == valid_trip['trip']['startDate']
         assert data[0]['duration'] == 5
@@ -59,8 +60,8 @@ class TestPlacesRoute():
         """Test updating trip date."""
         new_trip = {
             'tripName': '',
-            'startDate': '2024-09-01',
-            'endDate': '2024-09-06'
+            'startDate': '2024/09/01',
+            'endDate': '2024/09/06'
         }
         response = test_client.post('/places/update-trip/1', json=new_trip)
         assert response.status_code == 200
@@ -69,8 +70,8 @@ class TestPlacesRoute():
         """Test updating invalid trip date."""
         new_trip = {
             'tripName': '',
-            'startDate': '2024-09-01',
-            'endDate': '2024-09-06'
+            'startDate': '2024/09/01',
+            'endDate': '2024/09/06'
         }
         response = test_client.post('/places/update-trip/5', json=new_trip)
         assert response.status_code == 400
@@ -91,6 +92,7 @@ class TestPlacesRoute():
     def test_add_place(self, test_client):
         """Test adding place to trip."""
         request_place = MockData.place1_data
+        request_place['positionId'] = 3
         response = test_client.post('/places/add-place/1', json=request_place)
         assert response.status_code == 200
         assert response.data.decode('utf-8') == request_place['apiId']

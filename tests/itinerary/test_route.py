@@ -32,7 +32,7 @@ class TestItineraryRoute():
         """Test adding a place to trip where the itinerary is already created."""
         request = {
             'dayId': 2,
-            'place': MockData.place2_data
+            'place': MockData.place1_data
         }
         request['place']['positionId'] = 6
         response = test_client.post('/itinerary/add-one-place/1', json=request)
@@ -43,7 +43,7 @@ class TestItineraryRoute():
         """Test adding a place to a trip with no day attached."""
         request = {
             'dayId': None,
-            'place': MockData.place2_data
+            'place': MockData.place1_data
         }
         request['place']['positionId'] = 7
         response = test_client.post('/itinerary/add-one-place/1', json=request)
