@@ -1,4 +1,3 @@
-import pytest
 from ..config import test_client
 
 class TestProfileRoute():
@@ -14,9 +13,9 @@ class TestProfileRoute():
         response = test_client.post('/profile/user', json=user_data)
         assert response.status_code == 200
         data = response.get_json()
-        assert data['uid'] == '12345'
-        assert data['username'] == 'testuser'
-        assert data['email'] == 'testuser@example.com'
+        assert data['uid'] == user_data['uid']
+        assert data['username'] == user_data['username']
+        assert data['email'] == user_data['email']
         assert data['hasAccess'] == False
     
     def test_add_user_exisitng(self, test_client):

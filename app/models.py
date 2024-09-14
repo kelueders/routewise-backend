@@ -64,7 +64,7 @@ class UserInfo(db.Model):
     
 class UserInfoSchema(ma.Schema):
     userUid = ma.String(attribute='user_uid')
-    
+
     class Meta:
         fields = ['userUid', 'shopping', 'nature', 'landmarks', 'entertainment', 'relaxation', 'food', 'arts']
 
@@ -83,8 +83,8 @@ class Trip(db.Model):
     dest_lat = db.Column(db.Float)
     dest_long = db.Column(db.Float)
     dest_img_url = db.Column(db.String)
-    start_date = db.Column(db.Date)
-    end_date = db.Column(db.Date)
+    start_date = db.Column(db.String)
+    end_date = db.Column(db.String)
     duration = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -107,15 +107,15 @@ class Trip(db.Model):
         self.start_date = start_date
         self.end_date = end_date
         self.user_uid = user_uid
-        self.duration = self.calc_duration(start_date, end_date)
+        self.duration = self.calc_duration()
 
     def __repr__(self):
         return f'{self.id} Trip Object'
     
-    def calc_duration(self, start_date, end_date):
+    def calc_duration(self):
         # Determining duration of trip by converting string to datetime object
-        start_obj = datetime.strptime(start_date, '%m/%d/%Y').date()
-        end_obj = datetime.strptime(end_date, '%m/%d/%Y').date()
+        start_obj = datetime.strptime(self.start_date, '%Y-%m-%d').date()
+        end_obj = datetime.strptime(self.end_date, '%Y-%m-%d').date()
 
         # then subtract and return type INT for days
         duration = end_obj - start_obj
@@ -124,6 +124,18 @@ class Trip(db.Model):
         return duration
     
 class TripSchema(ma.Schema):
+    destCity = ma.String(attribute='dest_city')
+    destState = ma.String(attribute='dest_state')
+    destCountry = ma.String(attribute='dest_country')
+    destCountryAbbr = ma.String(attribute='dest_country_abbr')
+    destLat = ma.Float(attribute='dest_lat')
+    destLong = ma.Float(attribute='dest_long')
+    destImgUrl = ma.String(attribute='dest_img_url')
+    startDate = ma.String(attribute='start_date')
+    endDate = ma.String(attribute='end_date')
+    isItinerary = ma.Boolean(attribute='is_itinerary')
+    userUid = ma.String(attribute='user_uid')
+
     class Meta:
         fields = ['id', 'name', 'destCity', 'destState', 'destCountry', 'destCountryAbbr', 
                   'destLat', 'destLong', 'destImgUrl', 'startDate', 'endDate', 'isItinerary', 
@@ -186,6 +198,15 @@ class Place(db.Model):
         return f'{self.name} Place Object'
     
 class PlaceSchema(ma.Schema):
+    apiId = ma.String(attribute='api_id')
+    positionId = ma.Integer(attribute='position_id')
+    imgUrl = ma.String(attribute='img_url')
+    phoneNumber = ma.String(attribute='phone_number')
+    avgVisitTime = ma.Float(attribute='avg_visit_time')
+    inItinerary = ma.Boolean(attribute='in_itinerary')
+    tripId = ma.Integer(attribute='trip_id')
+    dayId = ma.Integer(attribute='day_id')
+
     class Meta:
         fields = ['apiId', 'positionId', 'name', 'address', 'imgUrl', 'info', 'favorite', 
                   'category', 'phoneNumber', 'rating', 'summary', 'website', 'avgVisitTime', 
@@ -220,6 +241,12 @@ class Day(db.Model):
         return f'{self.date_formatted} Day Object.'
     
 class DaySchema(ma.Schema):
+    dateFormatted = ma.Date(attribute='date_formatted')
+    dateConverted = ma.String(attribute='date_converted')
+    dateShort = ma.String(attribute='date_short')
+    weekDay = ma.String(attribute='week_day')
+    tripId = ma.Integer(attribute='trip_id')
+
     class Meta:
         fields = ['id', 'name', 'dateFormatted', 'dateConverted', 'dateShort', 'weekDay', 'tripId']
 

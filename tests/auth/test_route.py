@@ -1,7 +1,6 @@
-import pytest
 from ..config import test_client
 
-class TestProfileRoute():
+class TestAuthRoute():
     
     def test_check_code_no_user(self, test_client):
         """Test checking non-existing user access."""

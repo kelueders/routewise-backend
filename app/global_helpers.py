@@ -53,11 +53,9 @@ def serialize_places(places):
 
     for i, place_data in enumerate(places):
 
-        place = {}
-
-        place_schema.jsonify(place_data)
+        place = place_schema.dump(place_data)
+        place['id'] = place_data.id
         place['geocode'] = [place_data.lat, place_data.long]
-        place['id'] = place.id
         
         # making the index one of the keys with the place dictionary as the value
         places_serial[place['positionId']] = place
@@ -67,13 +65,14 @@ def serialize_places(places):
 
 def add_places(trip_id, places_last_id, places_arr):
 
-    for i in range(places_last_id):
+    for i in range(len(places_arr)):
 
-        if type(places_arr) == dict:
-            place = places_arr[i + 1]
+        place = places_arr[i]
+        # if type(places_arr) == dict:
+        #     place = places_arr[i + 1]
 
-        elif type(places_arr) == list:
-            place = places_arr[i]
+        # elif type(places_arr) == list:
+        #     place = places_arr[i]
 
         apiId = place['apiId']
         position_id = place['positionId']

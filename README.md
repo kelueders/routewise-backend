@@ -292,6 +292,30 @@ run pytest
     }
     ```
 
+### `GET /places/trips/<uid>`
+- **Description**: Gets all trips for a user.
+- **Response**: 
+    ```json
+    [
+        {
+            "destCity": "Paris",
+            "destCountry": "France",
+            'destCountryAbbr': 'FR',
+            'destImgUrl': "https://images.unsplash.com/photo-1525218291292-e46d2a90f77c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MzAyODV8MHwxfHNlYXJjaHwxfHxQYXJpcy1JbGUtZGUtRnJhbmNlLWxhbmRtYXJrc3xlbnwwfHx8fDE3MjYyNjYzMzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
+            'destLat': 48.8588897,
+            'destLong': 2.3200410217200766,
+            'destState': '',
+            'duration': 5,
+            'endDate': '2024-09-05',
+            'id': 1,
+            'isItinerary': False,
+            'name': 'Paris',
+            'startDate': '2024-09-01',
+            'userUid': '12345'
+        }
+    ]
+    ```
+
 ### `DELETE /places/delete-trip/<trip_id>`
 - **Description**: Delete specified trip.
 - **Response**: Success or error message.
