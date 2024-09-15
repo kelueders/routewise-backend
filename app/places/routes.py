@@ -194,7 +194,7 @@ def get_places(trip_id):
 # Allows the user to add a place before there is an itinerary created, commit it to the database
 # Also allows the user to add a place to the saved places list even after the itinerary is created
 # and then return the place_id to the frontend
-@places.route('add-place/<trip_id>', methods = ['GET', 'POST'])
+@places.route('/add-place/<trip_id>', methods=['GET', 'POST'])
 def add_place(trip_id):
 
     # Get requested data about a place
@@ -231,7 +231,7 @@ def add_place(trip_id):
 
 
 # User flow for when the user is not logged in - it will create the trip and places at the same time
-@places.route('add-trip-and-places', methods=['GET', 'POST'])
+@places.route('/add-trip-and-places', methods=['GET', 'POST'])
 def add_trip_and_places():
 
     # Get requested data about trip
