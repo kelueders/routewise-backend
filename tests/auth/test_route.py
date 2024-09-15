@@ -26,7 +26,7 @@ class TestAuthRoute():
         assert response.status_code == 401
 
     def test_check_code_granted(self, test_client):
-        """Test checking unauthorized user access."""
+        """Test granting unauthorized user access."""
         test_client.post('/profile/user', json=MockData.user1_data)
 
         request = {

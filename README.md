@@ -109,7 +109,7 @@ There are several unit tests created for the api endpoints.
 
 ### `GET|PATCH /auth/check-code`
 - **Description**: Verify user access.
-- **Request Body**:
+- **Request Body**: Post: update database; GET: check status.
     ```json
     {
         "uid": "",
@@ -121,7 +121,7 @@ There are several unit tests created for the api endpoints.
     - Status code 200, user is granted access.
     - Status code 401, user is not granted access.
 
-### `GET|PATCH /itinerary/generate/<trip_id>`
+### `PATCH /itinerary/generate/<trip_id>`
 - **Description**: Create itinerary for places and creates corresponding days.
 - **Response**:
     - Status code 401, if trip does not exist.
@@ -137,12 +137,13 @@ There are several unit tests created for the api endpoints.
                 "dateMMDD": "mm/dd",
                 "dateWeekdayMonthDay": "Weekday, Month Day",
                 "dateYYYYMMDD": "yyyy/mm/dd",
-                "id": "day-1",
+                "dayNum": "day-1",
+                "id": "1",
                 "name": "",
                 "placeIds": [
                     (Integer),
                     ...
-                ]
+                ],
                 "weekday": "Weekday Abbreviation",
             },
             ...
@@ -181,7 +182,7 @@ There are several unit tests created for the api endpoints.
     }
     ```
 
-### `POST|GET /itinerary/add-one-place/<trip_id>`
+### `POST /itinerary/add-one-place/<trip_id>`
 - **Description**: Adds new place if itinerary hasn't been created.
 - **Request Body**:
     ```json
@@ -241,7 +242,7 @@ There are several unit tests created for the api endpoints.
     ```
 - **Response**: Status code 200, if places are successfully moved.
 
-### `POST|GET /places/trip`
+### `POST /places/trip`
 - **Description**: Adds a new empty trip.
 - **Request Body**:
     ```json
@@ -287,12 +288,13 @@ There are several unit tests created for the api endpoints.
                 "dateMMDD": "mm/dd",
                 "dateWeekdayMonthDay": "Weekday, Month Day",
                 "dateYYYYMMDD": "yyyy/mm/dd",
-                "id": "day-id",
+                "dayNum": "day-1",
+                "id": "1",
                 "name": ,
                 "placeIds": [
                     (Integer),
                     ...
-                ]
+                ],
                 "weekday": "Weekday Abbreviation",
             },
             ...
@@ -360,7 +362,7 @@ There are several unit tests created for the api endpoints.
 - **Description**: Delete specified trip.
 - **Response**: Status code 200, on success.
 
-### `PATCH|POST|GET|DELETE /places/update-trip/<trip_id>`
+### `PATCH|POST|DELETE /places/update-trip/<trip_id>`
 - **Description**: Update trip info.
 - **Request Body**:
     ```json
@@ -407,7 +409,7 @@ There are several unit tests created for the api endpoints.
     }
     ```
 
-### `GET|POST /places/add-place/<trip_id>`
+### `POST /places/add-place/<trip_id>`
 - **Description**: Add a place to empty itinerary.
 - **Request Body**:
     ```json
@@ -431,7 +433,7 @@ There are several unit tests created for the api endpoints.
     ```
 - **Response**: Status code 200 upon success. Returns place API Id (String).
 
-### `GET|POST /places/add-trip-and-places`
+### `POST /places/add-trip-and-places`
 - **Description**: Add a new trip with places.
 - **Request Body**:
     ```json
@@ -497,6 +499,12 @@ There are several unit tests created for the api endpoints.
 - **Description**: Adds user info to user.
 - **Request Body**:
     ```json
+    GET
+    {
+        "uid": ""
+    }
+
+    POST
     {
         "uid": "",
         "categories": {
@@ -513,3 +521,16 @@ There are several unit tests created for the api endpoints.
 - **Response**:
     - Status code 400, if user has not been created yet.
     - Status code 200, if successfully added user info.
+    ```json
+    GET
+    {
+        "uid": "",
+        "shopping": (Boolean),
+        "nature": (Boolean),
+        "landmarks": (Boolean),
+        "entertainment": (Boolean),
+        "relaxation": (Boolean),
+        "food": (Boolean),
+        "arts": (Boolean)
+    }
+    ```

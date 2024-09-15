@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 
 # INTERNAL
-from app.models import User, UserInfo, user_schema, db
+from app.models import User, UserInfo, user_schema, db, user_info_schema
 
 profile = Blueprint('profile', __name__, url_prefix='/profile')
 
@@ -45,24 +45,32 @@ def add_user_info():
     if not User.query.filter_by(uid=uid).first():
         return jsonify({"message": "User has not been created."}), 400
 
-    categories = request.json['categories']
+    if request.method == 'GET':
+        user_info = UserInfo.query.filter_by(uid=uid).first()
+        if user_info:
+            schema = user_info_schema.dump(user_info)
+            return jsonify(schema), 200
+        else:
+            return jsonify({"message": f'There is no user info for user: {uid}'}), 400
+    elif request.method == 'POST':
+        categories = request.json['categories']
 
-    shopping = categories['shopping']
-    nature = categories['nature']
-    landmarks = categories['landmarks']
-    entertainment = categories['entertainment']
-    relaxation = categories['relaxation']
-    food = categories['food']
-    arts = categories['arts']    
+        shopping = categories['shopping']
+        nature = categories['nature']
+        landmarks = categories['landmarks']
+        entertainment = categories['entertainment']
+        relaxation = categories['relaxation']
+        food = categories['food']
+        arts = categories['arts']    
 
-    # Create new user info
-    user_info = UserInfo(uid, shopping, nature, landmarks, entertainment, relaxation, food, arts)
+        # Create new user info
+        user_info = UserInfo(uid, shopping, nature, landmarks, entertainment, relaxation, food, arts)
 
-    db.session.add(user_info)
-    db.session.commit()
+        db.session.add(user_info)
+        db.session.commit()
 
-    user_info_record = UserInfo.query.filter_by(uid=uid).first()
-    if user_info_record:
-        return jsonify({"message": f"Hello {user_info_record.user.username}"}), 200
-    else:
-        return jsonify({"message": "Failed adding user info"}), 500
+        user_info_record = UserInfo.query.filter_by(uid=uid).first()
+        if user_info_record:
+            return jsonify({"message": f"Hello {user_info_record.user.username}"}), 200
+        else:
+            return jsonify({"message": "Failed adding user info"}), 500

@@ -10,7 +10,7 @@ from .itinerary import Itinerary
 itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 
 # Create itinerary with places sorted into days
-@itinerary.route('/generate/<trip_id>', methods=['GET', 'PATCH'])
+@itinerary.route('/generate/<trip_id>', methods=['PATCH'])
 def generate_itinerary(trip_id):
     
     # Check that there is a trip with the id
@@ -102,7 +102,7 @@ def generate_itinerary(trip_id):
 
 
 # Add a place to a specific day in the trip when there is already an itinerary created    
-@itinerary.route('/add-one-place/<trip_id>', methods=['POST', 'GET'])
+@itinerary.route('/add-one-place/<trip_id>', methods=['POST'])
 def add_one_place(trip_id):
     # Get data from request
     data = request.get_json()
