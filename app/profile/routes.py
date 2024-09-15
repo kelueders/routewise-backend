@@ -36,7 +36,7 @@ def test():
     return "Waking up!", 200
 
 # Creates a user info row attached to a specific user
-@profile.route('/user_info', methods=['POST', 'GET'])
+@profile.route('/user-info', methods=['POST', 'GET'])
 def add_user_info():
 
     # Get requested data for user and categories

@@ -2,7 +2,7 @@
 from flask import Blueprint, redirect, request, jsonify, url_for
 
 # INTERNAL
-from ..models import Trip, Place, Day, db, trip_schema, trips_schema, places_schema, place_schema
+from ..models import Trip, Place, Day, db, trips_schema
 from ..global_helpers import create_day_dict, serialize_places, add_places
 
 places = Blueprint('places', __name__, url_prefix='/places')
@@ -78,7 +78,7 @@ def get_trip(trip_id):
     # Format of data to be sent to the front end
     return {
         "tripId": int(trip_id),
-        "lastPlaceId": len(places),
+        "lastPlaceId": places[-1].position_id,
         "places": serialized_places,
         "days": days,
         "dayOrder": list(days.keys()),
@@ -259,10 +259,8 @@ def add_trip_and_places():
 
     # Get places data
     places = trip_data['places']
-    places_last_id = len(places) + 1
-
     # Create and add places to database
-    add_places(trip.id, places_last_id, places)
+    add_places(trip.id, places)
 
     # Validate trip and places were added successfully
     trip_record = Trip.query.filter_by(id=trip.id)

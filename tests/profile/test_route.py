@@ -36,7 +36,7 @@ class TestProfileRoute():
             }
         }
 
-        response = test_client.post('/profile/user_info', json=user_info_data)
+        response = test_client.post('/profile/user-info', json=user_info_data)
         assert response.status_code == 200
     
     def test_user_info_invalid_user(self, test_client):
@@ -54,5 +54,5 @@ class TestProfileRoute():
             }
         }
 
-        response = test_client.post('/profile/user_info', json=user_info_data)
+        response = test_client.post('/profile/user-info', json=user_info_data)
         assert response.status_code == 400

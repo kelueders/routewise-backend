@@ -62,7 +62,7 @@ def serialize_places(places):
     return places_serial
 
 
-def add_places(trip_id, places_last_id, places_arr):
+def add_places(trip_id, places_arr):
 
     for i in range(len(places_arr)):
 

@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from datetime import timedelta
 
 # INTERNAL
-from ..models import Place, Trip, Day, db, place_schema, day_schema
+from ..models import Place, Trip, Day, db
 from ..global_helpers import create_day_dict, serialize_places, replace_day_id
 from .itinerary import Itinerary
 
@@ -43,7 +43,7 @@ def generate_itinerary(trip_id):
             # Increments by 1 the day that is added to the trip, starting at the trip start date
             current_date += timedelta(1)
 
-    # Create Itinerary and cluster data
+    # Create Itinerary data
     itinerary = Itinerary(trip_id)
     itinerary_data = itinerary.generate()       # multi-dimen array - rows=days, cols=place_ids
 
@@ -65,8 +65,7 @@ def generate_itinerary(trip_id):
 
                 # Add day_id to place, and set in_itinerary true
                 place.day_id = new_day.id
-                place.in_itinerary = True
-                
+                place.in_itinerary = True    
             else:
                 # Place is not in an existing day
                 # Set day_id to None, and in_itinerary to false
@@ -89,7 +88,7 @@ def generate_itinerary(trip_id):
     # Packages the data in order to be rendered on the frontend
     return {
         "tripId": int(trip_id),
-        "lastPlaceId": len(places),
+        "lastPlaceId": places[-1].position_id,
         "places": serialized_places,
         "days": days,
         "dayOrder": list(days.keys()),

@@ -9,7 +9,6 @@ from config import Config
 class TestConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # In-memory database for testing
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 @pytest.fixture(scope='module')
 def test_client():

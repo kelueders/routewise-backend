@@ -14,7 +14,7 @@ class TestItineraryRoute():
         assert response.status_code == 200
         data = response.get_json()
         assert data['tripId'] == 1
-        assert data['lastPlaceId'] == len(trip_request['trip']['places'])
+        assert data['lastPlaceId'] == 5
         assert len(data['places']) == len(trip_request['trip']['places'])
         assert len(data['days']) == 3
         assert data['days']['day-1']['dateYYYYMMDD'] == trip_request['trip']['startDate']
