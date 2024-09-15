@@ -68,12 +68,12 @@ def get_trip(trip_id):
     days = {}
     for i, day in enumerate(day_records):
         day_dict = create_day_dict(i + 1, day)
-        days[day_dict['id']] = day_dict
+        days[day_dict['dayNum']] = day_dict
 
         # Add the all the corresponding places id the day
         places_in_day = Place.query.filter_by(trip_id=trip_id, day_id=day.id).all()
         for place in places_in_day:
-            days[day_dict['id']]['placeIds'].append(place.position_id)
+            days[day_dict['dayNum']]['placeIds'].append(place.position_id)
         
     # Format of data to be sent to the front end
     return {

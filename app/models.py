@@ -217,6 +217,7 @@ places_schema = PlaceSchema(many=True)
 # Model for Day Table
 class Day(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    day_num = db.Column(db.String)                      # day-#
     name = db.Column(db.String(60), nullable=True)
     date_yyyy_mm_dd = db.Column(db.String)              # yyyy/mm/dd
     date_weekday_month_day = db.Column(db.String(60))   # Weekday, Month day
@@ -226,7 +227,8 @@ class Day(db.Model):
     trip = db.relationship('Trip', back_populates='day')
     place = db.relationship('Place', back_populates='day')
 
-    def __init__(self, name, date, trip_id):
+    def __init__(self, num, name, date, trip_id):
+        self.day_num = f'day-{num}'
         self.name = name
         self.date_yyyy_mm_dd = date.strftime('%Y/%m/%d')            # yyyy/mm/dd
         self.date_weekday_month_day = date.strftime('%A, %B %#d')   # Weekday, Month day
@@ -237,13 +239,17 @@ class Day(db.Model):
     def __repr__(self):
         return f'{self.date_yyyy_mm_dd} Day Object.'
     
+    def add_day_num(self, num):
+        self.day_num = f'day-{num}'
+    
 class DaySchema(ma.Schema):
+    dayNum = ma.String(attribute='day_num')
     dateYYYYMMDD = ma.String(attribute='date_yyyy_mm_dd')
     dateWeekdayMonthDay = ma.String(attribute='date_weekday_month_day')
     dateMMDD = ma.String(attribute='date_mm_dd')
 
     class Meta:
-        fields = ['id', 'name', 'dateYYYYMMDD', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
+        fields = ['id', 'dayNum', 'name', 'dateYYYYMMDD', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
 
 day_schema = DaySchema()
 days_schema = DaySchema(many=True)

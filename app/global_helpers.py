@@ -1,20 +1,21 @@
-from .models import Place, db, place_schema, day_schema
+from .models import Place, db, place_schema, day_schema, Day
 
-def create_day_dict(day_num, day):
+def create_day_dict(num, day):
     '''
     {
         'dateMMDD': '09/15', 
         'dateWeekdayMonthDay': 'Sunday, September 15', 
         'dateYYYYMMDD': '2024/09/15', 
-        'id': 'day-1', 
+        'dayNum': 'day-1'
+        'id': 1, 
         'name': '', 
         'placeIds': [2, 4, 5], 
         'weekday': 'Sun'
     }
     '''
-    id = f'day-{day_num}'
+    if not day.day_num:
+        day.add_day_num(num)
     day_dict = day_schema.dump(day)
-    day_dict['id'] = id
     day_dict['placeIds'] = []
     return day_dict
 

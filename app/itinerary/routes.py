@@ -27,18 +27,22 @@ def generate_itinerary(trip_id):
         # serialize days
         for i, day_data in enumerate(days_data):
             day_dict = create_day_dict(i + 1, day_data)
-            days[day_dict['id']] = day_dict
+            days[day_dict['dayNum']] = day_dict
     else:
         current_date = trip.convert_to_datetime(trip.start_date)
         for i in range(1, trip.duration + 1):
             # Create and add day to database
-            new_day = Day('', current_date, trip_id)
+            new_day = Day(i, '', current_date, trip_id)
 
             # Serialize day
             day_dict = create_day_dict(i, new_day)
-            days[day_dict['id']] = day_dict
+            days[day_dict['dayNum']] = day_dict
 
             db.session.add(new_day)
+
+            # Update day with id created from database
+            new_day = Day.query.filter_by(day_num=day_dict['dayNum'], trip_id=trip_id).first()
+            days[day_dict['dayNum']]['id'] = new_day.id
 
             # Increments by 1 the day that is added to the trip, starting at the trip start date
             current_date += timedelta(1)
@@ -59,12 +63,10 @@ def generate_itinerary(trip_id):
                 # Place is in an existing day
                 # Add place_id to days
                 day = days[days_day_id]
-                new_day = Day.query.filter_by(date_yyyy_mm_dd=day['dateYYYYMMDD'], 
-                                              trip_id=trip_id).first()
                 day['placeIds'].append(place_position_id)
 
                 # Add day_id to place, and set in_itinerary true
-                place.day_id = new_day.id
+                place.day_id = day['id']
                 place.in_itinerary = True    
             else:
                 # Place is not in an existing day
