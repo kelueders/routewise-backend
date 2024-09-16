@@ -205,7 +205,7 @@ class PlaceSchema(ma.Schema):
     dayId = ma.Integer(attribute='day_id')
 
     class Meta:
-        fields = ['apiId', 'positionId', 'name', 'address', 'imgUrl', 'info', 'favorite', 
+        fields = ['id', 'apiId', 'positionId', 'name', 'address', 'imgUrl', 'info', 'favorite', 
                   'category', 'phoneNumber', 'rating', 'summary', 'website', 'avgVisitTime', 
                   'lat', 'long', 'inItinerary', 'tripId', 'dayId']
 
@@ -228,7 +228,7 @@ class Day(db.Model):
     place = db.relationship('Place', back_populates='day')
 
     def __init__(self, num, name, date, trip_id):
-        self.day_num = f'day-{num}'
+        self.add_day_num(num)
         self.name = name
         self.date_yyyy_mm_dd = date.strftime('%Y/%m/%d')            # yyyy/mm/dd
         self.date_weekday_month_day = date.strftime('%A, %B %#d')   # Weekday, Month day
@@ -241,6 +241,19 @@ class Day(db.Model):
     
     def add_day_num(self, num):
         self.day_num = f'day-{num}'
+
+    def serialize(self, num, empty):
+        if not self.day_num:
+            self.add_day_num(num)
+        
+        day_dict = day_schema.dump(self)
+
+        if empty:
+            day_dict['placeIds'] = []
+        else:
+            day_dict['placeIds'] = [ place.id for place in self.place ]
+        
+        return day_dict
     
 class DaySchema(ma.Schema):
     dayNum = ma.String(attribute='day_num')

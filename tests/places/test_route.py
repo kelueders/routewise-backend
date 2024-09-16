@@ -1,5 +1,6 @@
 from ..config import test_client
 from ..mock_data import MockData
+from datetime import datetime
 
 class TestPlacesRoute():
     
@@ -134,16 +135,24 @@ class TestPlacesRoute():
     # get trip route
     def test_get_trip(self, test_client):
         """Test getting a trip and its places."""
+        valid_trip = MockData.trip2_and_places_data
         response = test_client.get('/places/trip/1')
         assert response.status_code == 200
         data = response.get_json()
         assert data['tripId'] == 1
         assert data['lastPlaceId'] == 3
         assert len(data['places']) == 3
-        # assert len(data['days']) == 5
-        # assert data['days']['day-1']['dateFormatted'] == self.trip2_and_places_data['trip']['startDate']
-        # assert len(data['dayOrder']) == 5
-        # assert data['dayOrder'][0] == 'day-1'
+        assert len(data['days']) == 5
+        assert data['days']['day-1']['dateYYYYMMDD'] == valid_trip['trip']['startDate']
+        date_obj = datetime.strptime(valid_trip['trip']['startDate'], '%Y/%m/%d').date()
+        assert data['days']['day-1']['dateMMDD'] == date_obj.strftime('%m/%d')
+        assert data['days']['day-1']['dateWeekdayMonthDay'] == date_obj.strftime('%A, %B %#d')
+        assert data['days']['day-1']['weekday'] ==  date_obj.strftime('%a')
+        assert data['days']['day-1']['dayNum'] == 'day-1'
+        assert data['days']['day-1']['id'] == 1
+        assert len(data['days']['day-1']['placeIds']) != None
+        assert len(data['dayOrder']) == 5
+        assert data['dayOrder'][0] == 'day-1'
 
     def test_get_trip_invalid_trip(self, test_client):
         """Test getting a trip that doesn't exist."""

@@ -3,14 +3,15 @@ from flask import Blueprint, redirect, request, jsonify, url_for
 
 # INTERNAL
 from ..models import Trip, Place, Day, db, trips_schema
-from ..global_helpers import create_day_dict, serialize_places, add_places
+from ..global_helpers import serialize_places, add_places, create_add_days
 
 places = Blueprint('places', __name__, url_prefix='/places')
+
 
 # Create a new trip
 @places.route('/trip', methods=['POST'])
 def add_trip():
-    # Get requested data
+
     uid = request.json['uid']
     trip_data = request.json['trip']
 
@@ -33,14 +34,16 @@ def add_trip():
     db.session.add(trip)
     db.session.commit()
 
+    # Create days and add to database
+    create_add_days(trip)
+
     # Validate and get new trip from database
-    trip_record = Trip.query.filter_by(id=trip.id).first()
-    if trip_record:
+    if trip.id:
         return {
-            "tripId": trip_record.id,
-            "startDate": trip_record.start_date,
-            "endDate": trip_record.end_date,
-            "duration": trip_record.duration
+            "tripId": trip.id,
+            "startDate": trip.start_date,
+            "endDate": trip.end_date,
+            "duration": trip.duration
         }, 200
     else:
         return jsonify({"message": "Failed to add trip"}), 500
@@ -50,7 +53,6 @@ def add_trip():
 @places.route('/trip/<trip_id>', methods=['GET'])
 def get_trip(trip_id):
 
-    # Get all the necessary data
     places = Place.query.filter_by(trip_id=trip_id).all()
     day_records = Day.query.filter_by(trip_id=trip_id).all()
     if not places:
@@ -67,13 +69,8 @@ def get_trip(trip_id):
     # Create a dict of days with keys "day-#"
     days = {}
     for i, day in enumerate(day_records):
-        day_dict = create_day_dict(i + 1, day)
+        day_dict = day.serialize(num=i+1, empty=False)
         days[day_dict['dayNum']] = day_dict
-
-        # Add the all the corresponding places id the day
-        places_in_day = Place.query.filter_by(trip_id=trip_id, day_id=day.id).all()
-        for place in places_in_day:
-            days[day_dict['dayNum']]['placeIds'].append(place.position_id)
         
     # Format of data to be sent to the front end
     return {
@@ -92,6 +89,7 @@ def get_trip(trip_id):
 # Return all the trips for a specific user   
 @places.route('/trips/<uid>', methods=['GET'])
 def get_trips(uid):
+
     # Get all trips from user
     trips = Trip.query.filter_by(uid=uid).all()
     if trips:
@@ -107,8 +105,8 @@ def delete_trip(trip_id):
     
     # Get trip and corresponding places and days to delete
     trip = Trip.query.filter_by(id=trip_id).first()
-    places = Place.query.filter_by(trip_id=trip_id).all()
-    days = Day.query.filter_by(trip_id=trip_id).all()
+    places = trip.place
+    days = trip.day
 
     # Delete each place in trip
     for place in places:
@@ -141,10 +139,10 @@ def delete_trip(trip_id):
 @places.route('/update-trip/<trip_id>', methods=['PATCH', 'POST', 'DELETE'])
 def update_trip(trip_id):
 
-    # Get requested data
     trip = Trip.query.filter_by(id=trip_id).first()
     if not trip:
         return jsonify({"message": f"No trip {trip_id}"}), 400
+    
     data = request.get_json()
 
     # Rename trip
@@ -165,10 +163,9 @@ def update_trip(trip_id):
         # If itinerary has been already been created, delete old days and create new itinerary
         if trip.is_itinerary:
             # delete old days
-            days = Day.query.filter_by(trip_id=trip_id).all()
+            days = trip.day
             for day in days:
                 db.session.delete(day)
-                
             db.session.commit()
 
             # create new itinerary
@@ -191,14 +188,12 @@ def get_places(trip_id):
     return serialized_places, 200
 
 
-# Allows the user to add a place before there is an itinerary created, commit it to the database
-# Also allows the user to add a place to the saved places list even after the itinerary is created
-# and then return the place_id to the frontend
+# Add place to list before itinerary created and add place to saved list after itinerary created
 @places.route('/add-place/<trip_id>', methods=['POST'])
 def add_place(trip_id):
 
-    # Get requested data about a place
     place_data = request.get_json()
+
     api_id = place_data['apiId']
     position_id = place_data['positionId']
     name = place_data['name']
@@ -223,9 +218,8 @@ def add_place(trip_id):
     db.session.commit()
 
     # Validate that the place has been added and return place id
-    place_record = Place.query.filter_by(position_id=position_id, trip_id=trip_id).first()
-    if place_record:
-        return str(place_record.api_id), 200
+    if place.id:
+        return str(place.api_id), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500
 
@@ -257,15 +251,17 @@ def add_trip_and_places():
     db.session.add(trip)
     db.session.commit()
 
+    # Create days and add to database
+    create_add_days(trip)
+    
     # Get places data
     places = trip_data['places']
     # Create and add places to database
     add_places(trip.id, places)
 
     # Validate trip and places were added successfully
-    trip_record = Trip.query.filter_by(id=trip.id)
     place_records = Place.query.filter_by(trip_id=trip.id).all()
-    if trip_record and (len(place_records) == len(places)):
+    if trip.id and (len(place_records) == len(places)):
         return jsonify({"message": "Trip and places have been added to the database."}), 200
     else:
         return jsonify({"message": "Failed adding trip or places"}), 500

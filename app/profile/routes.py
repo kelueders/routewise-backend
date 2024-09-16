@@ -6,9 +6,11 @@ from app.models import User, UserInfo, user_schema, db, user_info_schema
 
 profile = Blueprint('profile', __name__, url_prefix='/profile')
 
+
 # Creates a new user in the database
 @profile.route('/user', methods=['POST'])
 def add_user():
+    
     uid = request.json['uid']
     username = request.json['username']
     email = request.json['email']
@@ -24,34 +26,36 @@ def add_user():
     db.session.commit()
 
     # Send back user if correctly added to database
-    user = User.query.filter_by(uid=new_user.uid).first()
-    if user:
-        response = user_schema.dump(user)
+    if new_user.id:
+        response = user_schema.dump(new_user)
         return jsonify(response), 200
     else:
         return jsonify({"message": f'Failed adding user {uid}'}), 500
+
 
 @profile.route('/test', methods=['POST', 'GET'])
 def test():
     return "Waking up!", 200
 
+
 # Creates a user info row attached to a specific user
 @profile.route('/user-info', methods=['POST', 'GET'])
 def add_user_info():
 
-    # Get requested data for user and categories
     uid = request.json['uid']
     # Make sure user exists
-    if not User.query.filter_by(uid=uid).first():
+    user = User.query.filter_by(uid=uid).first()
+    if not user:
         return jsonify({"message": "User has not been created."}), 400
 
     if request.method == 'GET':
-        user_info = UserInfo.query.filter_by(uid=uid).first()
+        user_info = user.user_info[0]
         if user_info:
             schema = user_info_schema.dump(user_info)
             return jsonify(schema), 200
         else:
             return jsonify({"message": f'There is no user info for user: {uid}'}), 400
+        
     elif request.method == 'POST':
         categories = request.json['categories']
 
@@ -69,8 +73,7 @@ def add_user_info():
         db.session.add(user_info)
         db.session.commit()
 
-        user_info_record = UserInfo.query.filter_by(uid=uid).first()
-        if user_info_record:
-            return jsonify({"message": f"Hello {user_info_record.user.username}"}), 200
+        if user_info.id:
+            return jsonify({"message": f"Hello {user_info.user.username}"}), 200
         else:
             return jsonify({"message": "Failed adding user info"}), 500

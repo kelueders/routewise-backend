@@ -27,6 +27,7 @@ def check_code():
             return jsonify({"message": "User has access"}), 200
         else:
             return jsonify({"message": "User does not have access"}), 401
+        
     elif request.method == 'PATCH':
         # Validate access code
         if passcode == access_code:

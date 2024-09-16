@@ -1,78 +1,20 @@
-from .models import Place, db, place_schema, day_schema, Day
-
-def create_day_dict(num, day):
-    '''
-    {
-        'dateMMDD': '09/15', 
-        'dateWeekdayMonthDay': 'Sunday, September 15', 
-        'dateYYYYMMDD': '2024/09/15', 
-        'dayNum': 'day-1'
-        'id': 1, 
-        'name': '', 
-        'placeIds': [2, 4, 5], 
-        'weekday': 'Sun'
-    }
-    '''
-    if not day.day_num:
-        day.add_day_num(num)
-    day_dict = day_schema.dump(day)
-    day_dict['placeIds'] = []
-    return day_dict
+from .models import Place, db, place_schema, Day, Trip
+from datetime import timedelta
 
 def serialize_places(places):
-    '''
-    Serializes a list of Places.
-        Returns a dictionary with  that each have a local_id as the KEY and the 
-        place data (a dict) as the VALUE for each place
-
-    {
-        1: {
-            "local_id": 1,
-            "placeName": "Hyde Park",
-            "address": "Hyde Park, Albion Street, London, W2 2LG, United Kingdom",
-            "imgUrl": "https://images.unsplash.com/",
-            "place_id": 2535,
-            "info": "No hours information",
-            "lat": 51.5074889,
-            "long": -0.162236683080672,
-            "favorite": false,
-            "category": "park",
-            "phoneNumber": "604-000-0000",
-            "rating": "5",
-            "summary": "",
-            "website": "www.website.com",
-            "geocode": [51.5074889, -0.162236683080672],
-            "apiPlaceId": "ADxmjKepdsfL"
-        },
-        2: {
-            ...
-        }
-    }
-    '''
     places_serial = {}
 
     for i, place_data in enumerate(places):
-
         place = place_schema.dump(place_data)
-        place['id'] = place_data.id
         place['geocode'] = [place_data.lat, place_data.long]
         
         # making the index one of the keys with the place dictionary as the value
         places_serial[place['positionId']] = place
-
     return places_serial
 
-
 def add_places(trip_id, places_arr):
-
     for i in range(len(places_arr)):
-
         place = places_arr[i]
-        # if type(places_arr) == dict:
-        #     place = places_arr[i + 1]
-
-        # elif type(places_arr) == list:
-        #     place = places_arr[i]
 
         apiId = place['apiId']
         position_id = place['positionId']
@@ -97,6 +39,23 @@ def add_places(trip_id, places_arr):
 
         db.session.add(place)
         db.session.commit()
+
+def create_add_days(trip):
+    days = {}
+    current_date = trip.convert_to_datetime(trip.start_date)
+    for i in range(1, trip.duration + 1):
+        # Create and add day to database
+        new_day = Day(i, '', current_date, trip.id)
+        db.session.add(new_day)
+        db.session.commit()
+
+        # Serialize day
+        day_dict = new_day.serialize(num=i, empty=True)
+        days[day_dict['dayNum']] = day_dict
+
+        # Increments by 1 the day that is added to the trip, starting at the trip start date
+        current_date += timedelta(1)
+    return days
 
 def replace_day_id(places, day_id_1, day_id_2):
     # validate if theres any places in day

@@ -1,7 +1,7 @@
 from ..config import test_client
 from ..mock_data import MockData
-
 from datetime import datetime
+
 class TestItineraryRoute():
     
     # generate itinerary route
@@ -12,7 +12,7 @@ class TestItineraryRoute():
         test_client.post('/places/add-trip-and-places', json=trip_request)
         # test route
         response = test_client.patch('/itinerary/generate/1')
-        assert response.status_code == 200        
+        assert response.status_code == 200
         data = response.get_json()
         assert data['tripId'] == 1
         assert data['lastPlaceId'] == 5
