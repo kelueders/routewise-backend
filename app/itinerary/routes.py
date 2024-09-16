@@ -156,12 +156,14 @@ def delete_place(place_id):
 @itinerary.route('/update-place/<place_id>', methods=['PATCH'])
 def update_place(place_id):
 
-    data = request.get_json()
-    new_day_id = data['dayId']
     place = Place.query.filter_by(id=place_id).first()
+    print(place)
     if not place:
         return jsonify({"message": f"No place {place_id}"}) , 400
 
+    data = request.get_json()
+    new_day_id = data['dayId']
+    
     # Update place with new day_id
     place.day_id = new_day_id
     place.in_itinerary = data['inItinerary']

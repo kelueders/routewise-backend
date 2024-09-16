@@ -80,7 +80,11 @@ class TestItineraryRoute():
 
     def test_update_nonexisting_place(self, test_client):
         """Test updating nonexisting place."""
-        response = test_client.patch('/itinerary/update-place/10')
+        request = {
+            "dayId": 2,
+            "inItinerary": True
+        }
+        response = test_client.patch('/itinerary/update-place/10', json=request)
         assert response.status_code == 400
 
     # move/swap places in a day route
