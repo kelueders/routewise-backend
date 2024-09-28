@@ -31,6 +31,26 @@ def add_user():
 
     # return f'It worked. ID: {new_user.uid} Username: {new_user.username} Email: {new_user.email}'
 
+# @profile.route('/update-user', methods=['POST'])
+# def update_user():
+    # updates user with first, last name, and username
+
+    # data = request.get_json()
+    # uid = data['uid']
+
+    # user = User.query.get(uid)
+
+    # if not user:
+    #     return "User not found", 404
+    # else:
+    #     user.first_name = data['first_name']
+    #     user.last_name = data['last_name']
+    #     user.username = data['username']
+
+    #     db.session.commit()
+
+    #     return "user updated", 200
+
 @profile.route('/test', methods=['POST', 'GET'])
 def test():
     return "Waking up!"
