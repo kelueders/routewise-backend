@@ -184,6 +184,35 @@ def delete_place(place_id):
 
     return "Place deleted"
 
+@itinerary.route('/delete-places/', methods = ['DELETE'])
+def delete_places():
+    # expects package with placeIds: []
+
+    data = request.get_json()
+    place_ids = data['placeIds']
+
+    for place_id in place_ids:
+        place = Place.query.get(place_id)
+        db.session.delete(place)
+    
+    db.session.commit()
+
+    return "Places deleted", 200
+
+@itinerary.route('/delete-all-places/<trip_id>', methods = ['DELETE'])
+def delete_all_places(trip_id):
+    # only expects trip_id in the url
+
+    places = Place.query.filter_by(trip_id = trip_id).all()
+
+    for place in places:
+        place = Place.query.get(place.place_id)
+        db.session.delete(place)
+    
+    db.session.commit()
+
+    return "All places for trip deleted", 200
+
 
 @itinerary.route('/update-place/<place_id>', methods = ['PATCH'])
 def update_place(place_id):

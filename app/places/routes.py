@@ -257,19 +257,6 @@ def update_trip(trip_id):
 
     return "Trip Name and/or Duration Updated"
 
-@places.route('/update-day-name/<day_id>', methods = ['PATCH'])
-def update_day_name(day_id):
-
-    day = Day.query.get(day_id)
-
-    data = request.get_json()
-
-    day.day_name = data['dayName']
-
-    db.session.commit()
-
-    return "Day Name Updated", 200
-
 
 # Add a place to the user's list
 @places.route('/add-place/<trip_id>', methods=['POST'])
