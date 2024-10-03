@@ -201,7 +201,16 @@ def delete_places():
 
 @itinerary.route('/delete-all-places/<trip_id>', methods = ['DELETE'])
 def delete_all_places(trip_id):
-    # only expects trip_id in the url
+    # expects trip_id in the url and package with uid: string
+
+    data = request.get_json()
+    print(data)
+
+    uid = data['uid']
+
+    trip = Trip.query.filter_by(trip_id = trip_id, uid = uid).first()
+    if (not trip):
+        return "Trip not found", 404
 
     places = Place.query.filter_by(trip_id = trip_id).all()
 
