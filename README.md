@@ -302,6 +302,15 @@ Running the program in a docker container ensures it runs in a clean enviornment
     }
     ```
 
+### `PATCH /places/update-day-name/<day_id>`
+- **Description**: Update day name (user created title for a trip day).
+- **Request Body**:
+    ```json
+    {
+        "dayName": ""
+    }
+    ```
+
 ### `POST /places/add-place/<trip_id>`
 - **Description**: Add place to trip.
 - **Request Body**:
