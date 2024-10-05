@@ -180,6 +180,20 @@ Running the program in a docker container ensures it runs in a clean enviornment
 - **Description**: Deletes place in its entirety.
 - **Response**: Success message
 
+### `DELETE /itinerary/delete-places`
+- **Description**: Deletes multiple places at once.
+- **Request Body**:
+    ```json
+    {
+        "placeIds": []
+    }
+    ```
+- **Response**: Success message
+
+### `DELETE /itinerary/delete-all-places/<trip_id>`
+- **Description**: Deletes all places related to a specified trip.
+- **Response**: Success message
+
 ### `PATCH /itinerary/update-place/<place_id>`
 - **Description**: Updates place specified.
 - **Request Body**:
@@ -299,15 +313,6 @@ Running the program in a docker container ensures it runs in a clean enviornment
         "tripName": "",
         "startDate": "",
         "endDate": ""
-    }
-    ```
-
-### `PATCH /places/update-day-name/<day_id>`
-- **Description**: Update day name (user created title for a trip day).
-- **Request Body**:
-    ```json
-    {
-        "dayName": ""
     }
     ```
 
