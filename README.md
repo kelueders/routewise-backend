@@ -217,6 +217,20 @@ There are several unit tests created for the api endpoints.
     - Status code 400, if no place is found.
     - Status code 200, if place is successfully deleted.
 
+### `DELETE /itinerary/delete-places`
+- **Description**: Deletes multiple places at once.
+- **Request Body**:
+    ```json
+    {
+        "placeIds": []
+    }
+    ```
+- **Response**: Success message
+
+### `DELETE /itinerary/delete-all-places/<trip_id>`
+- **Description**: Deletes all places related to a specified trip.
+- **Response**: Success message
+
 ### `PATCH /itinerary/update-place/<place_id>`
 - **Description**: Move place to day.
 - **Request Body**:
