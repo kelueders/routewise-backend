@@ -2,8 +2,6 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-from ..models import Place, Trip
-
 max_visit_time_per_day = 540    # minutes
 default_avg_visit_time = 60     # minutes
 
@@ -22,14 +20,11 @@ The data is stored in a multi-dimensional array
 '''
 class Itinerary:
 
-    def __init__(self, trip_id):
+    def __init__(self, trip_id, places):
         self.trip_id = trip_id                  # int - index value from Trip table
-        self.places = self.get_places()         # list - Place objects
+        self.places = places                    # list - Place objects
         self.duration = self.get_duration()     # int - length of the trip in days
         self.sorted_days = []                   # Multi-dimen array - row is day, column is placeId
-
-    def get_places(self):
-        return Place.query.filter_by(trip_id=self.trip_id).all()
     
     def get_duration(self):
         return self.places[0].trip.duration

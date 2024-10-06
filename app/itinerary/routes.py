@@ -32,7 +32,7 @@ def generate_itinerary(trip_id):
         days = create_add_days(trip)
 
     # Create Itinerary data
-    itinerary = Itinerary(trip_id)
+    itinerary = Itinerary(trip_id, places)
     itinerary_data = itinerary.generate()   # multi-dimen array - rows=days, cols=place_ids
 
     # Populate saved_places and days with places from itinerary_data
