@@ -390,6 +390,15 @@ There are several unit tests created for the api endpoints.
     - Status code 400, if trip doesn’t exist.
     - Status code 200, if successful and regenerates itinerary.
 
+### `PATCH /places/update-day-name/<day_id>`
+- **Description**: Update day name (user created title for a trip day).
+- **Request Body**:
+    ```json
+    {
+        "dayName": ""
+    }
+    ```
+
 ### `GET /places/get-places/<trip_id>`
 - **Description**: Gets places in trip.
 - **Response**:

@@ -174,6 +174,20 @@ def update_trip(trip_id):
     return jsonify({"message": "Trip Name and/or Duration Updated"}), 200
 
 
+@places.route('/update-day-name/<day_id>', methods = ['PATCH'])
+def update_day_name(day_id):
+    
+    day = Day.query.filter_by(day_id = day_id).first()
+    data = request.get_json()
+    day.day_name = data['dayName']
+    db.session.commit()
+    day = Day.query.filter_by(day_id = day_id).first()
+    if day.day_name != data['dayName']:
+        return "Day Name Not Updated", 500
+    
+    return "Day Name Updated", 200
+
+
 # Return all the places for a specific trip  
 @places.route('/get-places/<trip_id>', methods=['GET'])
 def get_places(trip_id):
