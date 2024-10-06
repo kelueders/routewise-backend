@@ -218,18 +218,18 @@ There are several unit tests created for the api endpoints.
     - Status code 200, if place is successfully deleted.
 
 ### `DELETE /itinerary/delete-places`
-- **Description**: Deletes multiple places at once.
+- **Description**: Deletes multiple places.
 - **Request Body**:
     ```json
     {
-        "placeIds": []
+        "placeIds": [ (Integer), ... ]
     }
     ```
-- **Response**: Success message
+- **Response**: Status code 200 if successful
 
 ### `DELETE /itinerary/delete-all-places/<trip_id>`
 - **Description**: Deletes all places related to a specified trip.
-- **Response**: Success message
+- **Response**: Status code 200 if successful
 
 ### `PATCH /itinerary/update-place/<place_id>`
 - **Description**: Move place to day.
@@ -398,6 +398,7 @@ There are several unit tests created for the api endpoints.
         "dayName": ""
     }
     ```
+- **Response**: Status code 200, if successful.
 
 ### `GET /places/get-places/<trip_id>`
 - **Description**: Gets places in trip.

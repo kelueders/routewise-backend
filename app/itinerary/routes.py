@@ -151,31 +151,37 @@ def delete_place(place_id):
     else:
         return jsonify({"message": f"Place {place_id} deletion failed"}), 500
 
-@itinerary.route('/delete-places', methods = ['DELETE'])
+
+# deletes multiple places
+@itinerary.route('/delete-places', methods=['DELETE'])
 def delete_places():
 
     data = request.get_json()
     place_ids = data['placeIds']
 
     for place_id in place_ids:
-        place = Place.query.filter_by(place_id = place_id).first()
+        place = Place.query.filter_by(id=place_id).first()
+        if not place:
+            return jsonify({"message": f"No such place {place_id}"}), 400
         db.session.delete(place)
     
     db.session.commit()
 
     for place_id in place_ids:
-        place = Place.query.filter_by(place_id = place_id).first()
-        if (place):
-            return "Places not deleted", 500
+        place = Place.query.filter_by(id=place_id).first()
+        if place:
+            return jsonify({"message": f"Place {place_id} not deleted"}), 500
 
-    return "Places deleted", 200
+    return jsonify({"message": "Places deleted"}), 200
 
-@itinerary.route('/delete-all-places/<trip_id>', methods = ['DELETE'])
+
+# delete all places in a trip
+@itinerary.route('/delete-all-places/<trip_id>', methods=['DELETE'])
 def delete_all_places(trip_id):
 
-    trip = Trip.query.filter_by(trip_id = trip_id).first()
+    trip = Trip.query.filter_by(id=trip_id).first()
     if (not trip):
-        return "Trip not found", 404
+        return jsonify({"message": f"Trip {trip_id} not found"}), 404
     
     places = trip.place
 
@@ -184,12 +190,13 @@ def delete_all_places(trip_id):
     
     db.session.commit()
 
-    places = Place.query.filter_by(trip_id = trip_id).all()
+    places = Place.query.filter_by(id=trip_id).all()
 
     if (len(places) != 0):
-        return "Places not deleted", 500
+        return jsonify({"message": "Places not deleted"}), 500
 
-    return "Places deleted", 200
+    return jsonify({"message": "Places deleted"}), 200
+
 
 # Moves place to new day
 @itinerary.route('/update-place/<place_id>', methods=['PATCH'])

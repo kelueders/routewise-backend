@@ -158,3 +158,12 @@ class TestPlacesRoute():
         """Test getting a trip that doesn't exist."""
         response = test_client.get('/places/trip/5')
         assert response.status_code == 400
+    
+    # update day name route
+    def test_update_day_name(self, test_client):
+        """Test updating day name."""
+        request = {
+            'dayName': 'New fun name'
+        }
+        response = test_client.patch('/places/update-day-name/1', json=request)
+        assert response.status_code == 200

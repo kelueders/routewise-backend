@@ -218,7 +218,7 @@ places_schema = PlaceSchema(many=True)
 class Day(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     day_num = db.Column(db.String)                      # day-#
-    name = db.Column(db.String(60), nullable=True)
+    name = db.Column(db.String(60), nullable=True)      # optional name for day
     date_yyyy_mm_dd = db.Column(db.String)              # yyyy/mm/dd
     date_weekday_month_day = db.Column(db.String(60))   # Weekday, Month day
     date_mm_dd = db.Column(db.String(60))               # mm/dd

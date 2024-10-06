@@ -117,3 +117,31 @@ class TestItineraryRoute():
         }
         response = test_client.patch('/itinerary/move-day-places/1', json=request)
         assert response.status_code == 502
+ 
+    # delete places route
+    def test_delete_places(self, test_client):
+        """Test deleting multiple places."""
+        request = {
+            "placeIds": [3, 4]
+        }
+        response = test_client.delete('/itinerary/delete-places', json=request)
+        assert response.status_code == 200
+
+    def test_delete_nonexisting_places(self, test_client):
+        """Test deleting nonexisting place."""
+        request = {
+            "placeIds": [10, 12]
+        }
+        response = test_client.delete('/itinerary/delete-places', json=request)
+        assert response.status_code == 400
+
+    # delete all places in a trip route
+    def test_delete_all_places(self, test_client):
+        """Test deleting all places in a trip."""
+        response = test_client.delete('/itinerary/delete-all-places/1')
+        assert response.status_code == 200
+
+    def test_delete_all_places_nonexisting_trip(self, test_client):
+        """Test deleting all places from nonexisting trip."""
+        response = test_client.delete('/itinerary/delete-all-places/5')
+        assert response.status_code == 404
