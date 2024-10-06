@@ -3,196 +3,13 @@ from flask import Blueprint, redirect, request, jsonify, url_for
 
 # INTERNAL
 from ..models import Trip, Place, Day, db, trips_schema
-from ..global_helpers import serialize_places, add_places, create_add_days
+from ..global_helpers import serialize_places, replace_day_id, add_places, create_add_days
 
 places = Blueprint('places', __name__, url_prefix='/places')
 
 
-# Create a new trip
-@places.route('/trip', methods=['POST'])
-def add_trip():
-
-    uid = request.json['uid']
-    trip_data = request.json['trip']
-
-    trip_name = trip_data['name']
-    city = trip_data['city']
-    state = trip_data['state']
-    country = trip_data['country']
-    country_abbr = trip_data['countryAbbr']
-    lat = trip_data['lat']
-    long = trip_data['long']
-    img_url = trip_data['imgUrl']
-    start_date = trip_data['startDate']
-    end_date = trip_data['endDate']
-
-    # Create trip object
-    trip = Trip(trip_name, city, state, country, country_abbr, lat, long, 
-                img_url, start_date, end_date, uid)
-
-    # Add trip to database
-    db.session.add(trip)
-    db.session.commit()
-
-    # Create days and add to database
-    create_add_days(trip)
-
-    # Validate and get new trip from database
-    if trip.id:
-        return {
-            "tripId": trip.id,
-            "startDate": trip.start_date,
-            "endDate": trip.end_date,
-            "duration": trip.duration
-        }, 200
-    else:
-        return jsonify({"message": "Failed to add trip"}), 500
-
-
-# Return a specific trip from the database to the front-end
-@places.route('/trip/<trip_id>', methods=['GET'])
-def get_trip(trip_id):
-
-    places = Place.query.filter_by(trip_id=trip_id).all()
-    day_records = Day.query.filter_by(trip_id=trip_id).all()
-    if not places:
-        return jsonify({"message": "No places associated with trip"}), 400
-    
-    serialized_places = serialize_places(places)
-
-    # Create list of place ids that are not in the itinerary
-    saved_places_ids = []
-    for i, place_data in enumerate(places):
-        if place_data.in_itinerary != True and not place_data.day_id:
-            saved_places_ids.append(place_data.position_id)
-    
-    # Create a dict of days with keys "day-#"
-    days = {}
-    for i, day in enumerate(day_records):
-        day_dict = day.serialize(num=i+1, empty=False)
-        days[day_dict['dayNum']] = day_dict
-        
-    # Format of data to be sent to the front end
-    return {
-        "tripId": int(trip_id),
-        "lastPlaceId": places[-1].position_id,
-        "places": serialized_places,
-        "days": days,
-        "dayOrder": list(days.keys()),
-        "savedPlaces": { 
-            "placesIds": saved_places_ids,
-            "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
-            }
-        }, 200
-
-
-# Return all the trips for a specific user   
-@places.route('/trips/<uid>', methods=['GET'])
-def get_trips(uid):
-
-    # Get all trips from user
-    trips = Trip.query.filter_by(uid=uid).all()
-    if trips:
-        response = trips_schema.dump(trips)
-        return jsonify(response), 200
-    else:
-        return jsonify({"message": "No trips for user"}), 400
-
-
-# Delete a trip and its corresponding places and days
-@places.route('/delete-trip/<trip_id>', methods=['DELETE'])
-def delete_trip(trip_id):
-    
-    # Get trip and corresponding places and days to delete
-    trip = Trip.query.filter_by(id=trip_id).first()
-    places = trip.place
-    days = trip.day
-
-    # Delete each place in trip
-    for place in places:
-        db.session.delete(place)
-
-    # Delete each day in trip
-    for day in days:
-        db.session.delete(day)
-
-    # Update database
-    db.session.delete(trip)
-    db.session.commit()
-
-    # Validate data has been deleted
-    if (not Trip.query.filter_by(id=trip_id).first() and 
-        not Place.query.filter_by(trip_id=trip_id).all() and 
-        not Day.query.filter_by(trip_id=trip_id).all()):
-        return jsonify({"message": "Trip deleted yay"}), 200
-    else:
-        return jsonify({"message": f"Failed to delete trip {trip_id}"}), 500
-
-
-'''
-** Update a Trip Name AND/OR Date **
-- will be used in 3 places:
-    - Dashboard page - can update trip name and dates, is_itinerary = True or False
-    - Places List page - can update trip dates, is_itinerary = True or False
-    - Itinerary page - can update trip dates, is_itinerary = True
-'''
-@places.route('/update-trip/<trip_id>', methods=['PATCH', 'POST', 'DELETE'])
-def update_trip(trip_id):
-
-    trip = Trip.query.filter_by(id=trip_id).first()
-    if not trip:
-        return jsonify({"message": f"No trip {trip_id}"}), 400
-    
-    data = request.get_json()
-
-    # Rename trip
-    if data['tripName']:
-        trip.name = data['tripName']  
-        db.session.commit()
-
-    # Edit trip dates
-    if data['startDate'] or data['endDate']:
-        if data['startDate']:
-            trip.start_date = data['startDate']
-        if data['endDate']:
-            trip.end_date = data['endDate']
-        # Update trip duration
-        trip.duration = trip.calc_duration()
-        db.session.commit()
-
-        # If itinerary has been already been created, delete old days and create new itinerary
-        if trip.is_itinerary:
-            # delete old days
-            days = trip.day
-            for day in days:
-                db.session.delete(day)
-            db.session.commit()
-
-            # create new itinerary
-            return redirect(url_for('itinerary.create_days', trip_id=trip_id)), 200
-
-    return jsonify({"message": "Trip Name and/or Duration Updated"}), 200
-
-
-@places.route('/update-day-name/<day_id>', methods=['PATCH'])
-def update_day_name(day_id):
-    
-    day = Day.query.filter_by(id=day_id).first()
-
-    data = request.get_json()
-    day.name = data['dayName']
-
-    db.session.commit()
-
-    day = Day.query.filter_by(id=day_id).first()
-    if day.name != data['dayName']:
-        return jsonify({"message": "Day Name Not Updated"}), 500
-    
-    return jsonify({"message": "Day Name Updated"}), 200
-
-
 # Return all the places for a specific trip  
-@places.route('/get-places/<trip_id>', methods=['GET'])
+@places.route('/<trip_id>', methods=['GET'])
 def get_places(trip_id):
 
     # Get places for trip
@@ -206,7 +23,7 @@ def get_places(trip_id):
 
 
 # Add place to list before itinerary created and add place to saved list after itinerary created
-@places.route('/add-place/<trip_id>', methods=['POST'])
+@places.route('/add/<trip_id>', methods=['POST'])
 def add_place(trip_id):
 
     place_data = request.get_json()
@@ -241,44 +58,120 @@ def add_place(trip_id):
         return jsonify({"message": "Place could not be added"}), 500
 
 
-# User flow for when the user is not logged in - it will create the trip and places at the same time
-@places.route('/add-trip-and-places', methods=['POST'])
-def add_trip_and_places():
+# Deletes place
+@places.route('/delete/<place_id>', methods=['DELETE'])
+def delete_place(place_id):
 
-    # Get requested data about trip
-    data = request.get_json()
-
-    uid = data['uid']
-    trip_data = data['trip']
-    trip_name = trip_data['name']
-    city = trip_data['city']
-    state = trip_data['state']
-    country = trip_data['country']
-    country_abbr = trip_data['countryAbbr']
-    lat = trip_data['geocode'][0]
-    long = trip_data['geocode'][1]
-    img_url = trip_data['imgUrl']
-    start_date = trip_data['startDate']
-    end_date = trip_data['endDate']
-
-    # Create and add Trip to database
-    trip = Trip(trip_name, city, state, country, country_abbr, lat, long, 
-            img_url, start_date, end_date, uid)
+    place = Place.query.filter_by(id=place_id).first()
+    if not place:
+        return jsonify({"message": f"No such place {place_id}"}), 400
     
-    db.session.add(trip)
+    # Update database
+    db.session.delete(place)
     db.session.commit()
 
-    # Create days and add to database
-    create_add_days(trip)
-    
-    # Get places data
-    places = trip_data['places']
-    # Create and add places to database
-    add_places(trip.id, places)
-
-    # Validate trip and places were added successfully
-    place_records = Place.query.filter_by(trip_id=trip.id).all()
-    if trip.id and (len(place_records) == len(places)):
-        return jsonify({"message": "Trip and places have been added to the database."}), 200
+    # Validate that the place has been deleted
+    place_record = Place.query.filter_by(id=place_id).first()
+    if not place_record:
+        return jsonify({"message": "Place deleted"}), 200
     else:
-        return jsonify({"message": "Failed adding trip or places"}), 500
+        return jsonify({"message": f"Place {place_id} deletion failed"}), 500
+
+
+# deletes multiple places
+@places.route('/delete', methods=['DELETE'])
+def delete_places():
+
+    data = request.get_json()
+    place_ids = data['placeIds']
+
+    for place_id in place_ids:
+        place = Place.query.filter_by(id=place_id).first()
+        if not place:
+            return jsonify({"message": f"No such place {place_id}"}), 400
+        db.session.delete(place)
+    
+    db.session.commit()
+
+    for place_id in place_ids:
+        place = Place.query.filter_by(id=place_id).first()
+        if place:
+            return jsonify({"message": f"Place {place_id} not deleted"}), 500
+
+    return jsonify({"message": "Places deleted"}), 200
+
+
+# delete all places in a trip
+@places.route('/delete-all/<trip_id>', methods=['DELETE'])
+def delete_all_places(trip_id):
+
+    trip = Trip.query.filter_by(id=trip_id).first()
+    if (not trip):
+        return jsonify({"message": f"Trip {trip_id} not found"}), 404
+    
+    places = trip.place
+
+    for place in places:
+        db.session.delete(place)
+    
+    db.session.commit()
+
+    places = Place.query.filter_by(id=trip_id).all()
+
+    if (len(places) != 0):
+        return jsonify({"message": "Places not deleted"}), 500
+
+    return jsonify({"message": "Places deleted"}), 200
+
+
+# Moves place to new day
+@places.route('/update/<place_id>', methods=['PATCH'])
+def update_place(place_id):
+
+    place = Place.query.filter_by(id=place_id).first()
+    print(place)
+    if not place:
+        return jsonify({"message": f"No place {place_id}"}) , 400
+
+    data = request.get_json()
+    new_day_id = data['dayId']
+    
+    # Update place with new day_id
+    place.day_id = new_day_id
+    place.in_itinerary = data['inItinerary']
+
+    # Update database
+    db.session.commit()
+
+    # Validate data has been updated
+    if place.day_id == new_day_id:
+        return jsonify({"message": f"Place updated to day: {new_day_id}"}) , 200
+    else:
+        return jsonify({"message": "Place failed to update"}), 500
+
+# Move/Swap all places in a day to another day
+@places.route('/move-days/<trip_id>', methods=['PATCH'])
+def move_day_places(trip_id):
+
+    data = request.get_json()
+    src_day_id = data['sourceDayId']
+    dest_day_id = data['destDayId']
+    swap = data['swap']
+
+    try:
+        # Get all the places in the specified days
+        src_places = Place.query.filter_by(trip_id=trip_id, day_id=src_day_id).all()
+        dest_places = Place.query.filter_by(trip_id=trip_id, day_id=dest_day_id).all()
+
+        # Move places from source day to destination day
+        replace_day_id(src_places, src_day_id, dest_day_id)
+        
+        if(swap):
+            # Move places from destination day to source day
+            replace_day_id(dest_places, dest_day_id, src_day_id)
+
+        db.session.commit()
+
+        return jsonify({"message": "Successfully moved places"}), 200
+    except Exception as e:
+        return jsonify({"message": f'Failed: {e}'}), 502

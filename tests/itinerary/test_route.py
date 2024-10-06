@@ -9,7 +9,8 @@ class TestItineraryRoute():
         """Test generating an itinerary."""
         # populate database with trip and places
         trip_request = MockData.trip3_and_places_data
-        test_client.post('/places/add-trip-and-places', json=trip_request)
+        test_client.post('/trip/add', json=trip_request)
+        
         # test route
         response = test_client.patch('/itinerary/generate/1')
         assert response.status_code == 200
@@ -56,92 +57,3 @@ class TestItineraryRoute():
         response = test_client.post('/itinerary/add-one-place/1', json=request)
         assert response.status_code == 200
         assert int(response.data.decode('utf-8')) == 7
-
-    # delete place route
-    def test_delete_place(self, test_client):
-        """Test deleting place."""
-        response = test_client.delete('/itinerary/delete-place/7')
-        assert response.status_code == 200
-
-    def test_delete_nonexisting_place(self, test_client):
-        """Test deleting nonexisting place."""
-        response = test_client.delete('/itinerary/delete-place/10')
-        assert response.status_code == 400
-
-    # update place route
-    def test_update_place(self, test_client):
-        """Test updating place."""
-        request = {
-            "dayId": 2,
-            "inItinerary": True
-        }
-        response = test_client.patch('/itinerary/update-place/6', json=request)
-        assert response.status_code == 200
-
-    def test_update_nonexisting_place(self, test_client):
-        """Test updating nonexisting place."""
-        request = {
-            "dayId": 2,
-            "inItinerary": True
-        }
-        response = test_client.patch('/itinerary/update-place/10', json=request)
-        assert response.status_code == 400
-
-    # move/swap places in a day route
-    def test_swap_day_places(self, test_client):
-        """Test swapping all places in a day with another day."""
-        request = {
-            "sourceDayId": 1,
-            "destDayId" : 2,
-            "swap": True
-        }
-        response = test_client.patch('/itinerary/move-day-places/1', json=request)
-        assert response.status_code == 200
-
-    def test_move_day_places(self, test_client):
-        """Test moving all places in a day to another day."""
-        request = {
-            "sourceDayId": 1,
-            "destDayId" : 2,
-            "swap": False
-        }
-        response = test_client.patch('/itinerary/move-day-places/1', json=request)
-        assert response.status_code == 200
-
-    def test_move_day_places_nonexisting_day(self, test_client):
-        """Test moving places in a day to a nonexisting day."""
-        request = {
-            "sourceDayId": 5,
-            "destDayId" : 2,
-            "swap": False
-        }
-        response = test_client.patch('/itinerary/move-day-places/1', json=request)
-        assert response.status_code == 502
- 
-    # delete places route
-    def test_delete_places(self, test_client):
-        """Test deleting multiple places."""
-        request = {
-            "placeIds": [3, 4]
-        }
-        response = test_client.delete('/itinerary/delete-places', json=request)
-        assert response.status_code == 200
-
-    def test_delete_nonexisting_places(self, test_client):
-        """Test deleting nonexisting place."""
-        request = {
-            "placeIds": [10, 12]
-        }
-        response = test_client.delete('/itinerary/delete-places', json=request)
-        assert response.status_code == 400
-
-    # delete all places in a trip route
-    def test_delete_all_places(self, test_client):
-        """Test deleting all places in a trip."""
-        response = test_client.delete('/itinerary/delete-all-places/1')
-        assert response.status_code == 200
-
-    def test_delete_all_places_nonexisting_trip(self, test_client):
-        """Test deleting all places from nonexisting trip."""
-        response = test_client.delete('/itinerary/delete-all-places/5')
-        assert response.status_code == 404

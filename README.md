@@ -94,16 +94,20 @@ There are several unit tests created for the api endpoints.
     - models.py : contains the schema for database models.
     - global_helpers.py : contains helper functions used in multiple files.
     - /auth : contains the api route to handle granting access to a user
+    - /days : contains the api routes to handle manipulating day data from the database.
     - /itinerary : contains the algorithm to create an itinerary and the api routes to manipulate an itinerary.
-    - /places : contains the api routes to handle getting and manipulating trip and places data from the database.
+    - /places : contains the api routes to handle getting and manipulating places data from the database.
     - /profile : contains the api route to handle getting and manipulating user data in the database.
+    - /trip : contains the api routes to handle getting and manipulating trip data from the database.
 - /tests : Contains the unit tests
     - mock_data.py : contains mock data to be used in the tests
     - config.py : runs the program testing mode on a local sqlite database
     - /auth : contains the tests for the auth api routes
+    - /days : contains the tests for the days api routes
     - /itinerary : contains the tests for the itinerary api routes
     - /places : contains the tests for the places api routes
     - /profile : contains the tests for the profile api routes
+    - /trip : contains the tests for the trip api routes
 
 ## API Documentation
 
@@ -120,6 +124,16 @@ There are several unit tests created for the api endpoints.
     - Status code 400, if user does not exist.
     - Status code 200, user is granted access.
     - Status code 401, user is not granted access.
+
+### `PATCH /days/update-name/<day_id>`
+- **Description**: Update day name (user created title for a trip day).
+- **Request Body**:
+    ```json
+    {
+        "dayName": ""
+    }
+    ```
+- **Response**: Status code 200, if successful.
 
 ### `PATCH /itinerary/generate/<trip_id>`
 - **Description**: Create itinerary for places and creates corresponding days.
@@ -211,13 +225,70 @@ There are several unit tests created for the api endpoints.
     ```
 - **Response**: Status code 200 on success. Returns place id (Integer) in database.
 
-### `DELETE /itinerary/delete-place/<place_id>`
+### `GET /places/<trip_id>`
+- **Description**: Gets places in trip.
+- **Response**:
+    - Status code 400, if there are no places for that trip.
+    - Status code 200, if there are places for the trip.
+    ```json
+    {
+        "1": {
+            "address": "",
+            "apiId": "",
+            "avgVisitTime": (Float),
+            "category": "",
+            "dayId": (Integer),
+            "favorite": (Boolean),
+            "geocode": [ (Float), (Float) ],
+            "id": 1,
+            "imgUrl": "",
+            "inItinerary": (Boolean),
+            "info": "",
+            "lat": (Float),
+            "long": (Float),
+            "phoneNumber": "",
+            "positionId": (Integer),
+            "name": "",
+            "rating": "",
+            "summary": "",
+            "tripId": (Integer),
+            "website": ""
+        },
+        ...
+    }
+    ```
+
+### `POST /places/add/<trip_id>`
+- **Description**: Add a place to empty itinerary.
+- **Request Body**:
+    ```json
+    {
+        "apiId": "",
+        "positionId": (Integer),
+        "name": "",
+        "address": "",
+        "imgUrl": "",
+        "info": "",
+        "favorite": (Boolean),
+        "category": "",
+        "phoneNumber": "",
+        "rating": "",
+        "summary": "",
+        "website": "",
+        "avgVisitTime": (Float),
+        "lat": (Float),
+        "long": (Float)
+    }
+    ```
+- **Response**: Status code 200 upon success. Returns place API Id (String).
+
+### `DELETE /places/delete/<place_id>`
 - **Description**: Deletes place from database.
 - **Response**: 
     - Status code 400, if no place is found.
     - Status code 200, if place is successfully deleted.
 
-### `DELETE /itinerary/delete-places`
+### `DELETE /places/delete`
 - **Description**: Deletes multiple places.
 - **Request Body**:
     ```json
@@ -227,16 +298,16 @@ There are several unit tests created for the api endpoints.
     ```
 - **Response**: Status code 200 if successful
 
-### `DELETE /itinerary/delete-all-places/<trip_id>`
+### `DELETE /places/delete-all/<trip_id>`
 - **Description**: Deletes all places related to a specified trip.
 - **Response**: Status code 200 if successful
 
-### `PATCH /itinerary/update-place/<place_id>`
+### `PATCH /places/update/<place_id>`
 - **Description**: Move place to day.
 - **Request Body**:
     ```json
     {
-        "dayId": ,
+        "dayId": (Integer),
         "inItinerary": (Boolean)
     }
     ```
@@ -244,7 +315,7 @@ There are several unit tests created for the api endpoints.
     - Status code 400, if place doesn’t exist.
     - Status code 200, if place successfully moved.
 
-### `PATCH /itinerary/move-day-places/<trip_id>`
+### `PATCH /places/move-days/<trip_id>`
 - **Description**: Moves/swaps all places in a day to a destination day.
 - **Request Body**:
     ```json
@@ -256,9 +327,11 @@ There are several unit tests created for the api endpoints.
     ```
 - **Response**: Status code 200, if places are successfully moved.
 
-### `POST /places/trip`
-- **Description**: Adds a new empty trip.
+### `POST /trip/add`
+- **Description**: Adds a new trip with optional places.
 - **Request Body**:
+
+    Empty trip
     ```json
     {
         "uid": "",
@@ -276,6 +349,42 @@ There are several unit tests created for the api endpoints.
         }
     }
     ```
+    Trip with places
+    ```json
+    {
+        "uid": "",
+        "trip": {
+            "name": "",
+            "city": "",
+            "state": "",
+            "country": "",
+            "countryAbbr": "",
+            "geocode": [ (Float), (Float) ],
+            "imgUrl": "",
+            "startDate": "yyyy/mm/dd",
+            "endDate": "yyyy/mm/dd",
+            "places": [
+                {
+                    "positionId": 1,
+                    "name": "",
+                    "apiId": "",
+                    "address": "",
+                    "imgUrl": "",
+                    "category": "",
+                    "favorite": (Boolean),
+                    "phoneNumber": "",
+                    "rating": "",
+                    "summary": "",
+                    "website": "",
+                    "info": "",
+                    "lat": (Float),
+                    "long": (Float)
+                },
+                ...
+            ]
+        }
+    }
+    ```
 - **Response**: Status code 200 on success.
     ```json
     {
@@ -286,7 +395,7 @@ There are several unit tests created for the api endpoints.
     }
     ```
 
-### `GET /places/trip/<trip_id>`
+### `GET /trip/<trip_id>`
 - **Description**: Gets specific trip.
 - **Response**:
     - Status code 400, if there are no places for the trip.
@@ -347,7 +456,7 @@ There are several unit tests created for the api endpoints.
     }
     ```
 
-### `GET /places/trips/<uid>`
+### `GET /trip/trips/<uid>`
 - **Description**: Gets all trips for a user.
 - **Response**: Status code 200.
     ```json
@@ -372,11 +481,11 @@ There are several unit tests created for the api endpoints.
     ]
     ```
 
-### `DELETE /places/delete-trip/<trip_id>`
+### `DELETE /trip/delete/<trip_id>`
 - **Description**: Delete specified trip.
 - **Response**: Status code 200, on success.
 
-### `PATCH|POST|DELETE /places/update-trip/<trip_id>`
+### `PATCH|POST|DELETE /trip/update/<trip_id>`
 - **Description**: Update trip info.
 - **Request Body**:
     ```json
@@ -389,113 +498,6 @@ There are several unit tests created for the api endpoints.
 - **Response**:
     - Status code 400, if trip doesn’t exist.
     - Status code 200, if successful and regenerates itinerary.
-
-### `PATCH /places/update-day-name/<day_id>`
-- **Description**: Update day name (user created title for a trip day).
-- **Request Body**:
-    ```json
-    {
-        "dayName": ""
-    }
-    ```
-- **Response**: Status code 200, if successful.
-
-### `GET /places/get-places/<trip_id>`
-- **Description**: Gets places in trip.
-- **Response**:
-    - Status code 400, if there are no places for that trip.
-    - Status code 200, if there are places for the trip.
-    ```json
-    {
-        "1": {
-            "address": "",
-            "apiId": "",
-            "avgVisitTime": (Float),
-            "category": "",
-            "dayId": (Integer),
-            "favorite": (Boolean),
-            "geocode": [ (Float), (Float) ],
-            "id": 1,
-            "imgUrl": "",
-            "inItinerary": (Boolean),
-            "info": "",
-            "lat": (Float),
-            "long": (Float),
-            "phoneNumber": "",
-            "positionId": (Integer),
-            "name": "",
-            "rating": "",
-            "summary": "",
-            "tripId": (Integer),
-            "website": ""
-        },
-        ...
-    }
-    ```
-
-### `POST /places/add-place/<trip_id>`
-- **Description**: Add a place to empty itinerary.
-- **Request Body**:
-    ```json
-    {
-        "apiId": "",
-        "positionId": (Integer),
-        "name": "",
-        "address": "",
-        "imgUrl": "",
-        "info": "",
-        "favorite": (Boolean),
-        "category": "",
-        "phoneNumber": "",
-        "rating": "",
-        "summary": "",
-        "website": "",
-        "avgVisitTime": (Float),
-        "lat": (Float),
-        "long": (Float)
-    }
-    ```
-- **Response**: Status code 200 upon success. Returns place API Id (String).
-
-### `POST /places/add-trip-and-places`
-- **Description**: Add a new trip with places.
-- **Request Body**:
-    ```json
-    {
-        "uid": "",
-        "trip": {
-            "name": "",
-            "city": "",
-            "state": "",
-            "country": "",
-            "countryAbbr": "",
-            "geocode": [ (Float), (Float) ],
-            "imgUrl": "",
-            "startDate": "yyyy/mm/dd",
-            "endDate": "yyyy/mm/dd",
-            "places": [
-                {
-                    "positionId": 1,
-                    "name": "",
-                    "apiId": "",
-                    "address": "",
-                    "imgUrl": "",
-                    "category": "",
-                    "favorite": (Boolean),
-                    "phoneNumber": "",
-                    "rating": "",
-                    "summary": "",
-                    "website": "",
-                    "info": "",
-                    "lat": (Float),
-                    "long": (Float)
-                },
-                ...
-            ]
-        }
-    }
-    ```
-- **Response**: Status code 200 on success.
 
 ### `POST /profile/user`
 - **Description**: Creates new user.

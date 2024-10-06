@@ -182,3 +182,67 @@ class MockData():
         "lat": 35.701527,
         "long": 139.804531
     }
+
+    place2_data = {
+        "name": "Ghibli Museum",
+        "apiId": "ChIJLYwD5TTuGGARBZKEP5BV4U0",
+        "address": "1-chōme-1-83 Shimorenjaku, Mitaka, Tokyo 181-0013, Japan",
+        "imgUrl": "https://places.googleapis.com/v1/places/ChIJLYwD5TTuGGARBZKEP5BV4U0/photos/AXCi2Q6LD18Ol_BDV0GatAqbc289S_95wWKTd-HyAUbhIgNylADNq0bdmF21KseRcRXSX96Kc-FjOmCz5us_I2U_VnOGO2kN_1MluBAzDI2C5ITvbt3r7sw3Rplg4hfmwKVgkI5zAbdNNkxYaPQSc75WyIk07maPuhH7_BjI/media?maxWidthPx=4800&key=AIzaSyDSb_2EDA9dG4bMW6QtRcTrqHy3MkLmxPU",
+        "category": "Establishment",
+        "favorite": False,
+        "phoneNumber": "",
+        "rating": "4.5",
+        "summary": "Whimsical museum dedicated to the famed animation studio with a play area, theater & rooftop garden.",
+        "website": "https://www.ghibli-museum.jp/",
+        "info": "Mon: 10:00 AM – 6:00 PM, Tue: Closed, Wed: 10:00 AM – 6:00 PM, Thu: 10:00 AM – 6:00 PM, Fri: 10:00 AM – 6:00 PM, Sat: 10:00 AM – 6:00 PM, Sun: 10:00 AM – 6:00 PM",
+        "lat": 35.696238,
+        "long": 139.5704317
+    }
+
+    place3_data = {
+        "name": "KANDA SQUARE HALL",
+        "apiId": "ChIJDVeyP06NGGARrb6m8OewxpM",
+        "address": "Japan, 〒101-0054 Tokyo, Chiyoda City, Kanda Nishikichō, 2-chōme−２−１",
+        "imgUrl": "https://places.googleapis.com/v1/places/ChIJDVeyP06NGGARrb6m8OewxpM/photos/AXCi2Q7L5q8I0WPY7OZR120cO201QCHPyp4EukEKwDeVSSbCEqUQ-Z3XyKftSN2bxlrIhkEdMHsYvRauc8lV2IDkvmT1rRV8A9a8ZFhFKgdOizBrlMFjS5EGViw4DWP2id6dXlrvPngAFS02fAnE82GvSYy9VqZlsmm3kdPi/media?maxWidthPx=1772&key=AIzaSyDSb_2EDA9dG4bMW6QtRcTrqHy3MkLmxPU",
+        "category": "Store",
+        "favorite": False,
+        "phoneNumber": "",
+        "rating": "4.0",
+        "summary": "",
+        "website": "https://kanda-square.com/hall/",
+        "info": "",
+        "lat": 35.6931252,
+        "long": 139.7632042
+    }
+
+    place4_data = {
+        "name": "Family Mart",
+        "apiId": "ChIJz52D5KKJGGARADyKkye7pxA",
+        "address": "Japan, 〒135-0061 Tokyo, Koto City, Toyosu, 5-chōme−2−１０ 沢真ビル",
+        "imgUrl": "https://places.googleapis.com/v1/places/ChIJz52D5KKJGGARADyKkye7pxA/photos/AXCi2Q4_wrKn1Z10eAUqdoyPuHRlH986jRVwSoQEneAzZX1axJtUpH3PhkGJ9CYDuafSsAF1VwITTx69S6w5j4PXvoSgBUqFh5lb-fsdAtlTxUc2kevrSobjRj8A1t1Sch9vZns7TolsjFJJ_s7ffZcZgAPge7LNjDqISu2j/media?maxWidthPx=2227&key=AIzaSyDSb_2EDA9dG4bMW6QtRcTrqHy3MkLmxPU",
+        "category": "Food",
+        "favorite": False,
+        "phoneNumber": "+81 3-5547-9032",
+        "rating": "2.2",
+        "summary": "",
+        "website": "https://as.chizumaru.com/famima/detailmap?account=famima&bid=27511",
+        "info": "Mon: Open 24 hours, Tue: Open 24 hours, Wed: Open 24 hours, Thu: Open 24 hours, Fri: Open 24 hours, Sat: Open 24 hours, Sun: Open 24 hours",
+        "lat": 35.6534761,
+        "long": 139.7955297
+    }
+
+    place5_data = {
+        "name": "Imperial Palace",
+        "apiId": "ChIJTQbYAg2MGGARt22eNwtfGtE",
+        "address": "1-1 Chiyoda, Chiyoda City, Tokyo 100-8111, Japan",
+        "imgUrl": "https://places.googleapis.com/v1/places/ChIJTQbYAg2MGGARt22eNwtfGtE/photos/AXCi2Q6Tdn8XNxGbQXJPw38re-_ESgq6KoCKX_7dJtgsc93PLEXPCjWZ1HKbQO7F2Z0BBeMc3s1hbWsK5IjXdYjhZl_LXZyNVRsRCvA5Fs6zYbuF_Dyll28s5FoXOTcmPi_x6LV1miCrw10TneAWURiinZnTy69rzKLoHiF-/media?maxWidthPx=728&key=AIzaSyDSb_2EDA9dG4bMW6QtRcTrqHy3MkLmxPU",
+        "category": "Park",
+        "favorite": False,
+        "phoneNumber": "+81 3-3213-1111",
+        "rating": "4.4",
+        "summary": "This site with scenic gardens & tours of the grounds is the main residence of the emperor of Japan.",
+        "website": "https://sankan.kunaicho.go.jp/index.html",
+        "info": "Mon: Closed, Tue: 9:00 – 11:15 AM; 1:30 – 2:45 PM, Wed: 9:00 – 11:15 AM; 1:30 – 2:45 PM, Thu: 9:00 – 11:15 AM; 1:30 – 2:45 PM, Fri: 9:00 – 11:15 AM; 1:30 – 2:45 PM, Sat: 9:00 – 11:15 AM; 1:30 – 2:45 PM, Sun: Closed",
+        "lat": 35.685175,
+        "long": 139.75279949999998
+    }
