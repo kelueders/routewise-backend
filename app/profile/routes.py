@@ -31,6 +31,7 @@ def add_user():
 
     # return f'It worked. ID: {new_user.uid} Username: {new_user.username} Email: {new_user.email}'
 
+
 @profile.route('/test', methods=['POST', 'GET'])
 def test():
     return "Waking up!"
