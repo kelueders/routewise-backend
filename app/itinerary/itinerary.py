@@ -29,6 +29,35 @@ class Itinerary:
     def get_duration(self):
         return self.places[0].trip.duration
     
+    def generate(self):
+        # Set number of starting clusters
+        n_clusters = self.duration
+        if len(self.places) < self.duration:
+            n_clusters = len(self.places)
+
+        places_df = self.create_dataframe()
+        lat_long = places_df[['lat', 'long']]       # Features for clustering
+        scaler = StandardScaler()
+        lat_long_scaled = scaler.fit_transform(lat_long)
+
+        # Cluster into the amount of trip days
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+        kmeans.fit(lat_long_scaled)
+        places_df['day'] = kmeans.labels_
+
+        # Re-cluster to limit day visit time
+        df_refined = self.split_clusters_on_time_limit(places_df)
+
+        # Create sorted_days multi-dimens array with places going into corresponding day
+        self.sorted_days = [[] for _ in range(df_refined['day'].max() + 1)]
+        for _, row in df_refined.iterrows():
+            self.sorted_days[int(row['day'])].append(int(row['position_id']))
+
+        # sort df_refined by day size (descending)
+        self.sorted_days.sort(reverse=True, key=len)
+
+        return self.sorted_days
+    
     def create_dataframe(self):
         data = {
             'position_id': [],
@@ -79,35 +108,6 @@ class Itinerary:
                 # Update the main dataframe with the new clusters
                 df.loc[overloaded_cluster.index, 'day'] = overloaded_cluster['day']
         return df
-    
-    def generate(self):
-        # Set number of starting clusters
-        n_clusters = self.duration
-        if len(self.places) < self.duration:
-            n_clusters = len(self.places)
-
-        places_df = self.create_dataframe()
-        lat_long = places_df[['lat', 'long']]       # Features for clustering
-        scaler = StandardScaler()
-        lat_long_scaled = scaler.fit_transform(lat_long)
-
-        # Cluster into the amount of trip days
-        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-        kmeans.fit(lat_long_scaled)
-        places_df['day'] = kmeans.labels_
-
-        # Re-cluster to limit day visit time
-        df_refined = self.split_clusters_on_time_limit(places_df)
-
-        # Create sorted_days multi-dimens array with places going into corresponding day
-        self.sorted_days = [[] for _ in range(df_refined['day'].max() + 1)]
-        for _, row in df_refined.iterrows():
-            self.sorted_days[int(row['day'])].append(int(row['position_id']))
-
-        # sort df_refined by day size (descending)
-        self.sorted_days.sort(reverse=True, key=len)
-
-        return self.sorted_days
     
     def __repr__(self):
         return f"trip_id: {self.trip_id}\nplaces: {self.places}\nduration: {self.duration} days"
