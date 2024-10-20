@@ -449,19 +449,57 @@ Running the program in a docker container ensures it runs in a clean enviornment
     ```json
     {
         "uid": "",
-        "displayName": "",
-        "email": ""
+        "username": "",
+        "email": "",
+        "firstName": "",
+        "lastName": ""
     }
     ```
 - **Response**: 
     ```json
     {
         "email": "",
-        "has_access": ,
+        "hasAccess": ,
         "uid": "",
-        "username": ""
+        "username": "",
+        "firstName": "",
+        "lastName": ""
     }
     ```
+
+### `GET /profile/user`
+- **Description**: Get user data.
+- **Request Body**:
+    ```json
+    {
+        "uid": "",
+    }
+    ```
+- **Response**: 
+    ```json
+    {
+        "email": "",
+        "hasAccess": ,
+        "uid": "",
+        "username": "",
+        "firstName": "",
+        "lastName": ""
+    }
+    ```
+
+### `PATCH /profile/update`
+- **Description**: Updates existing user.
+- **Request Body**:
+    ```json
+    {
+        "uid": "",
+        "username" (optional): "",
+        "email" (optional): "",
+        "firstName" (optional): "",
+        "lastName" (optional): ""
+    }
+    ```
+- **Response**: 200 or 400 response code.
 
 ### `POST|GET /profile/user_info`
 - **Description**: Adds user info to user.
