@@ -461,9 +461,9 @@ Running the program in a docker container ensures it runs in a clean enviornment
         "email": "",
         "hasAccess": ,
         "uid": "",
-        "username": "",
-        "firstName": "",
-        "lastName": ""
+        "username" (optional): "",
+        "firstName" (optional): "",
+        "lastName" (optional): ""
     }
     ```
 

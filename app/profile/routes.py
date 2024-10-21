@@ -10,14 +10,29 @@ profile = Blueprint('profile', __name__, url_prefix='/profile')
 @profile.route('/user', methods=['POST'])
 def add_user():
     uid = request.json['uid']
-    username = request.json['username']
     email = request.json['email']
-    first_name = request.json['firstName']
-    last_name = request.json['lastName']
+    username = ''
+    first_name = ''
+    last_name = ''
     has_access = False
 
     if User.query.filter_by(uid = uid).first():
         return jsonify({"message": "User has already been added to the database."}), 400
+
+    data = request.get_json()
+    if 'username' in data:
+        username = data['username']
+
+        # check to see if username does not exists for any user
+        db_user = User.query.filter_by(username=username).first()
+        if db_user and db_user.uid != uid:
+            return jsonify({"message": "Username already exists"}), 400
+    
+    if 'firstName' in data:
+        first_name = request.json['firstName']
+
+    if 'lastName' in data:
+        last_name = request.json['lastName']
 
     new_user = User(uid, username, email, first_name, last_name, has_access)
 
