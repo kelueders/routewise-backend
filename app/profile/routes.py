@@ -48,10 +48,9 @@ def add_user():
 
 
 # get user data
-@profile.route('/user', methods=['GET'])
-def get_user():
+@profile.route('/user/<string:uid>', methods=['GET'])
+def get_user(uid):
     
-    uid = request.json['uid']
     user = User.query.filter_by(uid=uid).first()
     if user:
         response = user_schema.dump(user)
