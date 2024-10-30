@@ -135,7 +135,7 @@ def add_one_place(trip_id):
 
     local_id = place['id']
     place_name = place['placeName']
-    geoapify_placeId = place['placeId']
+    geoapify_placeId = place['apiPlaceId']
     place_address = place['address']
     place_img = place['imgURL']
     favorite = place['favorite']

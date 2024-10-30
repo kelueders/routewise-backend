@@ -308,7 +308,7 @@ def add_get_place(trip_id):
 
     local_id = place['id']
     place_name = place['placeName']
-    geoapify_placeId = place['placeId']
+    geoapify_placeId = place['apiPlaceId']
     place_address = place['address']
     place_img = place['imgURL']
     category = place.get('category', None)
