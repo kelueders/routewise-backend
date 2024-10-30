@@ -169,7 +169,7 @@ Running the program in a docker container ensures it runs in a clean enviornment
                 ,
                 
             ],
-            "placeId": "",
+            "apiPlaceId": "",
             "rating": ""
         }
     }
@@ -389,7 +389,7 @@ Running the program in a docker container ensures it runs in a clean enviornment
     {
         "id": ,
         "placeName": "",
-        "placeId": "",
+        "apiPlaceId": "",
         "address": "",
         "imgURL": "",
         "category": "",
