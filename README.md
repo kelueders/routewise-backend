@@ -506,7 +506,29 @@ There are several unit tests created for the api endpoints.
     {
         "uid": "",
         "username": "",
-        "email": ""
+        "email": "",
+        "firstName": "",
+        "lastName": ""
+    }
+    ```
+- **Response**: 
+    ```json
+    {
+        "email": "",
+        "hasAccess": ,
+        "uid": "",
+        "username" (optional): "",
+        "firstName" (optional): "",
+        "lastName" (optional): ""
+    }
+    ```
+
+### `GET /profile/user`
+- **Description**: Get user data.
+- **Request Body**:
+    ```json
+    {
+        "uid": "",
     }
     ```
 - **Response**: 
@@ -517,9 +539,25 @@ There are several unit tests created for the api endpoints.
         "email": "",
         "hasAccess": (Boolean),
         "uid": "",
-        "username": ""
+        "username": "",
+        "firstName": "",
+        "lastName": ""
     }
     ```
+
+### `PATCH /profile/update`
+- **Description**: Updates existing user.
+- **Request Body**:
+    ```json
+    {
+        "uid": "",
+        "username" (optional): "",
+        "email" (optional): "",
+        "firstName" (optional): "",
+        "lastName" (optional): ""
+    }
+    ```
+- **Response**: 200 or 400 response code.
 
 ### `POST|GET /profile/user-info`
 - **Description**: Adds user info to user.
