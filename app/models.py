@@ -88,8 +88,8 @@ class Trip(db.Model):
     lat = db.Column(db.Float)
     long = db.Column(db.Float)
     img_url = db.Column(db.String)
-    start_date = db.Column(db.String)       # yyyy/mm/dd
-    end_date = db.Column(db.String)         # yyyy/mm/dd
+    start_date = db.Column(db.String)       # mm/dd/yyyy
+    end_date = db.Column(db.String)         # mm/dd/yyyy
     duration = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -99,7 +99,7 @@ class Trip(db.Model):
     place = db.relationship('Place', back_populates='trip')
     day = db.relationship('Day', back_populates='trip')
 
-    date_format = '%Y/%m/%d'
+    date_format = '%m/%d/%Y'
 
     def __init__(self, name, city, state, country, country_abbr, lat, long, img_url, 
                  start_date, end_date, uid):
@@ -111,8 +111,8 @@ class Trip(db.Model):
         self.lat = lat
         self.long = long
         self.img_url = img_url
-        self.start_date = start_date                # yyyy/mm/dd
-        self.end_date = end_date                    # yyyy/mm/dd
+        self.start_date = start_date                # mm/dd/yyyy
+        self.end_date = end_date                    # mm/dd/yyyy
         self.uid = uid
         self.duration = self.calc_duration()
 
@@ -225,7 +225,7 @@ class Day(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     day_num = db.Column(db.String)                      # day-#
     name = db.Column(db.String(60), nullable=True)      # optional name for day
-    date_yyyy_mm_dd = db.Column(db.String)              # yyyy/mm/dd
+    date_mm_dd_yyyy = db.Column(db.String)              # mm/dd/yyyy
     date_weekday_month_day = db.Column(db.String(60))   # Weekday, Month day
     date_mm_dd = db.Column(db.String(60))               # mm/dd
     weekday = db.Column(db.String(60))                  # Weekday abbreviation
@@ -236,14 +236,14 @@ class Day(db.Model):
     def __init__(self, num, name, date, trip_id):
         self.add_day_num(num)
         self.name = name
-        self.date_yyyy_mm_dd = date.strftime('%Y/%m/%d')            # yyyy/mm/dd
+        self.date_mm_dd_yyyy = date.strftime('%m/%d/%Y')            # mm/dd/yyyy
         self.date_weekday_month_day = date.strftime('%A, %B %#d')   # Weekday, Month day
         self.date_mm_dd = date.strftime('%m/%d')                    # mm/dd
         self.weekday = date.strftime('%a')                          # Weekday abbreviation
         self.trip_id = trip_id
     
     def __repr__(self):
-        return f'{self.date_yyyy_mm_dd} Day Object.'
+        return f'{self.date_mm_dd_yyyy} Day Object.'
     
     def add_day_num(self, num):
         self.day_num = f'day-{num}'
@@ -263,12 +263,12 @@ class Day(db.Model):
     
 class DaySchema(ma.Schema):
     dayNum = ma.String(attribute='day_num')
-    dateYYYYMMDD = ma.String(attribute='date_yyyy_mm_dd')
+    dateMMDDYYYY = ma.String(attribute='date_mm_dd_yyyy')
     dateWeekdayMonthDay = ma.String(attribute='date_weekday_month_day')
     dateMMDD = ma.String(attribute='date_mm_dd')
 
     class Meta:
-        fields = ['id', 'dayNum', 'name', 'dateYYYYMMDD', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
+        fields = ['id', 'dayNum', 'name', 'dateMMDDYYYY', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
 
 day_schema = DaySchema()
 days_schema = DaySchema(many=True)

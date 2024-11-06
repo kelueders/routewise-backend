@@ -150,7 +150,7 @@ There are several unit tests created for the api endpoints.
             "day-1": {
                 "dateMMDD": "mm/dd",
                 "dateWeekdayMonthDay": "Weekday, Month Day",
-                "dateYYYYMMDD": "yyyy/mm/dd",
+                "dateMMDDYYYY": "mm/dd/yyyy",
                 "dayNum": "day-1",
                 "id": "1",
                 "name": "",
@@ -344,8 +344,8 @@ There are several unit tests created for the api endpoints.
             "lat": (Float),
             "long": (Float),
             "imgUrl": "",
-            "startDate": "yyyy/mm/dd",
-            "endDate": "yyyy/mm/dd"
+            "startDate": "mm/dd/yyyy",
+            "endDate": "mm/dd/yyyy"
         }
     }
     ```
@@ -361,8 +361,8 @@ There are several unit tests created for the api endpoints.
             "countryAbbr": "",
             "geocode": [ (Float), (Float) ],
             "imgUrl": "",
-            "startDate": "yyyy/mm/dd",
-            "endDate": "yyyy/mm/dd",
+            "startDate": "mm/dd/yyyy",
+            "endDate": "mm/dd/yyyy",
             "places": [
                 {
                     "positionId": 1,
@@ -389,8 +389,8 @@ There are several unit tests created for the api endpoints.
     ```json
     {
         "tripId": (Integer),
-        "startDate": "yyyy/mm/dd",
-        "endDate": "yyyy/mm/dd",
+        "startDate": "mm/dd/yyyy",
+        "endDate": "mm/dd/yyyy",
         "duration": (Integer)
     }
     ```
@@ -410,7 +410,7 @@ There are several unit tests created for the api endpoints.
             "day-1": {
                 "dateMMDD": "mm/dd",
                 "dateWeekdayMonthDay": "Weekday, Month Day",
-                "dateYYYYMMDD": "yyyy/mm/dd",
+                "dateMMDDYYYY": "mm/dd/yyyy",
                 "dayNum": "day-1",
                 "id": "1",
                 "name": ,
@@ -470,11 +470,11 @@ There are several unit tests created for the api endpoints.
             "long": (Double),
             "state": "",
             "duration": (Integer),
-            "endDate": "yyyy/mm/dd",
+            "endDate": "mm/dd/yyyy",
             "id": (Integer),
             "isItinerary": (Boolean),
             "name": "",
-            "startDate": "yyyy/mm/dd",
+            "startDate": "mm/dd/yyyy",
             "uid": ""
         },
         ...
@@ -491,8 +491,8 @@ There are several unit tests created for the api endpoints.
     ```json
     {
         "tripName": "",
-        "startDate": "yyyy/mm/dd",
-        "endDate": "yyyy/mm/dd"
+        "startDate": "mm/dd/yyyy",
+        "endDate": "mm/dd/yyyy"
     }
     ```
 - **Response**:

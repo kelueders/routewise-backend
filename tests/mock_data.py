@@ -16,8 +16,8 @@ class MockData():
             "lat": 48.8588897,
             "long": 2.3200410217200766,
             "imgUrl": "https://images.unsplash.com/photo-1525218291292-e46d2a90f77c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MzAyODV8MHwxfHNlYXJjaHwxfHxQYXJpcy1JbGUtZGUtRnJhbmNlLWxhbmRtYXJrc3xlbnwwfHx8fDE3MjYyNjYzMzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
-            "startDate": '2024/09/01',
-            "endDate": '2024/09/05'
+            "startDate": '09/01/2024',
+            "endDate": '09/05/2024'
         }
     }
 
@@ -31,8 +31,8 @@ class MockData():
             "countryAbbr": "JP",
             "geocode": [35.6828387, 139.7594549],
             "imgUrl": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MzAyODV8MHwxfHNlYXJjaHwxfHxUb2t5by0tbGFuZG1hcmtzfGVufDB8fHx8MTcyNjMzMDE3OHww&ixlib=rb-4.0.3&q=80&w=1080",
-            "startDate": "2024/09/15",
-            "endDate": "2024/09/19",
+            "startDate": "09/15/2024",
+            "endDate": "09/19/2024",
             "places": [
                 {
                     "positionId": 1,
@@ -80,8 +80,8 @@ class MockData():
             "countryAbbr": "JP",
             "geocode": [35.6828387, 139.7594549],
             "imgUrl": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MzAyODV8MHwxfHNlYXJjaHwxfHxUb2t5by0tbGFuZG1hcmtzfGVufDB8fHx8MTcyNjMzMDE3OHww&ixlib=rb-4.0.3&q=80&w=1080",
-            "startDate": "2024/09/15",
-            "endDate": "2024/09/17",
+            "startDate": "09/15/2024",
+            "endDate": "09/17/2024",
             "places": [
                 {
                     "positionId": 1,

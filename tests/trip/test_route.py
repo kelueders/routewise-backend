@@ -42,8 +42,8 @@ class TestTripRoute():
         assert data['lastPlaceId'] == 2
         assert len(data['places']) == 2
         assert len(data['days']) == 5
-        assert data['days']['day-1']['dateYYYYMMDD'] == valid_trip['trip']['startDate']
-        date_obj = datetime.strptime(valid_trip['trip']['startDate'], '%Y/%m/%d').date()
+        assert data['days']['day-1']['dateMMDDYYYY'] == valid_trip['trip']['startDate']
+        date_obj = datetime.strptime(valid_trip['trip']['startDate'], '%m/%d/%Y').date()
         assert data['days']['day-1']['dateMMDD'] == date_obj.strftime('%m/%d')
         assert data['days']['day-1']['dateWeekdayMonthDay'] == date_obj.strftime('%A, %B %#d')
         assert data['days']['day-1']['weekday'] ==  date_obj.strftime('%a')
@@ -107,8 +107,8 @@ class TestTripRoute():
         """Test updating trip date."""
         new_trip = {
             'tripName': '',
-            'startDate': '2024/09/01',
-            'endDate': '2024/09/06'
+            'startDate': '09/01/2024',
+            'endDate': '09/06/2024'
         }
         response = test_client.post('/trip/update/2', json=new_trip)
         assert response.status_code == 200
@@ -117,8 +117,8 @@ class TestTripRoute():
         """Test updating invalid trip date."""
         new_trip = {
             'tripName': '',
-            'startDate': '2024/09/01',
-            'endDate': '2024/09/06'
+            'startDate': '09/01/2024',
+            'endDate': '09/06/2024'
         }
         response = test_client.post('/trip/update/5', json=new_trip)
         assert response.status_code == 400

@@ -19,8 +19,8 @@ class TestItineraryRoute():
         assert data['lastPlaceId'] == 5
         assert len(data['places']) == len(trip_request['trip']['places'])
         assert len(data['days']) == 3
-        assert data['days']['day-1']['dateYYYYMMDD'] == trip_request['trip']['startDate']
-        date_obj = datetime.strptime(trip_request['trip']['startDate'], '%Y/%m/%d').date()
+        assert data['days']['day-1']['dateMMDDYYYY'] == trip_request['trip']['startDate']
+        date_obj = datetime.strptime(trip_request['trip']['startDate'], '%m/%d/%Y').date()
         assert data['days']['day-1']['dateMMDD'] == date_obj.strftime('%m/%d')
         assert data['days']['day-1']['dateWeekdayMonthDay'] == date_obj.strftime('%A, %B %#d')
         assert data['days']['day-1']['weekday'] ==  date_obj.strftime('%a')
