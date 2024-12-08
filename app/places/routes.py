@@ -12,11 +12,17 @@ places = Blueprint('places', __name__, url_prefix='/places')
 @places.route('/<trip_id>', methods=['GET'])
 def get_places(trip_id):
 
+    # check trfip exists
+    trip = Trip.query.filter_by(id=trip_id).first()
+    if not trip:
+        return jsonify({"message": f"No trip with id {trip_id}"}), 400
+
     # Get places for trip
     places = Place.query.filter_by(trip_id=trip_id).all()
     if not places:
-        return jsonify({"message": f"No places for trip {trip_id}"}), 400
-    
+        return jsonify({}), 200
+
+
     # Format places to send to frontend
     serialized_places = serialize_places(places)
     return serialized_places, 200
@@ -53,7 +59,7 @@ def add_place(trip_id):
 
     # Validate that the place has been added and return place id
     if place.id:
-        return str(place.api_id), 200
+        return jsonify(place.id), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500
 

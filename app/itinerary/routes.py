@@ -92,7 +92,7 @@ def add_one_place(trip_id):
     data = request.get_json()
     place_data = data['place']
 
-    position_id = place_data['positionId']
+    position_id = place_data['id']
     api_Id = place_data['apiId']
     name = place_data['name']
     address = place_data['address']

@@ -6,6 +6,7 @@ def serialize_places(places):
 
     for i, place_data in enumerate(places):
         place = place_schema.dump(place_data)
+        place['place_id'] = place_data.id
         place['geocode'] = [place_data.lat, place_data.long]
         
         # making the index one of the keys with the place dictionary as the value

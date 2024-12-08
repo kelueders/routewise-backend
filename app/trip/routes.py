@@ -105,9 +105,11 @@ def get_trip(trip_id):
 # Return all the trips for a specific user   
 @trip.route('/trips/<uid>', methods=['GET'])
 def get_trips(uid):
+    print(uid)
 
     # Get all trips from user
     trips = Trip.query.filter_by(uid=uid).all()
+
     if trips:
         response = trips_schema.dump(trips)
         return jsonify(response), 200
