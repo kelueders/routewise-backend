@@ -257,7 +257,7 @@ class Day(db.Model):
         if empty:
             day_dict['placeIds'] = []
         else:
-            day_dict['placeIds'] = [ place.id for place in self.place ]
+            day_dict['placeIds'] = [ place.position_id for place in self.place ]
         
         return day_dict
     

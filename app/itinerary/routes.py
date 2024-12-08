@@ -92,7 +92,7 @@ def add_one_place(trip_id):
     data = request.get_json()
     place_data = data['place']
 
-    position_id = place_data['positionId']
+    position_id = place_data['id']
     api_Id = place_data['apiId']
     name = place_data['name']
     address = place_data['address']
@@ -127,6 +127,6 @@ def add_one_place(trip_id):
 
     # RETURN THE place id to the front end if successfully added to database
     if place.id:
-        return str(place.id), 200
+        return jsonify(place.id), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500

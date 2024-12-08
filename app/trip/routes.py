@@ -176,7 +176,9 @@ def update_trip(trip_id):
         trip.duration = trip.calc_duration()
         db.session.commit()
 
-        # If itinerary has been already been created, delete old days and create new itinerary
+        print("updated trip dets:", trip.start_date + " - " + trip.end_date, "duration:" + str(trip.duration))
+
+        # If itinerary has already been created, delete old days and create new itinerary
         if trip.is_itinerary:
             # delete old days
             days = trip.day
@@ -185,6 +187,6 @@ def update_trip(trip_id):
             db.session.commit()
 
             # create new itinerary
-            return redirect(url_for('itinerary.create_days', trip_id=trip_id)), 200
+            return redirect(url_for('itinerary.generate_itinerary', trip_id=trip_id))
 
     return jsonify({"message": "Trip Name and/or Duration Updated"}), 200
