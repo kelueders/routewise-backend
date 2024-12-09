@@ -112,6 +112,12 @@ class TestTripRoute():
         }
         response = test_client.post('/trip/update/2', json=new_trip)
         assert response.status_code == 200
+        response = test_client.get('/trip/2')
+        # check days deleted and recreated properly
+        data = response.get_json()
+        assert len(data['days']) == 6
+        assert data['days']['day-1']['dateMMDDYYYY'] == new_trip['startDate']
+        assert response.status_code == 200
 
     def test_update_trip_invalid_trip(self, test_client):
         """Test updating invalid trip date."""
