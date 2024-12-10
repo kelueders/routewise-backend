@@ -24,8 +24,8 @@ class TestItineraryRoute():
         assert data['days']['day-1']['dateMMDD'] == date_obj.strftime('%m/%d')
         assert data['days']['day-1']['dateWeekdayMonthDay'] == date_obj.strftime('%A, %B %#d')
         assert data['days']['day-1']['weekday'] ==  date_obj.strftime('%a')
-        assert data['days']['day-1']['dayNum'] == 'day-1'
-        assert data['days']['day-1']['id'] == 1
+        assert data['days']['day-1']['id'] == 'day-1'
+        assert data['days']['day-1']['dayId'] == 1
         assert len(data['days']['day-1']['placeIds']) != 0
         assert len(data['dayOrder']) == 3
         assert data['dayOrder'][0] == 'day-1'
@@ -42,7 +42,7 @@ class TestItineraryRoute():
             'dayId': 2,
             'place': MockData.place1_data
         }
-        request['place']['positionId'] = 6
+        request['place']['id'] = 6
         response = test_client.post('/itinerary/add-one-place/1', json=request)
         assert response.status_code == 200
         assert response.get_json()['placeId'] == 6
@@ -53,7 +53,7 @@ class TestItineraryRoute():
             'dayId': None,
             'place': MockData.place1_data
         }
-        request['place']['positionId'] = 7
+        request['place']['id'] = 7
         response = test_client.post('/itinerary/add-one-place/1', json=request)
         assert response.status_code == 200
         assert response.get_json()['placeId'] == 7

@@ -169,7 +169,7 @@ class Place(db.Model):
     long = db.Column(db.Float)
     in_itinerary = db.Column(db.Boolean, default=False)
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.id'), nullable=False)
-    day_id = db.Column(db.Integer, db.ForeignKey('day.id'))
+    day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
     trip = db.relationship('Trip', back_populates='place')
     day = db.relationship('Day', back_populates='place')
 
@@ -201,6 +201,7 @@ class Place(db.Model):
         return f'{self.name} Place Object'
     
 class PlaceSchema(ma.Schema):
+    placeId = ma.Integer(attribute='id')
     apiId = ma.String(attribute='api_id')
     positionId = ma.Integer(attribute='position_id')
     imgUrl = ma.String(attribute='img_url')
@@ -211,7 +212,7 @@ class PlaceSchema(ma.Schema):
     dayId = ma.Integer(attribute='day_id')
 
     class Meta:
-        fields = ['id', 'apiId', 'positionId', 'name', 'address', 'imgUrl', 'info', 'favorite', 
+        fields = ['placeId', 'apiId', 'positionId', 'name', 'address', 'imgUrl', 'info', 'favorite', 
                   'category', 'phoneNumber', 'rating', 'summary', 'website', 'avgVisitTime', 
                   'lat', 'long', 'inItinerary', 'tripId', 'dayId']
 
@@ -222,7 +223,7 @@ places_schema = PlaceSchema(many=True)
 
 # Model for Day Table
 class Day(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    day_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     day_num = db.Column(db.String)                      # day-#
     name = db.Column(db.String(60), nullable=True)      # optional name for day
     date_mm_dd_yyyy = db.Column(db.String)              # mm/dd/yyyy
@@ -257,18 +258,19 @@ class Day(db.Model):
         if empty:
             day_dict['placeIds'] = []
         else:
-            day_dict['placeIds'] = [ place.id for place in self.place ]
+            day_dict['placeIds'] = [ place.positionId for place in self.place ]
         
         return day_dict
     
 class DaySchema(ma.Schema):
-    dayNum = ma.String(attribute='day_num')
+    dayId = ma.Integer(attribute='day_id')
+    id = ma.String(attribute='day_num')
     dateMMDDYYYY = ma.String(attribute='date_mm_dd_yyyy')
     dateWeekdayMonthDay = ma.String(attribute='date_weekday_month_day')
     dateMMDD = ma.String(attribute='date_mm_dd')
 
     class Meta:
-        fields = ['id', 'dayNum', 'name', 'dateMMDDYYYY', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
+        fields = ['dayId', 'id', 'name', 'dateMMDDYYYY', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
 
 day_schema = DaySchema()
 days_schema = DaySchema(many=True)

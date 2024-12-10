@@ -13,19 +13,19 @@ class TestPlacesRoute():
     
     def create_itinerary(self, test_client):
         valid_place = MockData.place2_data
-        valid_place['positionId'] = 2
+        valid_place['id'] = 2
         test_client.post('/places/add/1', json=valid_place)
         
         valid_place = MockData.place3_data
-        valid_place['positionId'] = 3
+        valid_place['id'] = 3
         test_client.post('/places/add/1', json=valid_place)
 
         valid_place = MockData.place4_data
-        valid_place['positionId'] = 4
+        valid_place['id'] = 4
         test_client.post('/places/add/1', json=valid_place)
         
         valid_place = MockData.place5_data
-        valid_place['positionId'] = 5
+        valid_place['id'] = 5
         test_client.post('/places/add/1', json=valid_place)
 
         test_client.patch('/itinerary/generate/1')
@@ -36,10 +36,10 @@ class TestPlacesRoute():
         self.add_trip(test_client)
 
         request_place = MockData.place1_data
-        request_place['positionId'] = 1
+        request_place['id'] = 1
         response = test_client.post('/places/add/1', json=request_place)
         assert response.status_code == 200
-        assert response.get_json()['placeId'] == request_place['positionId']
+        assert response.get_json()['placeId'] == request_place['id']
 
     # get places route
     def test_get_places(self, test_client):
@@ -59,7 +59,7 @@ class TestPlacesRoute():
         assert place['category'] == valid_place['category']
         assert place['dayId'] != None
         assert place['favorite'] == False
-        assert place['id'] == 5
+        assert place['placeId'] == 5
         assert place['imgUrl'] == valid_place['imgUrl']
         assert place['inItinerary'] == True
         assert place['info'] == valid_place['info']

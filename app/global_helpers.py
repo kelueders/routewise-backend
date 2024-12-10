@@ -17,7 +17,7 @@ def add_places(trip_id, places_arr):
         place = places_arr[i]
 
         apiId = place['apiId']
-        position_id = place['positionId']
+        position_id = place['id']
         name = place['name']
         address = place['address']
         img_url = place['imgUrl']
@@ -51,7 +51,7 @@ def create_add_days(trip):
 
         # Serialize day
         day_dict = new_day.serialize(num=i, empty=True)
-        days[day_dict['dayNum']] = day_dict
+        days[day_dict['id']] = day_dict
 
         # Increments by 1 the day that is added to the trip, starting at the trip start date
         current_date += timedelta(1)

@@ -151,8 +151,8 @@ There are several unit tests created for the api endpoints.
                 "dateMMDD": "mm/dd",
                 "dateWeekdayMonthDay": "Weekday, Month Day",
                 "dateMMDDYYYY": "mm/dd/yyyy",
-                "dayNum": "day-1",
-                "id": "1",
+                "id": "day-1",
+                "dayId": 1,
                 "name": "",
                 "placeIds": [
                     (Integer),
@@ -171,7 +171,7 @@ There are several unit tests created for the api endpoints.
                 "dayId": (Integer),
                 "favorite": (Boolean),
                 "geocode": [ (Float), (Float) ],
-                "id": 1,
+                "placeId": 1,
                 "imgUrl": "",
                 "inItinerary": (Boolean),
                 "info": "",
@@ -203,14 +203,13 @@ There are several unit tests created for the api endpoints.
     {
         "dayId": null/(Integer),
         "place":{
-            "id": ??,
+            "id": (Integer, position id),
             "apiId": "",
             "name": "",
             "info": "",
             "summary": "",
             "address": "",
             "phoneNumber": "",
-            "positionId": (Integer),
             "website": "",
             "imgUrl": "",
             "category": "",
@@ -245,7 +244,7 @@ There are several unit tests created for the api endpoints.
             "dayId": (Integer),
             "favorite": (Boolean),
             "geocode": [ (Float), (Float) ],
-            "id": 1,
+            "placeId": 1,
             "imgUrl": "",
             "inItinerary": (Boolean),
             "info": "",
@@ -269,7 +268,7 @@ There are several unit tests created for the api endpoints.
     ```json
     {
         "apiId": "",
-        "positionId": (Integer),
+        "id": (Integer, positional id),
         "name": "",
         "address": "",
         "imgUrl": "",
@@ -375,7 +374,7 @@ There are several unit tests created for the api endpoints.
             "endDate": "mm/dd/yyyy",
             "places": [
                 {
-                    "positionId": 1,
+                    "id": 1,
                     "name": "",
                     "apiId": "",
                     "address": "",
@@ -421,8 +420,8 @@ There are several unit tests created for the api endpoints.
                 "dateMMDD": "mm/dd",
                 "dateWeekdayMonthDay": "Weekday, Month Day",
                 "dateMMDDYYYY": "mm/dd/yyyy",
-                "dayNum": "day-1",
-                "id": "1",
+                "id": "day-1",
+                "dayId": 1,
                 "name": ,
                 "placeIds": [
                     (Integer),
@@ -441,7 +440,7 @@ There are several unit tests created for the api endpoints.
                 "dayId": (Integer),
                 "favorite": (Boolean),
                 "geocode": [ (Float),(Float) ],
-                "id": 1,
+                "placeId": 1,
                 "imgUrl": "",
                 "inItinerary": (Boolean),
                 "info": "",

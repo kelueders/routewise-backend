@@ -86,7 +86,7 @@ def get_trip(trip_id):
     days = {}
     for i, day in enumerate(day_records):
         day_dict = day.serialize(num=i+1, empty=False)
-        days[day_dict['dayNum']] = day_dict
+        days[day_dict['id']] = day_dict
         
     # Format of data to be sent to the front end
     return {

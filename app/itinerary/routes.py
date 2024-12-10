@@ -27,7 +27,7 @@ def generate_itinerary(trip_id):
         # serialize days
         for i, day_data in enumerate(days_data):
             day_dict = day_data.serialize(num=i+1, empty=True)
-            days[day_dict['dayNum']] = day_dict
+            days[day_dict['id']] = day_dict
     else:
         days = create_add_days(trip)
 
@@ -50,7 +50,7 @@ def generate_itinerary(trip_id):
                 day['placeIds'].append(position_id)
 
                 # Add day_id to place, and set in_itinerary true
-                place.day_id = day['id']
+                place.day_id = day['dayId']
                 place.in_itinerary = True
             else:
                 # Place is not in an existing day
@@ -67,9 +67,6 @@ def generate_itinerary(trip_id):
 
     # Serializes the list of places (see global_helpers.py)
     serialized_places = serialize_places(places)
-    # Remove position_id to coordinate with the front end
-    for position_id in serialized_places:
-        serialized_places[position_id]['id'] = serialized_places[position_id].pop('positionId') 
     
     # Packages the data in order to be rendered on the frontend
     return {
@@ -92,7 +89,7 @@ def add_one_place(trip_id):
     data = request.get_json()
     place_data = data['place']
 
-    position_id = place_data['positionId']
+    position_id = place_data['id']      # id refers to the positional id
     api_Id = place_data['apiId']
     name = place_data['name']
     address = place_data['address']

@@ -35,7 +35,7 @@ class MockData():
             "endDate": "09/19/2024",
             "places": [
                 {
-                    "positionId": 1,
+                    "id": 1,
                     "name": "Ghibli Museum",
                     "apiId": "ChIJLYwD5TTuGGARBZKEP5BV4U0",
                     "address": "1-chōme-1-83 Shimorenjaku, Mitaka, Tokyo 181-0013, Japan",
@@ -51,7 +51,7 @@ class MockData():
                     "long": 139.5704317
                 },
                 {
-                    "positionId": 2,
+                    "id": 2,
                     "name": "Family Mart",
                     "apiId": "ChIJz52D5KKJGGARADyKkye7pxA",
                     "address": "Japan, 〒135-0061 Tokyo, Koto City, Toyosu, 5-chōme−2−１０ 沢真ビル",
@@ -84,7 +84,7 @@ class MockData():
             "endDate": "09/17/2024",
             "places": [
                 {
-                    "positionId": 1,
+                    "id": 1,
                     "name": "Ghibli Museum",
                     "apiId": "ChIJLYwD5TTuGGARBZKEP5BV4U0",
                     "address": "1-chōme-1-83 Shimorenjaku, Mitaka, Tokyo 181-0013, Japan",
@@ -100,7 +100,7 @@ class MockData():
                     "long": 139.5704317
                 },
                 {
-                    "positionId": 2,
+                    "id": 2,
                     "name": "Family Mart",
                     "apiId": "ChIJz52D5KKJGGARADyKkye7pxA",
                     "address": "Japan, 〒135-0061 Tokyo, Koto City, Toyosu, 5-chōme−2−１０ 沢真ビル",
@@ -116,7 +116,7 @@ class MockData():
                     "long": 139.7955297
                 },
                 {
-                    "positionId": 3,
+                    "id": 3,
                     "name": "cherry blossom",
                     "apiId": "ChIJ39GHSE71GGARnwBli1-HcHM",
                     "address": "Japan, 〒211-0063 Kanagawa, Kawasaki, Nakahara Ward, Kosugimachi, 1-chōme−５２６−１７, Akiba Bld., 1階",
@@ -132,7 +132,7 @@ class MockData():
                     "long": 139.65884269999998
                 },
                 {
-                    "positionId": 4,
+                    "id": 4,
                     "name": "Imperial Palace",
                     "apiId": "ChIJTQbYAg2MGGARt22eNwtfGtE",
                     "address": "1-1 Chiyoda, Chiyoda City, Tokyo 100-8111, Japan",
@@ -148,7 +148,7 @@ class MockData():
                     "long": 139.75279949999998
                 },
                 {
-                    "positionId": 5,
+                    "id": 5,
                     "name": "KANDA SQUARE HALL",
                     "apiId": "ChIJDVeyP06NGGARrb6m8OewxpM",
                     "address": "Japan, 〒101-0054 Tokyo, Chiyoda City, Kanda Nishikichō, 2-chōme−２−１",

@@ -47,8 +47,8 @@ class TestTripRoute():
         assert data['days']['day-1']['dateMMDD'] == date_obj.strftime('%m/%d')
         assert data['days']['day-1']['dateWeekdayMonthDay'] == date_obj.strftime('%A, %B %#d')
         assert data['days']['day-1']['weekday'] ==  date_obj.strftime('%a')
-        assert data['days']['day-1']['dayNum'] == 'day-1'
-        assert data['days']['day-1']['id'] == 6
+        assert data['days']['day-1']['id'] == 'day-1'
+        assert data['days']['day-1']['dayId'] == 6
         assert len(data['days']['day-1']['placeIds']) != None
         assert len(data['dayOrder']) == 5
         assert data['dayOrder'][0] == 'day-1'

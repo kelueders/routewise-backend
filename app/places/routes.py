@@ -32,7 +32,7 @@ def add_place(trip_id):
     place_data = request.get_json()
 
     api_id = place_data['apiId']
-    position_id = place_data['positionId']
+    position_id = place_data['id']      # id refers to the positional id
     name = place_data['name']
     address = place_data['address']
     img_url = place_data['imgUrl']
