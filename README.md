@@ -223,12 +223,17 @@ There are several unit tests created for the api endpoints.
         }
     }
     ```
-- **Response**: Status code 200 on success. Returns place id (Integer) in database.
+- **Response**: Status code 200 on success.
+    ```json
+    {
+        "placeId": (Integer)
+    }
+    ```
 
 ### `GET /places/<trip_id>`
 - **Description**: Gets places in trip.
 - **Response**:
-    - Status code 400, if there are no places for that trip.
+    - Status code 400, if the trip doesn't exist.
     - Status code 200, if there are places for the trip.
     ```json
     {
@@ -280,7 +285,12 @@ There are several unit tests created for the api endpoints.
         "long": (Float)
     }
     ```
-- **Response**: Status code 200 upon success. Returns place API Id (String).
+- **Response**: Status code 200 upon success.
+    ```json
+    {
+        "placeId": (Integer)
+    }
+    ```
 
 ### `DELETE /places/delete/<place_id>`
 - **Description**: Deletes place from database.

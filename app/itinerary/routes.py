@@ -127,6 +127,6 @@ def add_one_place(trip_id):
 
     # RETURN THE place id to the front end if successfully added to database
     if place.id:
-        return str(place.id), 200
+        return jsonify({"placeId": place.id}), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500

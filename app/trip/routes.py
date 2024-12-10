@@ -185,6 +185,6 @@ def update_trip(trip_id):
 
         # If itinerary has been already been created, recreate a new itinerary
         if trip.is_itinerary:
-            return redirect(url_for('itinerary.create_days', trip_id=trip_id)), 200
+            return redirect(url_for('itinerary.generate_itinerary', trip_id=trip_id))
 
     return jsonify({"message": "Trip Name and/or Duration Updated"}), 200

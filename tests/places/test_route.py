@@ -39,7 +39,7 @@ class TestPlacesRoute():
         request_place['positionId'] = 1
         response = test_client.post('/places/add/1', json=request_place)
         assert response.status_code == 200
-        assert response.data.decode('utf-8') == request_place['apiId']
+        assert response.get_json()['placeId'] == request_place['positionId']
 
     # get places route
     def test_get_places(self, test_client):
@@ -77,6 +77,13 @@ class TestPlacesRoute():
         """Test getting all places from nonexisting trip."""
         response = test_client.get('/places/3')
         assert response.status_code == 400
+        
+    def test_get_place_empty_trip(self, test_client):
+        """Test getting places from an empty trip."""
+        self.add_trip(test_client)
+        response = test_client.get('/places/2')
+        assert response.status_code == 200
+        assert len(response.get_json()) == 0
     
     # delete place route
     def test_delete_place(self, test_client):

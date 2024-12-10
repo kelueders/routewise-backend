@@ -45,7 +45,7 @@ class TestItineraryRoute():
         request['place']['positionId'] = 6
         response = test_client.post('/itinerary/add-one-place/1', json=request)
         assert response.status_code == 200
-        assert int(response.data.decode('utf-8')) == 6
+        assert response.get_json()['placeId'] == 6
 
     def test_add_one_place_no_day(self, test_client):
         """Test adding a place to a trip with no day attached."""
@@ -56,4 +56,4 @@ class TestItineraryRoute():
         request['place']['positionId'] = 7
         response = test_client.post('/itinerary/add-one-place/1', json=request)
         assert response.status_code == 200
-        assert int(response.data.decode('utf-8')) == 7
+        assert response.get_json()['placeId'] == 7
