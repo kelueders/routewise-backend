@@ -51,7 +51,7 @@ class Itinerary:
         # Create sorted_days multi-dimens array with places going into corresponding day
         self.sorted_days = [[] for _ in range(df_refined['day'].max() + 1)]
         for _, row in df_refined.iterrows():
-            self.sorted_days[int(row['day'])].append(int(row['position_id']))
+            self.sorted_days[int(row['day'])].append(int(row['trip_place_id']))
 
         # sort df_refined by day size (descending)
         self.sorted_days.sort(reverse=True, key=len)
@@ -60,14 +60,14 @@ class Itinerary:
     
     def create_dataframe(self):
         data = {
-            'position_id': [],
+            'trip_place_id': [],
             'lat': [],
             'long': [],
             'avg_visit_time': []
         }
 
         for place in self.places:
-            data['position_id'].append(place.position_id)
+            data['trip_place_id'].append(place.trip_place_id)
             data['lat'].append(place.lat)
             data['long'].append(place.long)
 

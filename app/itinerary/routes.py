@@ -14,7 +14,7 @@ itinerary = Blueprint('itinerary', __name__, url_prefix='/itinerary')
 def generate_itinerary(trip_id):
     
     # Check that there is a trip with the id
-    trip = Trip.query.filter_by(id=trip_id).first()
+    trip = Trip.query.filter_by(trip_id=trip_id).first()
     if not trip:
         return jsonify({'message': 'No Trip for trip ID'}), 404
     
@@ -38,16 +38,16 @@ def generate_itinerary(trip_id):
     # Populate saved_places and days with places from itinerary_data
     saved_places_ids = []
     for i, day_row in enumerate(itinerary_data):
-        for j, position_id in enumerate(day_row):
+        for j, trip_place_id in enumerate(day_row):
             # Get place
-            place = next((p for p in places if p.position_id == position_id), None)
+            place = next((p for p in places if p.trip_place_id == trip_place_id), None)
 
             days_day_id = f'day-{i + 1}'
             if days_day_id in days:
                 # Place is in an existing day
                 # Add place_id to days
                 day = days[days_day_id]
-                day['placeIds'].append(position_id)
+                day['placeIds'].append(trip_place_id)
 
                 # Add day_id to place, and set in_itinerary true
                 place.day_id = day['dayId']
@@ -59,7 +59,7 @@ def generate_itinerary(trip_id):
                 place.in_itinerary = False
 
                 # Add place_id to saved places
-                saved_places_ids.append(position_id)
+                saved_places_ids.append(trip_place_id)
 
     # Update the trip 'is_itinerary' key to 'True'
     trip.is_itinerary = True
@@ -71,7 +71,7 @@ def generate_itinerary(trip_id):
     # Packages the data in order to be rendered on the frontend
     return {
         "tripId": int(trip_id),
-        "lastPlaceId": places[-1].position_id,
+        "lastPlaceId": places[-1].trip_place_id,
         "places": serialized_places,
         "days": days,
         "dayOrder": list(days.keys()),
@@ -89,7 +89,7 @@ def add_one_place(trip_id):
     data = request.get_json()
     place_data = data['place']
 
-    position_id = place_data['id']      # id refers to the positional id
+    trip_place_id = place_data['id']      # id refers to the positional id
     api_Id = place_data['apiId']
     name = place_data['name']
     address = place_data['address']
@@ -114,7 +114,7 @@ def add_one_place(trip_id):
         in_itinerary = False
     
     # Create new place
-    place = Place(api_Id, position_id, name, address, img_url, info, favorite, category, phone_number, 
+    place = Place(api_Id, trip_place_id, name, address, img_url, info, favorite, category, phone_number, 
                   rating, summary, website, avg_visit_time, lat, long, in_itinerary, trip_id)
     place.update_day_id(day_id)
     
@@ -123,7 +123,7 @@ def add_one_place(trip_id):
     db.session.commit()
 
     # RETURN THE place id to the front end if successfully added to database
-    if place.id:
-        return jsonify({"placeId": place.id}), 200
+    if place.place_id:
+        return jsonify({"placeId": place.place_id}), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500

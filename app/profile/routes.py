@@ -42,7 +42,7 @@ def add_user():
     db.session.commit()
 
     # Send back user data if correctly added to database
-    if new_user.id:
+    if new_user.user_id:
         response = user_schema.dump(new_user)
         return jsonify(response), 200
     else:
@@ -145,7 +145,7 @@ def add_user_info():
         db.session.add(user_info)
         db.session.commit()
 
-        if user_info.id:
+        if user_info.user_info_id:
             return jsonify({"message": f"Hello {user_info.user.username}"}), 200
         else:
             return jsonify({"message": "Failed adding user info"}), 500

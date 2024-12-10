@@ -46,17 +46,17 @@ def create_trip():
     if 'places' in trip_data:
         places = trip_data['places']
         # Create and add places to database
-        add_places(trip.id, places)
+        add_places(trip.trip_id, places)
 
         # Validate places were added successfully
-        place_records = Place.query.filter_by(trip_id=trip.id).all()
+        place_records = Place.query.filter_by(trip_id=trip.trip_id).all()
         if len(place_records) != len(places):
             return jsonify({"message": "Failed to add places"}), 500
 
     # Validate and get new trip from database
-    if trip.id:
+    if trip.trip_id:
         return {
-            "tripId": trip.id,
+            "tripId": trip.trip_id,
             "startDate": trip.start_date,
             "endDate": trip.end_date,
             "duration": trip.duration
@@ -80,7 +80,7 @@ def get_trip(trip_id):
     saved_places_ids = []
     for i, place_data in enumerate(places):
         if place_data.in_itinerary != True and not place_data.day_id:
-            saved_places_ids.append(place_data.position_id)
+            saved_places_ids.append(place_data.trip_place_id)
     
     # Create a dict of days with keys "day-#"
     days = {}
@@ -91,7 +91,7 @@ def get_trip(trip_id):
     # Format of data to be sent to the front end
     return {
         "tripId": int(trip_id),
-        "lastPlaceId": places[-1].position_id,
+        "lastPlaceId": places[-1].trip_place_id,
         "places": serialized_places,
         "days": days,
         "dayOrder": list(days.keys()),
@@ -120,7 +120,7 @@ def get_trips(uid):
 def delete_trip(trip_id):
     
     # Get trip and corresponding places and days to delete
-    trip = Trip.query.filter_by(id=trip_id).first()
+    trip = Trip.query.filter_by(trip_id=trip_id).first()
     places = trip.place
     days = trip.day
 
@@ -137,7 +137,7 @@ def delete_trip(trip_id):
     db.session.commit()
 
     # Validate data has been deleted
-    if (not Trip.query.filter_by(id=trip_id).first() and 
+    if (not Trip.query.filter_by(trip_id=trip_id).first() and 
         not Place.query.filter_by(trip_id=trip_id).all() and 
         not Day.query.filter_by(trip_id=trip_id).all()):
         return jsonify({"message": "Trip deleted yay"}), 200
@@ -155,7 +155,7 @@ def delete_trip(trip_id):
 @trip.route('/update/<trip_id>', methods=['PATCH', 'POST', 'DELETE'])
 def update_trip(trip_id):
 
-    trip = Trip.query.filter_by(id=trip_id).first()
+    trip = Trip.query.filter_by(trip_id=trip_id).first()
     if not trip:
         return jsonify({"message": f"No trip {trip_id}"}), 400
     

@@ -13,7 +13,7 @@ places = Blueprint('places', __name__, url_prefix='/places')
 def get_places(trip_id):
 
     # Verify trip
-    trip = Trip.query.filter_by(id=trip_id).first()
+    trip = Trip.query.filter_by(trip_id=trip_id).first()
     if not trip:
         return jsonify({"message": f"No trip with id {trip_id}"}), 400
     
@@ -32,7 +32,7 @@ def add_place(trip_id):
     place_data = request.get_json()
 
     api_id = place_data['apiId']
-    position_id = place_data['id']      # id refers to the positional id
+    trip_place_id = place_data['id']      # id refers to the positional id
     name = place_data['name']
     address = place_data['address']
     img_url = place_data['imgUrl']
@@ -48,15 +48,15 @@ def add_place(trip_id):
     long = place_data['long']
     in_itinerary = False
 
-    place = Place(api_id, position_id, name, address, img_url, info, favorite, 
+    place = Place(api_id, trip_place_id, name, address, img_url, info, favorite, 
                   category, phone_number, rating, summary, website, avg_visit_time, lat, long, in_itinerary, trip_id)
 
     db.session.add(place)
     db.session.commit()
 
     # Validate that the place has been added and return place id
-    if place.id:
-        return jsonify({"placeId": place.id}), 200
+    if place.place_id:
+        return jsonify({"placeId": place.place_id}), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500
 
@@ -65,7 +65,7 @@ def add_place(trip_id):
 @places.route('/delete/<place_id>', methods=['DELETE'])
 def delete_place(place_id):
 
-    place = Place.query.filter_by(id=place_id).first()
+    place = Place.query.filter_by(place_id=place_id).first()
     if not place:
         return jsonify({"message": f"No such place {place_id}"}), 400
     
@@ -74,7 +74,7 @@ def delete_place(place_id):
     db.session.commit()
 
     # Validate that the place has been deleted
-    place_record = Place.query.filter_by(id=place_id).first()
+    place_record = Place.query.filter_by(place_id=place_id).first()
     if not place_record:
         return jsonify({"message": "Place deleted"}), 200
     else:
@@ -89,7 +89,7 @@ def delete_places():
     place_ids = data['placeIds']
 
     for place_id in place_ids:
-        place = Place.query.filter_by(id=place_id).first()
+        place = Place.query.filter_by(place_id=place_id).first()
         if not place:
             return jsonify({"message": f"No such place {place_id}"}), 400
         db.session.delete(place)
@@ -97,7 +97,7 @@ def delete_places():
     db.session.commit()
 
     for place_id in place_ids:
-        place = Place.query.filter_by(id=place_id).first()
+        place = Place.query.filter_by(place_id=place_id).first()
         if place:
             return jsonify({"message": f"Place {place_id} not deleted"}), 500
 
@@ -108,7 +108,7 @@ def delete_places():
 @places.route('/delete-all/<trip_id>', methods=['DELETE'])
 def delete_all_places(trip_id):
 
-    trip = Trip.query.filter_by(id=trip_id).first()
+    trip = Trip.query.filter_by(trip_id=trip_id).first()
     if (not trip):
         return jsonify({"message": f"Trip {trip_id} not found"}), 404
     
@@ -119,7 +119,7 @@ def delete_all_places(trip_id):
     
     db.session.commit()
 
-    places = Place.query.filter_by(id=trip_id).all()
+    places = Place.query.filter_by(trip_id=trip_id).all()
 
     if (len(places) != 0):
         return jsonify({"message": "Places not deleted"}), 500
@@ -131,7 +131,7 @@ def delete_all_places(trip_id):
 @places.route('/update/<place_id>', methods=['PATCH'])
 def update_place(place_id):
 
-    place = Place.query.filter_by(id=place_id).first()
+    place = Place.query.filter_by(place_id=place_id).first()
     print(place)
     if not place:
         return jsonify({"message": f"No place {place_id}"}) , 400

@@ -8,7 +8,7 @@ ma = Marshmallow()   # the Marshmallow instance works to serialize and deseriali
 
 # model and schema for the User Table in the database
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uid = db.Column(db.String, unique=True)
     username = db.Column(db.String(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
@@ -44,7 +44,7 @@ user_schema = UserSchema()
 
 # model and schema for the UserInfo Table in the database
 class UserInfo(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_info_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     shopping = db.Column(db.Boolean, default=False, nullable=False)
     nature = db.Column(db.Boolean, default=False, nullable=False)
     landmarks = db.Column(db.Boolean, default=False, nullable=False)
@@ -79,7 +79,7 @@ user_info_schema = UserInfoSchema()
 
 # Model for Trip table
 class Trip(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    trip_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String)
     city = db.Column(db.String)
     state = db.Column(db.String(255))
@@ -134,6 +134,7 @@ class Trip(db.Model):
         return datetime.strptime(date, self.date_format).date()
     
 class TripSchema(ma.Schema):
+    id = ma.Integer(attribute='trip_id')
     countryAbbr = ma.String(attribute='country_abbr')
     imgUrl = ma.String(attribute='img_url')
     startDate = ma.String(attribute='start_date')
@@ -151,9 +152,9 @@ trips_schema = TripSchema(many=True)
 
 # Model for the Place table
 class Place(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    place_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     api_id = db.Column(db.String)
-    position_id = db.Column(db.Integer)    # int - index of that place within the trip (to account for a person adding the same location twice in a trip)
+    trip_place_id = db.Column(db.Integer)    # index of place within the trip (accounts for multiples of same place in trip)
     name = db.Column(db.String)
     address = db.Column(db.String)
     img_url = db.Column(db.String)
@@ -168,16 +169,16 @@ class Place(db.Model):
     lat = db.Column(db.Float)
     long = db.Column(db.Float)
     in_itinerary = db.Column(db.Boolean, default=False)
-    trip_id = db.Column(db.Integer, db.ForeignKey('trip.id'), nullable=False)
+    trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
     day_id = db.Column(db.Integer, db.ForeignKey('day.day_id'))
     trip = db.relationship('Trip', back_populates='place')
     day = db.relationship('Day', back_populates='place')
 
-    def __init__(self, api_id, position_id, name, address, img_url, info, favorite, category, 
+    def __init__(self, api_id, trip_place_id, name, address, img_url, info, favorite, category, 
                  phone_number, rating, summary, website, avg_visit_time, lat, long, in_itinerary, 
                  trip_id):
         self.api_id = api_id
-        self.position_id = position_id
+        self.trip_place_id = trip_place_id
         self.name = name
         self.address = address
         self.img_url = img_url
@@ -201,9 +202,9 @@ class Place(db.Model):
         return f'{self.name} Place Object'
     
 class PlaceSchema(ma.Schema):
-    placeId = ma.Integer(attribute='id')
+    placeId = ma.Integer(attribute='place_id')
     apiId = ma.String(attribute='api_id')
-    positionId = ma.Integer(attribute='position_id')
+    positionId = ma.Integer(attribute='trip_place_id')
     imgUrl = ma.String(attribute='img_url')
     phoneNumber = ma.String(attribute='phone_number')
     avgVisitTime = ma.Float(attribute='avg_visit_time')
@@ -224,13 +225,13 @@ places_schema = PlaceSchema(many=True)
 # Model for Day Table
 class Day(db.Model):
     day_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    day_num = db.Column(db.String)                      # day-#
+    trip_day_id = db.Column(db.String)                  # day-#
     name = db.Column(db.String(60), nullable=True)      # optional name for day
     date_mm_dd_yyyy = db.Column(db.String)              # mm/dd/yyyy
     date_weekday_month_day = db.Column(db.String(60))   # Weekday, Month day
     date_mm_dd = db.Column(db.String(60))               # mm/dd
     weekday = db.Column(db.String(60))                  # Weekday abbreviation
-    trip_id = db.Column(db.Integer, db.ForeignKey('trip.id'), nullable=False)
+    trip_id = db.Column(db.Integer, db.ForeignKey('trip.trip_id'), nullable=False)
     trip = db.relationship('Trip', back_populates='day')
     place = db.relationship('Place', back_populates='day')
 
@@ -247,10 +248,10 @@ class Day(db.Model):
         return f'{self.date_mm_dd_yyyy} Day Object.'
     
     def add_day_num(self, num):
-        self.day_num = f'day-{num}'
+        self.trip_day_id = f'day-{num}'
 
     def serialize(self, num, empty):
-        if not self.day_num:
+        if not self.trip_day_id:
             self.add_day_num(num)
         
         day_dict = day_schema.dump(self)
@@ -264,7 +265,7 @@ class Day(db.Model):
     
 class DaySchema(ma.Schema):
     dayId = ma.Integer(attribute='day_id')
-    id = ma.String(attribute='day_num')
+    id = ma.String(attribute='trip_day_id')
     dateMMDDYYYY = ma.String(attribute='date_mm_dd_yyyy')
     dateWeekdayMonthDay = ma.String(attribute='date_weekday_month_day')
     dateMMDD = ma.String(attribute='date_mm_dd')

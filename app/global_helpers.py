@@ -17,7 +17,7 @@ def add_places(trip_id, places_arr):
         place = places_arr[i]
 
         apiId = place['apiId']
-        position_id = place['id']
+        trip_place_id = place['id']
         name = place['name']
         address = place['address']
         img_url = place['imgUrl']
@@ -33,7 +33,7 @@ def add_places(trip_id, places_arr):
         long = place['long']
         in_itinerary = False
 
-        place = Place(apiId, position_id, name, address, img_url, 
+        place = Place(apiId, trip_place_id, name, address, img_url, 
                       info, favorite, category, phone_number, rating, summary, website, 
                       avg_visit_time, lat, long, in_itinerary, trip_id)
 
@@ -45,7 +45,7 @@ def create_add_days(trip):
     current_date = trip.convert_to_datetime(trip.start_date)
     for i in range(1, trip.duration + 1):
         # Create and add day to database
-        new_day = Day(i, '', current_date, trip.id)
+        new_day = Day(i, '', current_date, trip.trip_id)
         db.session.add(new_day)
         db.session.commit()
 
