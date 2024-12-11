@@ -1,4 +1,4 @@
-from .models import Place, db, place_schema, Day, Trip
+from .models import Place, db, place_schema, Day
 from datetime import timedelta
 
 def serialize_places(places):
@@ -9,7 +9,7 @@ def serialize_places(places):
         place['geocode'] = [place_data.lat, place_data.long]
         
         # making the index one of the keys with the place dictionary as the value
-        places_serial[place['positionId']] = place
+        places_serial[place['id']] = place
     return places_serial
 
 def add_places(trip_id, places_arr):

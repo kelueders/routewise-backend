@@ -1,9 +1,8 @@
 # EXTERNAL
-from flask import Blueprint, redirect, request, jsonify, url_for
+from flask import Blueprint, request, jsonify
 
 # INTERNAL
-from ..models import Trip, Place, Day, db, trips_schema
-from ..global_helpers import serialize_places, add_places, create_add_days
+from ..models import Day, db
 
 days = Blueprint('days', __name__, url_prefix='/days')
 

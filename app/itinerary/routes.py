@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 
 # INTERNAL
-from ..models import Place, Trip, Day, db
+from ..models import Place, Trip, db
 from ..global_helpers import serialize_places, replace_day_id, create_add_days
 from .itinerary import Itinerary
 

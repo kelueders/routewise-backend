@@ -67,7 +67,7 @@ class TestPlacesRoute():
         assert place['long'] == valid_place['long']
         assert place['name'] == valid_place['name']
         assert place['phoneNumber'] == valid_place['phoneNumber']
-        assert place['positionId'] == 5
+        assert place['id'] == 5
         assert place['rating'] == valid_place['rating']
         assert place['summary'] == valid_place['summary']
         assert place['tripId'] == 1

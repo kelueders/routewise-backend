@@ -204,7 +204,7 @@ class Place(db.Model):
 class PlaceSchema(ma.Schema):
     placeId = ma.Integer(attribute='place_id')
     apiId = ma.String(attribute='api_id')
-    positionId = ma.Integer(attribute='trip_place_id')
+    id = ma.Integer(attribute='trip_place_id')
     imgUrl = ma.String(attribute='img_url')
     phoneNumber = ma.String(attribute='phone_number')
     avgVisitTime = ma.Float(attribute='avg_visit_time')
@@ -213,7 +213,7 @@ class PlaceSchema(ma.Schema):
     dayId = ma.Integer(attribute='day_id')
 
     class Meta:
-        fields = ['placeId', 'apiId', 'positionId', 'name', 'address', 'imgUrl', 'info', 'favorite', 
+        fields = ['placeId', 'apiId', 'id', 'name', 'address', 'imgUrl', 'info', 'favorite', 
                   'category', 'phoneNumber', 'rating', 'summary', 'website', 'avgVisitTime', 
                   'lat', 'long', 'inItinerary', 'tripId', 'dayId']
 
@@ -259,7 +259,7 @@ class Day(db.Model):
         if empty:
             day_dict['placeIds'] = []
         else:
-            day_dict['placeIds'] = [ place.positionId for place in self.place ]
+            day_dict['placeIds'] = [ place.trip_place_id for place in self.place ]
         
         return day_dict
     
