@@ -76,7 +76,7 @@ def generate_itinerary(trip_id):
         "days": days,
         "dayOrder": list(days.keys()),
         "savedPlaces": { 
-            "placesIds": saved_places_ids,
+            "placeIds": saved_places_ids,
             "addresses": list(map(lambda x: serialized_places[x]["address"], saved_places_ids))
         }
     }, 200

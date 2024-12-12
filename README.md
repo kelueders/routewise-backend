@@ -190,7 +190,7 @@ There are several unit tests created for the api endpoints.
         "lastPlaceId": (Integer),
         "savedPlaces": {
             "addresses": [ "", ... ],
-            "placesIds": [ (Integer), ... ]
+            "placeIds": [ (Integer), ... ]
         },
         "tripId": (Integer)
     }
@@ -459,7 +459,7 @@ There are several unit tests created for the api endpoints.
         "lastPlaceId": (Integer),
         "savedPlaces": {
             "addresses": [ "", ... ],
-            "placesIds": [ (Integer), ... ]
+            "placeIds": [ (Integer), ... ]
         },
         "tripId": (Integer)
     }
