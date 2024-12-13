@@ -50,7 +50,7 @@ def generate_itinerary(trip_id):
                 day['placeIds'].append(trip_place_id)
 
                 # Add day_id to place, and set in_itinerary true
-                place.day_id = day['dayId']
+                place.day_id = day['databaseId']
                 place.in_itinerary = True
             else:
                 # Place is not in an existing day
@@ -124,6 +124,6 @@ def add_one_place(trip_id):
 
     # RETURN THE place id to the front end if successfully added to database
     if place.place_id:
-        return jsonify({"placeId": place.place_id}), 200
+        return jsonify({"databaseId": place.place_id}), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500

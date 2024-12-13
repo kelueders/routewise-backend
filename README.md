@@ -152,7 +152,7 @@ There are several unit tests created for the api endpoints.
                 "dateWeekdayMonthDay": "Weekday, Month Day",
                 "dateMMDDYYYY": "mm/dd/yyyy",
                 "id": "day-1",
-                "dayId": 1,
+                "databaseId": 1,
                 "name": "",
                 "placeIds": [
                     (Integer),
@@ -168,10 +168,10 @@ There are several unit tests created for the api endpoints.
                 "apiId": "",
                 "avgVisitTime": (Float),
                 "category": "",
-                "dayId": (Integer),
+                "dayDatabaseId": (Integer),
                 "favorite": (Boolean),
                 "geocode": [ (Float), (Float) ],
-                "placeId": (Integer, unique identifier for the element in the database),
+                "databaseId": (Integer, unique identifier for the element in the database),
                 "imgUrl": "",
                 "inItinerary": (Boolean),
                 "info": "",
@@ -225,7 +225,7 @@ There are several unit tests created for the api endpoints.
 - **Response**: Status code 200 on success.
     ```json
     {
-        "placeId": (Integer)
+        "databaseId": (Integer)
     }
     ```
 
@@ -241,10 +241,10 @@ There are several unit tests created for the api endpoints.
             "apiId": "",
             "avgVisitTime": (Float),
             "category": "",
-            "dayId": (Integer),
+            "dayDatabaseId": (Integer),
             "favorite": (Boolean),
             "geocode": [ (Float), (Float) ],
-            "placeId": (Integer, unique identifier for the element in the database),
+            "databaseId": (Integer, unique identifier for the element in the database),
             "imgUrl": "",
             "inItinerary": (Boolean),
             "info": "",
@@ -287,7 +287,7 @@ There are several unit tests created for the api endpoints.
 - **Response**: Status code 200 upon success.
     ```json
     {
-        "placeId": (Integer)
+        "databaseId": (Integer)
     }
     ```
 
@@ -421,7 +421,7 @@ There are several unit tests created for the api endpoints.
                 "dateWeekdayMonthDay": "Weekday, Month Day",
                 "dateMMDDYYYY": "mm/dd/yyyy",
                 "id": "day-1",
-                "dayId": 1,
+                "databaseId": 1,
                 "name": ,
                 "placeIds": [
                     (Integer),
@@ -437,10 +437,10 @@ There are several unit tests created for the api endpoints.
                 "apiId": "",
                 "avgVisitTime": (Float),
                 "category": "",
-                "dayId": (Integer),
+                "dayDatabaseId": (Integer),
                 "favorite": (Boolean),
                 "geocode": [ (Float),(Float) ],
-                "placeId": (Integer, unique identifier for the element in the database),
+                "databaseId": (Integer, unique identifier for the element in the database),
                 "imgUrl": "",
                 "inItinerary": (Boolean),
                 "info": "",

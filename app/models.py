@@ -202,7 +202,7 @@ class Place(db.Model):
         return f'{self.name} Place Object'
     
 class PlaceSchema(ma.Schema):
-    placeId = ma.Integer(attribute='place_id')
+    databaseId = ma.Integer(attribute='place_id')
     apiId = ma.String(attribute='api_id')
     id = ma.Integer(attribute='trip_place_id')
     imgUrl = ma.String(attribute='img_url')
@@ -210,12 +210,12 @@ class PlaceSchema(ma.Schema):
     avgVisitTime = ma.Float(attribute='avg_visit_time')
     inItinerary = ma.Boolean(attribute='in_itinerary')
     tripId = ma.Integer(attribute='trip_id')
-    dayId = ma.Integer(attribute='day_id')
+    dayDatabaseId = ma.Integer(attribute='day_id')
 
     class Meta:
-        fields = ['placeId', 'apiId', 'id', 'name', 'address', 'imgUrl', 'info', 'favorite', 
+        fields = ['databaseId', 'apiId', 'id', 'name', 'address', 'imgUrl', 'info', 'favorite', 
                   'category', 'phoneNumber', 'rating', 'summary', 'website', 'avgVisitTime', 
-                  'lat', 'long', 'inItinerary', 'tripId', 'dayId']
+                  'lat', 'long', 'inItinerary', 'tripId', 'dayDatabaseId']
 
 place_schema = PlaceSchema()
 places_schema = PlaceSchema(many=True)
@@ -264,14 +264,14 @@ class Day(db.Model):
         return day_dict
     
 class DaySchema(ma.Schema):
-    dayId = ma.Integer(attribute='day_id')
+    databaseId = ma.Integer(attribute='day_id')
     id = ma.String(attribute='trip_day_id')
     dateMMDDYYYY = ma.String(attribute='date_mm_dd_yyyy')
     dateWeekdayMonthDay = ma.String(attribute='date_weekday_month_day')
     dateMMDD = ma.String(attribute='date_mm_dd')
 
     class Meta:
-        fields = ['dayId', 'id', 'name', 'dateMMDDYYYY', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
+        fields = ['databaseId', 'id', 'name', 'dateMMDDYYYY', 'dateWeekdayMonthDay', 'dateMMDD', 'weekday']
 
 day_schema = DaySchema()
 days_schema = DaySchema(many=True)

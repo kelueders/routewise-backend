@@ -56,7 +56,7 @@ def add_place(trip_id):
 
     # Validate that the place has been added and return place id
     if place.place_id:
-        return jsonify({"placeId": place.place_id}), 200
+        return jsonify({"databaseId": place.place_id}), 200
     else:
         return jsonify({"message": "Place could not be added"}), 500
 

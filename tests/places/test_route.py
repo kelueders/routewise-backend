@@ -39,7 +39,7 @@ class TestPlacesRoute():
         request_place['id'] = 1
         response = test_client.post('/places/add/1', json=request_place)
         assert response.status_code == 200
-        assert response.get_json()['placeId'] == request_place['id']
+        assert response.get_json()['databaseId'] == request_place['id']
 
     # get places route
     def test_get_places(self, test_client):
@@ -57,9 +57,9 @@ class TestPlacesRoute():
         assert place['apiId'] == valid_place['apiId']
         assert place['avgVisitTime'] == 60
         assert place['category'] == valid_place['category']
-        assert place['dayId'] != None
+        assert place['dayDatabaseId'] != None
         assert place['favorite'] == False
-        assert place['placeId'] == 5
+        assert place['databaseId'] == 5
         assert place['imgUrl'] == valid_place['imgUrl']
         assert place['inItinerary'] == True
         assert place['info'] == valid_place['info']

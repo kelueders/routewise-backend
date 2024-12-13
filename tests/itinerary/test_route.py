@@ -25,7 +25,7 @@ class TestItineraryRoute():
         assert data['days']['day-1']['dateWeekdayMonthDay'] == date_obj.strftime('%A, %B %#d')
         assert data['days']['day-1']['weekday'] ==  date_obj.strftime('%a')
         assert data['days']['day-1']['id'] == 'day-1'
-        assert data['days']['day-1']['dayId'] == 1
+        assert data['days']['day-1']['databaseId'] == 1
         assert len(data['days']['day-1']['placeIds']) != 0
         assert len(data['dayOrder']) == 3
         assert data['dayOrder'][0] == 'day-1'
@@ -45,7 +45,7 @@ class TestItineraryRoute():
         request['place']['id'] = 6
         response = test_client.post('/itinerary/add-one-place/1', json=request)
         assert response.status_code == 200
-        assert response.get_json()['placeId'] == 6
+        assert response.get_json()['databaseId'] == 6
 
     def test_add_one_place_no_day(self, test_client):
         """Test adding a place to a trip with no day attached."""
@@ -56,4 +56,4 @@ class TestItineraryRoute():
         request['place']['id'] = 7
         response = test_client.post('/itinerary/add-one-place/1', json=request)
         assert response.status_code == 200
-        assert response.get_json()['placeId'] == 7
+        assert response.get_json()['databaseId'] == 7
