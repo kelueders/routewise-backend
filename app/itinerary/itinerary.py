@@ -2,8 +2,6 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-from ..models import Place, Trip
-
 max_visit_time_per_day = 540    # minutes
 default_avg_visit_time = 60     # minutes
 
@@ -22,20 +20,16 @@ The data is stored in a multi-dimensional array
 '''
 class Itinerary:
 
-    def __init__(self, trip_id):
+    def __init__(self, trip_id, places):
         self.trip_id = trip_id                  # int - index value from Trip table
-        self.places = self.get_places()         # list - Place objects
+        self.places = places                    # list - Place objects
         self.duration = self.get_duration()     # int - length of the trip in days
         self.sorted_days = []                   # Multi-dimen array - row is day, column is placeId
-
-    def get_places(self):
-        return Place.query.filter_by(trip_id = self.trip_id).all()
     
     def get_duration(self):
-        trip = Trip.query.filter_by(trip_id = self.trip_id).first()
-        return trip.duration
-
-    def cluster_analysis(self):
+        return self.places[0].trip.duration
+    
+    def generate(self):
         # Set number of starting clusters
         n_clusters = self.duration
         if len(self.places) < self.duration:
@@ -57,7 +51,7 @@ class Itinerary:
         # Create sorted_days multi-dimens array with places going into corresponding day
         self.sorted_days = [[] for _ in range(df_refined['day'].max() + 1)]
         for _, row in df_refined.iterrows():
-            self.sorted_days[int(row['day'])].append(int(row['local_id']))
+            self.sorted_days[int(row['day'])].append(int(row['trip_place_id']))
 
         # sort df_refined by day size (descending)
         self.sorted_days.sort(reverse=True, key=len)
@@ -66,16 +60,18 @@ class Itinerary:
     
     def create_dataframe(self):
         data = {
-            'local_id': [],
+            'trip_place_id': [],
             'lat': [],
             'long': [],
             'avg_visit_time': []
         }
 
         for place in self.places:
-            data['local_id'].append(place.local_id)
+            data['trip_place_id'].append(place.trip_place_id)
             data['lat'].append(place.lat)
             data['long'].append(place.long)
+
+            # temporarily set average visit time
             if place.avg_visit_time is None:
                 data['avg_visit_time'].append(default_avg_visit_time)
             else:

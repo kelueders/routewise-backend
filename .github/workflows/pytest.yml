@@ -1,0 +1,45 @@
+name: Run python unit tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - 'tests/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - 'tests/**'
+
+jobs:
+  build_and_test:
+    concurrency:
+        group: build_and_test
+        cancel-in-progress: false
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11.9"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build and run unit tests
+        env:
+          FLASK_APP: ${{ secrets.FLASK_APP }}
+          FLASK_ENV: ${{ secrets.FLASK_ENV }}
+          FLASK_DEBUG: ${{ secrets.FLASK_DEBUG }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
+        run: pytest

@@ -8,6 +8,7 @@ The backend includes the api endpoints for the frontend to access the database a
 - AWS RDS for PostrgreSQL
 - Render (Python version: 3.11.9)
 - Docker
+- GitHub Actions
 
 ## How to Run and Test
 1. Install the dependencies. **Note**: you may need to comment out some depenencies and manually install it.
@@ -18,7 +19,7 @@ The backend includes the api endpoints for the frontend to access the database a
 
 2. Set config variables for the flask app as environment variables. Create `.env` file in the root directory and fill with the following data. Replace '****' with the secret.
     ```
-    FLASK_APP = app
+    FLASK_APP = app:create_app()
     FLASK_ENV = development
     FLASK_DEBUG = true
     SECRET_KEY = '****'
@@ -32,7 +33,7 @@ The backend includes the api endpoints for the frontend to access the database a
     flask run 
     ```
 
-### UPDATE: Run in docker container
+### Run in docker container
 Running the program in a docker container ensures it runs in a clean enviornment. Additionally, you won't need to install the required libraries on your local machine. The environment is specified in dockerfile.
 
 1. Install docker on your machine following the instructions on [docker](https://www.docker.com/)
@@ -67,256 +68,64 @@ Running the program in a docker container ensures it runs in a clean enviornment
     docker stop container_id
     ```
 
+### Running Unit Tests
+There are several unit tests created for the api endpoints.
+
+1. Update python libraries
+
+    ```
+    pip install -r requirements.txt
+    ```
+
+2. In the root directory, run the python tests
+    ```
+    pytest
+    ```
+
+    Running certain tests
+    ```
+    pytest <directory>
+    ```
+
 ## Code Structure
+- / : outlines the necessary requirements to run the program
+- /.github/workflows : contains the workflows that are run through GitHub Actions
 - /app : The Flask code is contained in the app directory. It also initiates the webpage for port 5000.
     - models.py : contains the schema for database models.
     - global_helpers.py : contains helper functions used in multiple files.
     - /auth : contains the api route to handle granting access to a user
+    - /days : contains the api routes to handle manipulating day data from the database.
     - /itinerary : contains the algorithm to create an itinerary and the api routes to manipulate an itinerary.
-    - /places : contains the api routes to handle getting and manipulating trip and places data from the database.
+    - /places : contains the api routes to handle getting and manipulating places data from the database.
     - /profile : contains the api route to handle getting and manipulating user data in the database.
-- / : outlines the necessary requirements to run the program
+    - /trip : contains the api routes to handle getting and manipulating trip data from the database.
+- /tests : Contains the unit tests
+    - mock_data.py : contains mock data to be used in the tests
+    - config.py : runs the program testing mode on a local sqlite database
+    - /auth : contains the tests for the auth api routes
+    - /days : contains the tests for the days api routes
+    - /itinerary : contains the tests for the itinerary api routes
+    - /places : contains the tests for the places api routes
+    - /profile : contains the tests for the profile api routes
+    - /trip : contains the tests for the trip api routes
 
 ## API Documentation
 
-### `GET|PATCH /auth/check_code`
+### `GET|PATCH /auth/check-code`
 - **Description**: Verify user access.
-- **Request Body**:
+- **Request Body**: Post: update database; GET: check status.
     ```json
     {
         "uid": "",
         "passcode": ""
     }
     ```
-- **Response**: code 200, "Access granted" or "Access not granted".
-
-### `GET|PATCH /itinerary/createdays/<trip_id>`
-- **Description**: Create itinerary for places and creates corresponding days.
-- **Response**: 
-    ```json
-    {
-        "day_order": [
-            "day-1"
-        ],
-        "days": {
-            "day-1": {
-                "date_converted": "",
-                "date_formatted": "",
-                "date_short": "",
-                "dayName": "",
-                "day_id": ,
-                "day_short": "",
-                "id": "day-1",
-                "placeIds": [
-                    
-                ]
-            }
-        },
-        "places": {
-            "1": {
-                "address": "",
-                "apiPlaceId": "",
-                "avgVisitTime": ,
-                "category": "",
-                "day_id": ,
-                "favorite": ,
-                "geocode": [
-                    
-                ],
-                "id": 1,
-                "imgURL": "",
-                "in_itinerary": true,
-                "info": "",
-                "lat": ,
-                "long": ,
-                "phoneNumber": ,
-                "placeName": "",
-                "place_id": ,
-                "rating": "",
-                "summary": "",
-                "website": 
-            }
-        },
-        "places_last": ,
-        "saved_places": {
-            "addresses": [],
-            "placesIds": []
-        },
-        "trip_id": ""
-    }
-    ```
-
-### `POST|GET /itinerary/add-one-place/<trip_id>`
-- **Description**: Adds new place if itinerary hasn't been created.
-- **Request Body**:
-    ```json
-    {
-        "day_id": null,
-        "place":{
-            "id": ,
-            "placeName": "",
-            "info": "",
-            "summary": "",
-            "address": "",
-            "phoneNumber": "",
-            "website": "",
-            "imgURL": "",
-            "category": "",
-            "favorite": false,
-            "lat": ,
-            "long": ,
-            "geocode": [
-                ,
-                
-            ],
-            "apiPlaceId": "",
-            "rating": ""
-        }
-    }
-    ```
-- **Response**: Place id in list.
-
-### `DELETE /itinerary/delete-place/<place_id>`
-- **Description**: Deletes place in its entirety.
-- **Response**: Success message
-
-### `DELETE /itinerary/delete-places`
-- **Description**: Deletes multiple places at once.
-- **Request Body**:
-    ```json
-    {
-        "placeIds": []
-    }
-    ```
-- **Response**: Success message
-
-### `DELETE /itinerary/delete-all-places/<trip_id>`
-- **Description**: Deletes all places related to a specified trip.
-- **Response**: Success message
-
-### `PATCH /itinerary/update-place/<place_id>`
-- **Description**: Updates place specified.
-- **Request Body**:
-    ```json
-    {
-        "day_id": ,
-        "in_itinerary": false
-    }
-    ```
-- **Response**: Success message
-
-### `PATCH /itinerary/move-day-places/<trip_id>`
-- **Description**: Moves/swaps all places in a day to a destination day.
-- **Request Body**:
-    ```json
-    {
-        "sourceDayId": ,
-        "destDayId" : ,
-        "swap": true
-    }
-    ```
-- **Response**: success message
-
-### `POST|GET /places/trip`
-- **Description**: Adds a new empty trip.
-- **Request Body**:
-  ```json
-  {
-    "uid": "",
-    "tripData": {
-      "tripName": "",
-      "cityName": "",
-      "state": "",
-      "country": "",
-      "country_2letter": "",
-      "destinationLat": ,
-      "destinationLong": ,
-      "destinationImg": "",
-      "startDate": "",
-      "endDate": ""
-    }
-  }
-  ```
 - **Response**:
-  ```json
-  {
-    "trip_id": ,
-    "start_date": "",
-    "end_date": "",
-    "duration":
-  }
-  ```
+    - Status code 400, if user does not exist.
+    - Status code 200, user is granted access.
+    - Status code 401, user is not granted access.
 
-### `GET /places/trip/<trip_id>`
-- **Description**: Gets specific trip.
-- **Response**: 
-    ```json
-    {
-        "day_order": [
-            "day-1"
-        ],
-        "days": {
-            "day-1": {
-                "date_converted": "",
-                "date_short": "",
-                "dayName": "",
-                "day_short": "",
-                "db_id": ,
-                "id": "day-1",
-                "placeIds": [
-                ]
-            }
-        },
-        "places": {
-            "1": {
-                "address": "",
-                "apiPlaceId": "",
-                "avgVisitTime": ,
-                "category": "",
-                "day_id": ,
-                "favorite": false,
-                "geocode": [
-                ],
-                "id": 1,
-                "imgURL": "",
-                "info": "",
-                "lat": ,
-                "long": ,
-                "phoneNumber": "",
-                "placeName": "",
-                "place_id": ,
-                "rating": "",
-                "summary": "",
-                "website": ""
-            }
-        },
-        "places_last": ,
-        "saved_places": {
-            "addresses": [
-            ],
-            "placesIds": [
-            ]
-        },
-        "trip_id": 
-    }
-    ```
-
-### `DELETE /places/delete-trip/<trip_id>`
-- **Description**: Delete specified trip.
-- **Response**: Success or error message.
-
-### `PATCH|POST|GET|DELETE /places/update-trip/<trip_id>`
-- **Description**: Update trip info.
-- **Request Body**:
-    ```json
-    {
-        "tripName": "",
-        "startDate": "",
-        "endDate": ""
-    }
-    ```
-
-### `PATCH /places/update-day-name/<day_id>`
+### `PATCH /days/update-name/<day_id>`
 - **Description**: Update day name (user created title for a trip day).
 - **Request Body**:
     ```json
@@ -324,124 +133,380 @@ Running the program in a docker container ensures it runs in a clean enviornment
         "dayName": ""
     }
     ```
+- **Response**: Status code 200, if successful.
 
-### `POST /places/add-place/<trip_id>`
-- **Description**: Add place to trip.
-- **Request Body**:
+### `PATCH /itinerary/generate/<trip_id>`
+- **Description**: Create itinerary for places and creates corresponding days.
+- **Response**:
+    - Status code 401, if trip does not exist.
+    - Status code 200, on success.
     ```json
     {
-        "tripId": ,
-        "placesLast": ,
-        "places_serial": [
-            {
-                "id": 1,
-                "placeName": "",
-                "placeId": "",
+        "dayOrder": [
+            "day-1",
+            ...
+        ],
+        "days": {
+            "day-1": {
+                "dateMMDD": "mm/dd",
+                "dateWeekdayMonthDay": "Weekday, Month Day",
+                "dateMMDDYYYY": "mm/dd/yyyy",
+                "id": "day-1",
+                "databaseId": 1,
+                "name": "",
+                "placeIds": [
+                    (Integer),
+                    ...
+                ],
+                "weekday": "Weekday Abbreviation",
+            },
+            ...
+        },
+        "places": {
+            "1": {
                 "address": "",
-                "imgURL": "",
+                "apiId": "",
+                "avgVisitTime": (Float),
                 "category": "",
+                "dayDatabaseId": (Integer),
+                "favorite": (Boolean),
+                "geocode": [ (Float), (Float) ],
+                "databaseId": (Integer, unique identifier for the element in the database),
+                "imgUrl": "",
+                "inItinerary": (Boolean),
+                "info": "",
+                "lat": (Float),
+                "long": (Float),
                 "phoneNumber": "",
+                "id": 1 (index of place relative to a trip),
+                "name": "",
                 "rating": "",
                 "summary": "",
-                "website": "",
-                "favorite": false,
-                "info": "",
-                "lat": ,
-                "long": 
-            }
-        ]
+                "tripId": (Integer),
+                "website": ""
+            },
+            ...
+        },
+        "lastPlaceId": (Integer),
+        "savedPlaces": {
+            "addresses": [ "", ... ],
+            "placeIds": [ (Integer), ... ]
+        },
+        "tripId": (Integer)
     }
     ```
 
-### `GET /places/get-places/<trip_id>`
+### `POST /itinerary/add-one-place/<trip_id>`
+- **Description**: Adds new place if itinerary hasn't been created.
+- **Request Body**:
+    ```json
+    {
+        "dayId": null/(Integer),
+        "place":{
+            "id": (Integer, position id),
+            "apiId": "",
+            "name": "",
+            "info": "",
+            "summary": "",
+            "address": "",
+            "phoneNumber": "",
+            "website": "",
+            "imgUrl": "",
+            "category": "",
+            "favorite": (Boolean),
+            "lat": (Float),
+            "long": (Float),
+            "geocode": [ (Float), (Float) ],
+            "rating": "",
+            "avgVisitTime": (Float)
+        }
+    }
+    ```
+- **Response**: Status code 200 on success.
+    ```json
+    {
+        "databaseId": (Integer)
+    }
+    ```
+
+### `GET /places/<trip_id>`
 - **Description**: Gets places in trip.
-- **Response**: 
+- **Response**:
+    - Status code 400, if the trip doesn't exist.
+    - Status code 200, if there are places for the trip.
     ```json
     {
         "1": {
             "address": "",
-            "apiPlaceId": "",
-            "avgVisitTime": 60.0,
+            "apiId": "",
+            "avgVisitTime": (Float),
             "category": "",
-            "day_id": ,
-            "favorite": false,
-            "geocode": [ , ],
-            "imgURL": "",
-            "in_itinerary": true,
+            "dayDatabaseId": (Integer),
+            "favorite": (Boolean),
+            "geocode": [ (Float), (Float) ],
+            "databaseId": (Integer, unique identifier for the element in the database),
+            "imgUrl": "",
+            "inItinerary": (Boolean),
             "info": "",
-            "lat": ,
-            "local_id": 1,
-            "long": ,
+            "lat": (Float),
+            "long": (Float),
             "phoneNumber": "",
-            "placeName": "",
-            "place_id": ,
+            "id": 1 (index of place relative to a trip),
+            "name": "",
             "rating": "",
             "summary": "",
+            "tripId": (Integer),
             "website": ""
-        }
+        },
+        ...
     }
     ```
 
-### `GET|POST /places/add-get-place/<trip_id>`
+### `POST /places/add/<trip_id>`
 - **Description**: Add a place to empty itinerary.
 - **Request Body**:
     ```json
     {
-        "id": ,
-        "placeName": "",
-        "apiPlaceId": "",
+        "apiId": "",
+        "id": (Integer, positional id),
+        "name": "",
         "address": "",
-        "imgURL": "",
+        "imgUrl": "",
+        "info": "",
+        "favorite": (Boolean),
         "category": "",
-        "favorite": false,
         "phoneNumber": "",
         "rating": "",
         "summary": "",
         "website": "",
-        "info": "",
-        "lat": ,
-        "long": 
+        "avgVisitTime": (Float),
+        "lat": (Float),
+        "long": (Float)
     }
     ```
-- **Response**: Place ID.
+- **Response**: Status code 200 upon success.
+    ```json
+    {
+        "databaseId": (Integer)
+    }
+    ```
 
-### `GET|POST /places/add-trip-and-places`
-- **Description**: Add a new trip with places.
+### `DELETE /places/delete/<place_id>`
+- **Description**: Deletes place from database.
+- **Response**: 
+    - Status code 400, if no place is found.
+    - Status code 200, if place is successfully deleted.
+
+### `DELETE /places/delete`
+- **Description**: Deletes multiple places.
 - **Request Body**:
     ```json
     {
+        "placeIds": [ (Integer), ... ]
+    }
+    ```
+- **Response**: Status code 200 if successful
+
+### `DELETE /places/delete-all/<trip_id>`
+- **Description**: Deletes all places related to a specified trip.
+- **Response**: Status code 200 if successful
+
+### `PATCH /places/update/<place_id>`
+- **Description**: Move place to day.
+- **Request Body**:
+    ```json
+    {
+        "dayId": (Integer),
+        "inItinerary": (Boolean)
+    }
+    ```
+- **Response**:
+    - Status code 400, if place doesn’t exist.
+    - Status code 200, if place successfully moved.
+
+### `PATCH /places/move-days/<trip_id>`
+- **Description**: Moves/swaps all places in a day to a destination day.
+- **Request Body**:
+    ```json
+    {
+        "sourceDayId": (Integer),
+        "destDayId" : (Integer),
+        "swap": (Boolean)
+    }
+    ```
+- **Response**: Status code 200, if places are successfully moved.
+
+### `POST /trip/add`
+- **Description**: Adds a new trip with optional places.
+- **Request Body**:
+
+    Empty trip
+    ```json
+    {
         "uid": "",
-        "currentTrip": {
-            "tripName": "",
+        "trip": {
+            "name": "",
             "city": "",
             "state": "",
             "country": "",
-            "country_2letter": "",
-            "geocode": [],
+            "countryAbbr": "",
+            "lat": (Float),
+            "long": (Float),
             "imgUrl": "",
-            "startDate": "",
-            "endDate": "",
+            "startDate": "mm/dd/yyyy",
+            "endDate": "mm/dd/yyyy"
+        }
+    }
+    ```
+    Trip with places
+    ```json
+    {
+        "uid": "",
+        "trip": {
+            "name": "",
+            "city": "",
+            "state": "",
+            "country": "",
+            "countryAbbr": "",
+            "geocode": [ (Float), (Float) ],
+            "imgUrl": "",
+            "startDate": "mm/dd/yyyy",
+            "endDate": "mm/dd/yyyy",
             "places": [
                 {
                     "id": 1,
-                    "placeName": "",
-                    "placeId": "",
+                    "name": "",
+                    "apiId": "",
                     "address": "",
-                    "imgURL": "",
+                    "imgUrl": "",
                     "category": "",
-                    "favorite": false,
+                    "favorite": (Boolean),
                     "phoneNumber": "",
                     "rating": "",
                     "summary": "",
                     "website": "",
                     "info": "",
-                    "lat": ,
-                    "long": 
-                }
+                    "lat": (Float),
+                    "long": (Float)
+                },
+                ...
             ]
         }
     }
     ```
+- **Response**: Status code 200 on success.
+    ```json
+    {
+        "tripId": (Integer),
+        "startDate": "mm/dd/yyyy",
+        "endDate": "mm/dd/yyyy",
+        "duration": (Integer)
+    }
+    ```
+
+### `GET /trip/<trip_id>`
+- **Description**: Gets specific trip.
+- **Response**:
+    - Status code 400, if there are no places for the trip.
+    - Status code 200, if there are places in the trip.
+    ```json
+    {
+        "dayOrder": [
+            "day-1",
+            ...
+        ],
+        "days": {
+            "day-1": {
+                "dateMMDD": "mm/dd",
+                "dateWeekdayMonthDay": "Weekday, Month Day",
+                "dateMMDDYYYY": "mm/dd/yyyy",
+                "id": "day-1",
+                "databaseId": 1,
+                "name": ,
+                "placeIds": [
+                    (Integer),
+                    ...
+                ],
+                "weekday": "Weekday Abbreviation",
+            },
+            ...
+        },
+        "places": {
+            "1": {
+                "address": "",
+                "apiId": "",
+                "avgVisitTime": (Float),
+                "category": "",
+                "dayDatabaseId": (Integer),
+                "favorite": (Boolean),
+                "geocode": [ (Float),(Float) ],
+                "databaseId": (Integer, unique identifier for the element in the database),
+                "imgUrl": "",
+                "inItinerary": (Boolean),
+                "info": "",
+                "lat": (Float),
+                "long": (Float),
+                "phoneNumber": "",
+                "id": 1 (index of place relative to a trip),
+                "name": "",
+                "rating": "",
+                "summary": "",
+                "tripId": (Integer),
+                "website": ""
+            },
+            ...
+        },
+        "lastPlaceId": (Integer),
+        "savedPlaces": {
+            "addresses": [ "", ... ],
+            "placeIds": [ (Integer), ... ]
+        },
+        "tripId": (Integer)
+    }
+    ```
+
+### `GET /trip/trips/<uid>`
+- **Description**: Gets all trips for a user.
+- **Response**: Status code 200.
+    ```json
+    [
+        {
+            "city": "",
+            "country": "",
+            "countryAbbr": "",
+            "imgUrl": "",
+            "lat": (Double),
+            "long": (Double),
+            "state": "",
+            "duration": (Integer),
+            "endDate": "mm/dd/yyyy",
+            "id": (Integer),
+            "isItinerary": (Boolean),
+            "name": "",
+            "startDate": "mm/dd/yyyy",
+            "uid": ""
+        },
+        ...
+    ]
+    ```
+
+### `DELETE /trip/delete/<trip_id>`
+- **Description**: Delete specified trip.
+- **Response**: Status code 200, on success.
+
+### `PATCH /trip/update/<trip_id>`
+- **Description**: Update trip info.
+- **Request Body**:
+    ```json
+    {
+        "tripName": "",
+        "startDate": "mm/dd/yyyy",
+        "endDate": "mm/dd/yyyy"
+    }
+    ```
+- **Response**:
+    - Status code 400, if trip doesn’t exist.
+    - Status code 200, if successful and regenerates itinerary.
 
 ### `POST /profile/user`
 - **Description**: Creates new user.
@@ -476,10 +541,12 @@ Running the program in a docker container ensures it runs in a clean enviornment
     }
     ```
 - **Response**: 
+    - Status code 400, if user exists already.
+    - Status code 200, if user successfully added.
     ```json
     {
         "email": "",
-        "hasAccess": ,
+        "hasAccess": (Boolean),
         "uid": "",
         "username": "",
         "firstName": "",
@@ -501,20 +568,42 @@ Running the program in a docker container ensures it runs in a clean enviornment
     ```
 - **Response**: 200 or 400 response code.
 
-### `POST|GET /profile/user_info`
+### `POST|GET /profile/user-info`
 - **Description**: Adds user info to user.
 - **Request Body**:
     ```json
+    GET
+    {
+        "uid": ""
+    }
+
+    POST
     {
         "uid": "",
         "categories": {
-            "shopping": ,
-            "nature": ,
-            "landmarks": ,
-            "entertainment": ,
-            "relaxation": ,
-            "food": ,
-            "arts": 
+            "shopping": (Boolean),
+            "nature": (Boolean),
+            "landmarks": (Boolean),
+            "entertainment": (Boolean),
+            "relaxation": (Boolean),
+            "food": (Boolean),
+            "arts": (Boolean)
         }
+    }
+    ```
+- **Response**:
+    - Status code 400, if user has not been created yet.
+    - Status code 200, if successfully added user info.
+    ```json
+    GET
+    {
+        "uid": "",
+        "shopping": (Boolean),
+        "nature": (Boolean),
+        "landmarks": (Boolean),
+        "entertainment": (Boolean),
+        "relaxation": (Boolean),
+        "food": (Boolean),
+        "arts": (Boolean)
     }
     ```
