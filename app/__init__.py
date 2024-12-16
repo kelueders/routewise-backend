@@ -41,3 +41,5 @@ def create_app(config_class=Config, *args, **kwargs):
         return response_body, 200
 
     return app
+
+app = create_app()
