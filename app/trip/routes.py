@@ -152,7 +152,7 @@ def delete_trip(trip_id):
     - Places List page - can update trip dates, is_itinerary = True or False
     - Itinerary page - can update trip dates, is_itinerary = True
 '''
-@trip.route('/update/<trip_id>', methods=['PATCH', 'POST', 'DELETE'])
+@trip.route('/update/<trip_id>', methods=['PATCH'])
 def update_trip(trip_id):
 
     trip = Trip.query.filter_by(trip_id=trip_id).first()

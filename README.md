@@ -494,7 +494,7 @@ There are several unit tests created for the api endpoints.
 - **Description**: Delete specified trip.
 - **Response**: Status code 200, on success.
 
-### `PATCH|POST|DELETE /trip/update/<trip_id>`
+### `PATCH /trip/update/<trip_id>`
 - **Description**: Update trip info.
 - **Request Body**:
     ```json
