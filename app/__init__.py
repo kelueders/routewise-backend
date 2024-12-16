@@ -13,7 +13,7 @@ from .days.routes import days
 from .trip.routes import trip
 from .models import db
 
-def create_app(config_class=Config):
+def create_app(config_class=Config, *args, **kwargs):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -38,6 +38,6 @@ def create_app(config_class=Config):
             "about": "I'm a full stack developer"
         }
 
-        return response_body
+        return response_body, 200
 
     return app
