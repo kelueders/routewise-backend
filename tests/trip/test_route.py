@@ -100,7 +100,7 @@ class TestTripRoute():
             'startDate': '',
             'endDate': ''
         }
-        response = test_client.post('/trip/update/2', json=new_trip)
+        response = test_client.patch('/trip/update/2', json=new_trip)
         assert response.status_code == 200
     
     def test_update_trip_date(self, test_client):
@@ -110,7 +110,7 @@ class TestTripRoute():
             'startDate': '09/01/2024',
             'endDate': '09/06/2024'
         }
-        response = test_client.post('/trip/update/2', json=new_trip)
+        response = test_client.patch('/trip/update/2', json=new_trip)
         assert response.status_code == 200
         response = test_client.get('/trip/2')
         # check days deleted and recreated properly
@@ -126,5 +126,5 @@ class TestTripRoute():
             'startDate': '09/01/2024',
             'endDate': '09/06/2024'
         }
-        response = test_client.post('/trip/update/5', json=new_trip)
+        response = test_client.patch('/trip/update/5', json=new_trip)
         assert response.status_code == 400
