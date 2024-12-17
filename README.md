@@ -4,13 +4,16 @@ The backend includes the api endpoints for the frontend to access the database a
 ### Tech Stack
 - Python
 - Flask Framework
+- Gunicorn for production deployment
 - PostgreSQL
 - AWS RDS for PostrgreSQL
 - Render (Python version: 3.11.9)
 - Docker
 - GitHub Actions
+- Pytest for unit testing
 
 ## How to Run and Test
+### Run in a development environment
 1. Install the dependencies. **Note**: you may need to comment out some depenencies and manually install it.
 
     ``` 
@@ -68,7 +71,7 @@ Running the program in a docker container ensures it runs in a clean enviornment
     docker stop container_id
     ```
 
-### Running Unit Tests
+### Test with unit tests
 There are several unit tests created for the api endpoints.
 
 1. Update python libraries
@@ -87,10 +90,21 @@ There are several unit tests created for the api endpoints.
     pytest <directory>
     ```
 
+### Run in production
+Gunicorn is used for running in a production environment. **Note: gunicorn can not run on Windows, in this case use a docker container.
+
+1. Run the following command in a non-windows enviornment or docker container:
+    ```
+    gunicorn --bind 0.0.0.0:5000 wsgi:app 
+    ```
+
 ## Code Structure
 - / : outlines the necessary requirements to run the program
+- wsgi.py : deploy flask in production environment with gunicorn
+- config.py : contains environment variables needed to run app
 - /.github/workflows : contains the workflows that are run through GitHub Actions
 - /app : The Flask code is contained in the app directory. It also initiates the webpage for port 5000.
+    - __ init__.py : contains the app for deploying the app
     - models.py : contains the schema for database models.
     - global_helpers.py : contains helper functions used in multiple files.
     - /auth : contains the api route to handle granting access to a user
